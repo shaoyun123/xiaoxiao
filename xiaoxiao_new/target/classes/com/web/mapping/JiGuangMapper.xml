@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.JiGuangMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.XiaoXiFaSong">
+		<id column="ID" property="xiaoXiId" jdbcType="INTEGER" />
+		<result column="xiaoXiMingCheng" property="xiaoXiMingCheng" jdbcType="VARCHAR" />
+		<result column="xiaoXiNeiRong" property="xiaoXiNeiRong" jdbcType="VARCHAR" />
+		<result column="shuJuId" property="shuJuId" jdbcType="INTEGER" />
+		<result column="shuJuLeiXing" property="shuJuLeiXing" jdbcType="INTEGER" />
+		<result column="faSongMuBiao" property="faSongMuBiao" jdbcType="VARCHAR" />
+		<result column="faSongLeiXing" property="faSongLeiXing" jdbcType="INTEGER" />
+		<result column="shiFouChengGong" property="shiFouChengGong" jdbcType="INTEGER" />
+		<result column="faSongShiJian" property="faSongShiJian" jdbcType="DATE" />
+		<result column="xueXiaoId" property="xueXiaoId" jdbcType="VARCHAR" />
+		<result column="sheDingShiJian" property="sheDingShiJian" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, xiaoXiMingCheng, xiaoXiNeiRong, shuJuId, shuJuLeiXing,
+		faSongMuBiao,faSongLeiXing,shiFouChengGong,faSongShiJian,xueXiaoId,sheDingShiJian
+	</sql>
+	<select id="chaXunWeiFaSongXiaoXi" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xiaoxifasong
+		where shiFouChengGong = 0 and faSongMuBiao != '' and faSongMuBiao is not NULL and xueXiaoId != '' and xueXiaoId is not null 
+			<![CDATA[ 
+    		 	and (sheDingShiJian is null or sheDingShiJian = '' or sheDingShiJian <= NOW() )  
+    		 ]]>
+		
+	</select>
+	
+	<update id="gengXinXiaoXiZhuangTai" parameterType="map">
+		update xiaoxifasong set shiFouChengGong = #{shiFouChengGong,jdbcType=INTEGER}
+		 
+		where ID = #{xiaoXiId,jdbcType=INTEGER}
+	</update>
+	
+  <insert id="insertXiaoXiFaSong" parameterType="com.web.model.XiaoXiFaSong" >
+    insert into xiaoxifasong ( xiaoXiMingCheng, xiaoXiNeiRong, shuJuId, shuJuLeiXing,
+		faSongMuBiao,faSongLeiXing,shiFouChengGong,faSongShiJian,xueXiaoId,sheDingShiJian)
+    values ( #{xiaoXiMingCheng,jdbcType=VARCHAR} , #{xiaoXiNeiRong,jdbcType=VARCHAR}, 
+      #{shuJuId,jdbcType=INTEGER}, #{shuJuLeiXing,jdbcType=INTEGER}, #{faSongMuBiao,jdbcType=INTEGER}, 
+      #{faSongLeiXing,jdbcType=VARCHAR},  #{shiFouChengGong,jdbcType=INTEGER},
+      #{faSongShiJian,jdbcType=DATE}, #{xueXiaoId,jdbcType=VARCHAR},#{sheDingShiJian,jdbcType=TIMESTAMP})
+  </insert>
+</mapper>

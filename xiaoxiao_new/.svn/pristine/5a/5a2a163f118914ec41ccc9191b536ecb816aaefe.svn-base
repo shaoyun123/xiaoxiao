@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.NewsMapper" >
+  <select id="getNewsByParamID" resultType="com.web.model.TongZhi" parameterType="java.util.HashMap" >
+   	select id,title,url,chaKanRenIDs  regexp  #{regexp} as dq 
+   		<if test=" id != null and id != ''  ">
+    		<![CDATA[ 
+     		 	,chaKanRenIDs   
+      		 ]]> 
+    		</if>
+   	 from tongzhi where 1=1 
+   			<if test="status != null and status != '' ">
+    		<![CDATA[ 
+     			and (target in ('xuesheng_laoshi','','${status}') or target is null )  
+     		 ]]>  
+    		</if>
+   			<if test="xuexiao  != null and xuexiao != ''  ">
+    		<![CDATA[ 
+      		 	and school_id = #{xuexiao}  
+      		 ]]>  
+    		 </if>
+   			<if test=" id != null and id != ''  ">
+    		<![CDATA[ 
+      		 	and id = #{id}  
+      		 ]]>  
+    		</if>
+  			ORDER BY id desc
+		   	<if test="pageSize > 0">
+		   		 LIMIT #{pageNum},#{pageSize}
+		   	</if>
+    </select> 
+    
+    
+  <select id="getNewsByParam" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+   	select tz.id id ,tz.title title ,tz.url url,tz.chaKanRenIDs  regexp  #{regexp} as dq,tz.type type,
+   	tzlx.name name,tzlx.id leixingid,tz.update_time time
+   		<if test=" id != null and id != ''  ">
+    		<![CDATA[ 
+    		 	,tz.chaKanRenIDs  chaKanRenIDs
+    		 ]]>
+    		</if>
+   	 from tongzhi tz,tongzhileixing tzlx  where 1=1 and  tz.type=tzlx.id 
+   			<if test="status != null and status != '' ">
+    		<![CDATA[ 
+    			and (tz.target in ('xuesheng_laoshi','','${status}') or tz.target is null )
+    		 ]]>
+    		</if>
+   			<if test="xuexiao  != null and xuexiao != ''  ">
+    		<![CDATA[ 
+    		 	and tz.school_id = #{xuexiao}
+    		 ]]>
+    		 </if>
+   			<if test=" id != null and id != ''  ">
+    		<![CDATA[ 
+    		 	and tz.id = #{id}
+    		 ]]>
+    		</if>
+   			<if test=" type != null and type != ''  ">
+    		<![CDATA[ 
+    		 	and tz.type = #{type}
+    		 ]]>
+    		</if>
+    		and ((update_time > #{riqi1} and update_time NOT LIKE '%.%') 
+    		       or ( update_time > #{riqi2} and update_time NOT LIKE '%-%'))
+  			ORDER BY id desc
+		   	<if test="pageSize > 0">
+		   		 LIMIT #{pageNum},#{pageSize}
+		   	</if>
+    </select> 
+    
+    
+    
+  <select id="getNewsLeiXingByParam" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+   select tz.id id,tz.name name from tongzhi t ,tongzhileixing tz
+    where 1=1 and  t.type=tz.id   
+   			<if test="status != null and status != '' ">
+    		<![CDATA[ 
+    			and (t.target in ('xuesheng_laoshi','','${status}') or t.target is null )
+    		 ]]>
+    		</if>
+   			<if test="xuexiao  != null and xuexiao != ''  ">
+    		<![CDATA[ 
+    		 	and t.school_id = #{xuexiao}
+    		 ]]>
+    		 </if>
+  			 GROUP BY tz.id
+    </select> 
+    
+    
+    <update id="updateNewsByParam" parameterType="java.util.HashMap">
+    update tongzhi
+    set chaKanRenIDs = #{chaKanRenIDs,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    
+</mapper>

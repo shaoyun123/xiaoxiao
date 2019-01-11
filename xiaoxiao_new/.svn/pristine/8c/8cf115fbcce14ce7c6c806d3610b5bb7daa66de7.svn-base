@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.YongHuMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.YongHu" >
+    <id column="ID" property="yonghuid" jdbcType="INTEGER" />
+    <result column="jueSeId" property="jueseid" jdbcType="INTEGER" />
+    <result column="yuanXiID" property="yuanxiid" jdbcType="INTEGER" />
+    <result column="yongHuMing" property="yonghuming" jdbcType="VARCHAR" />
+    <result column="yongHuXingMing" property="yonghuxingming" jdbcType="VARCHAR" />
+    <result column="yongHuShouJi" property="yonghushouji" jdbcType="VARCHAR" />
+    <result column="yongHuYouXiang" property="yonghuyouxiang" jdbcType="VARCHAR" />
+    <result column="qitaJueSe" property="qitajuese" jdbcType="VARCHAR" />
+    <result column="touXiang" property="touxiang" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap type="java.lang.String" id="mima">
+  	<result column="miMaMD5" property="mimamd5" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, jueSeId, yuanXiID, yongHuMing, yongHuXingMing, 
+    yongHuShouJi, yongHuYouXiang, qitaJueSe,touXiang
+  </sql>
+  <select id="selectFuDaoYuanByIdAndPasswd" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from yonghu
+    where (jueSeId = 2 or qitaJueSe like '%2%')
+    and yongHuMing = #{id,jdbcType=VARCHAR}
+    and miMaMD5 = #{password,jdbcType=VARCHAR}
+  </select>
+  <select id="selectXueShengChuGuanLiYuanByIdAndPasswd" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from yonghu
+    where (jueSeId = 4 or qitaJueSe like '%4%')
+    and yongHuMing = #{id,jdbcType=VARCHAR}
+    and miMaMD5 = #{password,jdbcType=VARCHAR}
+  </select>
+  <select id="selectJiaoShiByIdAndPasswd" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from yonghu
+    where (jueSeId = 1 or qitaJueSe like '%1%')
+    and yongHuMing = #{id,jdbcType=VARCHAR}
+    and miMaMD5 = #{password,jdbcType=VARCHAR}
+  </select>
+  <select id="selectShuJiByIdAndPasswd" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from yonghu
+    where (jueSeId = 3 or qitaJueSe like '%3%')
+    and yongHuMing = #{id,jdbcType=VARCHAR}
+    and miMaMD5 = #{password,jdbcType=VARCHAR}
+  </select>
+  <select id="selectYongHuByID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yonghu
+    where ID = #{id}
+  </select>
+  <select id="selectPassWdByID" resultMap="mima" parameterType="java.lang.Integer" >
+    select 
+    miMaMD5
+    from yonghu
+    where ID = #{id}
+  </select>
+   <select id="getAllByYuanXiID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yonghu
+    where yuanXiID = #{yuanxiid,jdbcType=INTEGER}
+    and (jueSeId = 1 or qitaJueSe like '%1%')
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from yonghu
+    where ID = #{yonghuid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.YongHu" >
+    insert into yonghu (ID, jueSeId, yuanXiID, 
+      yongHuMing, yongHuLeiXing, miMaMD5, 
+      yongHuXingMing, yongHuShouJi, yongHuYouXiang, 
+      qitaJueSe)
+    values (#{yonghuid,jdbcType=INTEGER}, #{jueseid,jdbcType=INTEGER}, #{yuanxiid,jdbcType=INTEGER}, 
+      #{yonghuming,jdbcType=VARCHAR}, #{yonghuleixing,jdbcType=VARCHAR}, #{mimamd5,jdbcType=VARCHAR}, 
+      #{yonghuxingming,jdbcType=VARCHAR}, #{yonghushouji,jdbcType=VARCHAR}, #{yonghuyouxiang,jdbcType=VARCHAR}, 
+      #{qitajuese,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.YongHu" >
+    insert into yonghu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="yonghuid != null" >
+       ID,
+      </if>
+      <if test="jueseid != null" >
+        jueSeId,
+      </if>
+      <if test="yuanxiid != null" >
+        yuanXiID,
+      </if>
+      <if test="yonghuming != null" >
+        yongHuMing,
+      </if>
+      <if test="yonghuleixing != null" >
+        yongHuLeiXing,
+      </if>
+      <if test="mimamd5 != null" >
+        miMaMD5,
+      </if>
+      <if test="yonghuxingming != null" >
+        yongHuXingMing,
+      </if>
+      <if test="yonghushouji != null" >
+        yongHuShouJi,
+      </if>
+      <if test="yonghuyouxiang != null" >
+        yongHuYouXiang,
+      </if>
+      <if test="qitajuese != null" >
+        qitaJueSe,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="yonghuid != null" >
+        #{yonghuid,jdbcType=INTEGER},
+      </if>
+      <if test="jueseid != null" >
+        #{jueseid,jdbcType=INTEGER},
+      </if>
+      <if test="yuanxiid != null" >
+        #{yuanxiid,jdbcType=INTEGER},
+      </if>
+      <if test="yonghuming != null" >
+        #{yonghuming,jdbcType=VARCHAR},
+      </if>
+      <if test="yonghuleixing != null" >
+        #{yonghuleixing,jdbcType=VARCHAR},
+      </if>
+      <if test="mimamd5 != null" >
+        #{mimamd5,jdbcType=VARCHAR},
+      </if>
+      <if test="yonghuxingming != null" >
+        #{yonghuxingming,jdbcType=VARCHAR},
+      </if>
+      <if test="yonghushouji != null" >
+        #{yonghushouji,jdbcType=VARCHAR},
+      </if>
+      <if test="yonghuyouxiang != null" >
+        #{yonghuyouxiang,jdbcType=VARCHAR},
+      </if>
+      <if test="qitajuese != null" >
+        #{qitajuese,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.YongHu" >
+    update yonghu
+    <set >
+      <if test="jueseid != null" >
+        jueSeId = #{jueseid,jdbcType=INTEGER},
+      </if>
+      <if test="yuanxiid != null" >
+        yuanXiID = #{yuanxiid,jdbcType=INTEGER},
+      </if>
+      <if test="yonghuming != null" >
+        yongHuMing = #{yonghuming,jdbcType=VARCHAR},
+      </if>
+      <if test="yonghuleixing != null" >
+        yongHuLeiXing = #{yonghuleixing,jdbcType=VARCHAR},
+      </if>
+      <if test="mimamd5 != null" >
+        miMaMD5 = #{mimamd5,jdbcType=VARCHAR},
+      </if>
+      <if test="yonghuxingming != null" >
+        yongHuXingMing = #{yonghuxingming,jdbcType=VARCHAR},
+      </if>
+      <if test="yonghushouji != null" >
+        yongHuShouJi = #{yonghushouji,jdbcType=VARCHAR},
+      </if>
+      <if test="yonghuyouxiang != null" >
+        yongHuYouXiang = #{yonghuyouxiang,jdbcType=VARCHAR},
+      </if>
+      <if test="qitajuese != null" >
+        qitaJueSe = #{qitajuese,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{yonghuid,jdbcType=INTEGER}
+  </update>
+  <update id="updateYongHu" parameterType="com.web.model.YongHu" >
+    update yonghu
+    set jueSeId = #{jueseid,jdbcType=INTEGER},
+      yuanXiID = #{yuanxiid,jdbcType=INTEGER},
+      yongHuMing = #{yonghuming,jdbcType=VARCHAR},
+      yongHuLeiXing = #{yonghuleixing,jdbcType=VARCHAR},
+      yongHuXingMing = #{yonghuxingming,jdbcType=VARCHAR},
+      yongHuShouJi = #{yonghushouji,jdbcType=VARCHAR},
+      yongHuYouXiang = #{yonghuyouxiang,jdbcType=VARCHAR},
+      qitaJueSe = #{qitajuese,jdbcType=VARCHAR}
+    where ID = #{yonghuid,jdbcType=INTEGER}
+  </update>
+  <update id="updatePassWdByID">
+    update yonghu
+    set miMaMD5 = #{0,jdbcType=VARCHAR}
+    where ID = #{1,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectLoginInfo" resultType="com.web.model.LoginInfo" parameterType="java.util.HashMap" >
+    select *
+   from (SELECT ID as id,
+                'xuesheng' as status,
+                -1 as jueSeId,
+                -1 as yuanXiID,
+                banJiID as banJiID,
+                xueHao as xueHao,
+                yongHuMing as yongHuMing,
+                xingMing as xingMing,
+                '' as yongHuLeiXing,
+                dianHua as dianHua,
+                youXiang as youXiang,
+                xuexiao_xuehao as xuexiao_xuehao,
+                yanZhengMa as yanZhengMa,
+                checkCodeFor as checkCodeFor,
+                isBanZhang as isBanZhang,
+                suSheID as suSheID,
+                '' as qitaJueSe,
+                miMaMD5,
+								'' as xueXiaoID
+           from xuesheng
+         UNION all
+         SELECT yonghu.ID as id,
+                'laoshi' as status,
+                jueSeId,
+                yonghu.yuanXiID as yuanXiID,
+                '' as banJiID,
+                '' as xueHao,
+                yongHuMing as yongHuMing,
+                yongHuXingMing as xingMing,
+                yongHuLeiXing as yongHuLeiXing,
+                yongHuShouJi as dianHua,
+                yongHuYouXiang as youXiang,
+               CONCAT(yuanxi.xueXiaoID,'_',yonghu.yongHuMing) as xuexiao_xuehao,
+                yanZhengMa as yanZhengMa,
+                checkCodeFor as checkCodeFor,
+                '' as isBanZhang,
+                -1 as suSheID,
+                qitaJueSe,
+                miMaMD5,
+								yuanxi.xueXiaoID as xueXiaoID
+           from yonghu LEFT JOIN yuanxi yuanxi on  yonghu.yuanXiID = yuanxi.ID
+         
+         ) as temp
+		where 1=1 
+		<if test="id != null and id != ''">
+			and	yongHuMing = #{id}
+		</if>
+		<if test="password != null and password != ''">
+			AND miMaMD5 = #{password}
+		</if>
+		
+		<if test="youXiang != null and youXiang != ''">
+			AND youXiang = #{youXiang}
+		</if>
+  </select>
+  
+  
+  <update id="updateYanZhengMa" parameterType="java.util.HashMap" >
+  	<if test="status == 'laoshi'">
+    update yonghu
+    </if>
+    <if test="status == 'xuesheng'">
+    update xuesheng
+    </if>
+    set yanZhengMa = #{yanZhengMa,jdbcType=VARCHAR}
+    <if test="status == 'laoshi'">
+    where ID = #{yonghuid,jdbcType=INTEGER}
+    </if>
+     <if test="status == 'xuesheng'">
+     where ID = #{yonghuid,jdbcType=INTEGER}
+      </if>
+  </update>
+  
+   <update id="updatePasswordOrYanZhengMa" parameterType="java.util.HashMap" >
+  	<if test="status == 'laoshi'">
+    update yonghu
+    </if>
+    <if test="status == 'xuesheng'">
+    update xuesheng
+    </if>
+     <if test="yanZhengMa != null and yanZhengMa != ''">
+    	set yanZhengMa = ''
+    	<if test="status == 'xuesheng'">
+    		,miMaMD5 = xueHao
+    		</if>
+    	<if test="status == 'laoshi'">
+    		,miMaMD5 = '000000'
+    		</if>
+    </if>
+    
+     <if test="checkCodeFor != null and checkCodeFor != ''">
+     	
+    	set checkCodeFor =''
+    	
+    </if>
+    
+    <if test="status == 'laoshi'">
+    where ID = #{yonghuid,jdbcType=INTEGER}
+    </if>
+     <if test="status == 'xuesheng'">
+     where ID = #{yonghuid,jdbcType=INTEGER}
+      </if>
+  </update>
+  
+  
+  <update id="updateCheckCodeFor" parameterType="java.util.HashMap" >
+  	<if test="status == 'laoshi'">
+    update yonghu
+    </if>
+    <if test="status == 'xuesheng'">
+    update xuesheng
+    </if>
+    set checkCodeFor = #{yanZhengMa,jdbcType=VARCHAR},
+     <if test="status == 'laoshi'">
+   	 	yongHuYouXiang = #{youXiang,jdbcType=VARCHAR}
+    </if>
+    <if test="status == 'xuesheng'">
+    	youXiang = #{youXiang,jdbcType=VARCHAR}
+    </if>
+    <if test="status == 'laoshi'">
+    where ID = #{yonghuid,jdbcType=INTEGER}
+    </if>
+     <if test="status == 'xuesheng'">
+     where ID = #{yonghuid,jdbcType=INTEGER}
+      </if>
+  </update>
+  
+  
+  <!-- <update id="updatePasswordById" parameterType="java.util.HashMap" >
+  	<if test="status == 'laoshi'">
+    update yonghu  
+    </if>
+    <if test="status == 'xuesheng'">
+    update xuesheng y left join kaoshi.xuesheng k on y.xuexiao_xuehao=k.xuexiao_xuehao
+    </if>
+    <if test="status == 'laoshi'">
+    set miMaMD5 = #{password,jdbcType=VARCHAR}
+    </if>
+    <if test="status == 'xuesheng'">
+    set y.miMaMD5 = #{password,jdbcType=VARCHAR},k.miMaMD5 = #{password,jdbcType=VARCHAR}
+    </if>
+    <if test="status == 'laoshi'">
+    where yongHuID = #{yonghuid,jdbcType=INTEGER}
+    </if>
+     <if test="status == 'xuesheng'">
+     where y.xueHao = #{yonghuid,jdbcType=INTEGER} and k.xueHao = #{yonghuid,jdbcType=INTEGER}
+      </if>
+  </update> -->
+  
+    <update id="updatePasswordById" parameterType="java.util.HashMap" >
+  	<if test="status == 'laoshi'">
+    update yonghu
+    </if>
+    <if test="status == 'xuesheng'">
+    update xuesheng
+    </if>
+    set miMaMD5 = #{password,jdbcType=VARCHAR}
+    <if test="status == 'laoshi'">
+    where ID = #{yonghuid,jdbcType=INTEGER}
+    </if>
+     <if test="status == 'xuesheng'">
+     where ID = #{yonghuid,jdbcType=INTEGER}
+      </if>
+  </update>
+  
+  
+    <update id="updatePasswordKaoShiById" parameterType="java.util.HashMap" >
+  	<if test="status == 'laoshi'">
+    update kaoshi.yonghu
+    </if>
+    <if test="status == 'xuesheng'">
+    update kaoshi.xuesheng
+    </if>
+    set miMaMD5 = #{password,jdbcType=VARCHAR}
+    <if test="status == 'laoshi'">
+    where yongHuMing = #{loginName,jdbcType=VARCHAR}
+    </if>
+     <if test="status == 'xuesheng'">
+     where xuexiao_xuehao = #{xuexiaoxuehao,jdbcType=VARCHAR}
+      </if>
+  </update>
+  
+<!--   <insert id="insertKaoshiTongBuFaSong" parameterType="com.web.model.XueSheng"> -->
+<!-- 		insert into kaoshi.tongbufasongbiao (shunxuhao, dizhiliebiao, tongbuneirong, -->
+<!-- 		leimingcheng -->
+<!-- 		) -->
+<!-- 		values (#{shunxuhao}, #{dizhiliebiao}, -->
+<!-- 		#{tongbuneirong}, -->
+<!-- 		#{leimingcheng} -->
+<!-- 		) -->
+<!-- 	</insert> -->
+  <insert id="insertKaoshiTongBuFaSong" parameterType="java.util.HashMap">
+		insert into kaoshi.tongbufasongbiao (shunxuhao, dizhiliebiao, tongbuneirong,
+		leimingcheng
+		)
+		values (#{shunxuhao}, #{dizhiliebiao}, 
+		#{tongbuneirong},
+		#{leimingcheng}
+		)
+	</insert>
+	
+	<update id="updateTouXiangByID" parameterType="map">
+		update 
+		<if test="status == 'xuesheng'"> xuesheng </if> 
+		<if test="status == 'laoshi'"> yonghu </if> 
+		<if test="status == 'fudaoyuan'"> yonghu </if> 
+		<if test="status == 'yonghu'"> yonghu </if> 
+		set touXiang=#{touxiang,jdbcType=VARCHAR} 
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+  
+</mapper>

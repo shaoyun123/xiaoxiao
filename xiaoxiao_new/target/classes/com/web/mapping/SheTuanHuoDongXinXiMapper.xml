@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.SheTuanHuoDongXinXiMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.SheTuanHuoDongXinXi" >
+    <id column="ID" property="huodongid" jdbcType="INTEGER" />
+    <result column="sheTuanID" property="shetuanid" jdbcType="INTEGER" />
+    <result column="xueShengZuZhiID" property="xueshengzuzhiid" jdbcType="INTEGER" />
+    <result column="huoDongMingCheng" property="huodongmingcheng" jdbcType="VARCHAR" />
+    <result column="huoDongShiJian" property="huodongshijian" jdbcType="TIMESTAMP" />
+    <result column="huoDongDiDIan" property="huodongdidian" jdbcType="VARCHAR" />
+    <result column="huoDongXiangQing" property="huodongxiangqing" jdbcType="VARCHAR" />
+    <result column="canYuRenShu" property="canyurenshu" jdbcType="INTEGER" />
+    <result column="huoDongLiuCheng" property="huodongliucheng" jdbcType="VARCHAR" />
+    <result column="huoDongJiLu" property="huodongjilu" jdbcType="VARCHAR" />
+    <result column="zhaoPianLuJing" property="zhaopianlujing" jdbcType="VARCHAR" />
+    <result column="huoDongXingZhi" property="huodongxingzhi" jdbcType="VARCHAR" />
+    <result column="faBuShiJian" property="fabushijian" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, sheTuanID, xueShengZuZhiID, huoDongMingCheng, huoDongShiJian, huoDongDiDIan, 
+    huoDongXiangQing, canYuRenShu, huoDongLiuCheng, huoDongJiLu, zhaoPianLuJing, huoDongXingZhi, faBuShiJian
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanhuodongxinxi
+    where ID = #{huodongid,jdbcType=INTEGER}
+  </select>
+  <select id="getCountBySheTuanID" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select count(*)
+    from shetuanhuodongxinxi
+    where ID = #{huodongid,jdbcType=INTEGER}
+  </select>
+  <select id="getCountByXueShengZuZhiID" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select count(*)
+    from shetuanhuodongxinxi
+    where xueShengZuZhiID = #{xueshengzuzhiid,jdbcType=INTEGER}
+  </select>
+  <select id="selectSheTuanHuoDongXinXisBySheTuanIDAndLimit" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanhuodongxinxi
+    where sheTuanID = #{0,jdbcType=INTEGER}
+    order by huoDongID DESC
+    limit #{1},#{2}
+  </select>
+  <select id="selectSheTuanHuoDongXinXisBySheTuanID" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanhuodongxinxi
+    where sheTuanID = #{0,jdbcType=INTEGER}
+    order by ID DESC
+  </select>
+  <select id="selectSheTuanHuoDongXinXisByXueShengZuZhiIDAndLimit" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanhuodongxinxi
+    where xueShengZuZhiID = #{0,jdbcType=INTEGER}
+    order by ID DESC
+    limit #{1},#{2}
+  </select>
+  <select id="selectSheTuanHuoDongXinXisByXueShengZuZhiID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanhuodongxinxi
+    where xueShengZuZhiID = #{0,jdbcType=INTEGER}
+    order by ID DESC
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shetuanhuodongxinxi
+    where ID = #{huodongid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.SheTuanHuoDongXinXi" >
+    insert into shetuanhuodongxinxi (ID, sheTuanID, xueShengZuZhiID, 
+      huoDongMingCheng, huoDongShiJian, huoDongDiDIan, 
+      huoDongXiangQing, canYuRenShu, huoDongLiuCheng, 
+      huoDongJiLu, zhaoPianLuJing, huoDongXingZhi, faBuShiJian
+      )
+    values (#{huodongid,jdbcType=INTEGER}, #{shetuanid,jdbcType=INTEGER}, #{xueshengzuzhiid,jdbcType=INTEGER}, 
+      #{huodongmingcheng,jdbcType=VARCHAR}, #{huodongshijian,jdbcType=TIMESTAMP}, #{huodongdidian,jdbcType=VARCHAR}, 
+      #{huodongxiangqing,jdbcType=VARCHAR}, #{canyurenshu,jdbcType=INTEGER}, #{huodongliucheng,jdbcType=VARCHAR}, 
+      #{huodongjilu,jdbcType=VARCHAR}, #{zhaopianlujing,jdbcType=VARCHAR}, #{huodongxingzhi,jdbcType=VARCHAR}, #{fabushijian,jdbcType=DATE}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.SheTuanHuoDongXinXi" >
+    update shetuanhuodongxinxi
+    set sheTuanID = #{shetuanid,jdbcType=INTEGER},
+      xueShengZuZhiID = #{xueshengzuzhiid,jdbcType=INTEGER},
+      huoDongMingCheng = #{huodongmingcheng,jdbcType=VARCHAR},
+      huoDongShiJian = #{huodongshijian,jdbcType=TIMESTAMP},
+      huoDongDiDIan = #{huodongdidian,jdbcType=VARCHAR},
+      huoDongXiangQing = #{huodongxiangqing,jdbcType=VARCHAR},
+      canYuRenShu = #{canyurenshu,jdbcType=INTEGER},
+      huoDongLiuCheng = #{huodongliucheng,jdbcType=VARCHAR},
+      huoDongJiLu = #{huodongjilu,jdbcType=VARCHAR},
+      zhaoPianLuJing = #{zhaopianlujing,jdbcType=VARCHAR},
+      huoDongXingZhi = #{huodongxingzhi,jdbcType=VARCHAR},
+      faBuShiJian = #{fabushijian,jdbcType=DATE}
+    where ID = #{huodongid,jdbcType=INTEGER}
+  </update>
+</mapper>

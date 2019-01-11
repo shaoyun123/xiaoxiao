@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.JLNRMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.JLNR" >
+    <id column="jiaoLiuID" property="jiaoliuid" jdbcType="INTEGER" />
+    <result column="jiaoLiuMingCheng" property="jiaoliumingcheng" jdbcType="VARCHAR" />
+    <result column="anPaiID" property="anpaiid" jdbcType="INTEGER" />
+    <result column="xueShengID" property="xueshengid" jdbcType="INTEGER" />
+    <result column="fuDaoYuanID" property="fudaoyuanid" jdbcType="INTEGER" />
+    <result column="shangChuanZhuangTai" property="shangchuanzhuangtai" jdbcType="VARCHAR" />
+    <result column="xueShengShangChuan" property="xueshengshangchuan" jdbcType="VARCHAR" />
+    <result column="shenHeZhuangTai" property="shenhezhuangtai" jdbcType="VARCHAR" />
+    <result column="fuDaoYuanShenHe" property="fudaoyuanshenhe" jdbcType="VARCHAR" />
+    <result column="shangChuanRiQi" property="shangchuanriqi" jdbcType="DATE" />
+    <result column="shenHeRiQi" property="shenheriqi" jdbcType="DATE" />
+  </resultMap>
+  
+  <resultMap type="java.lang.String" id="xueshengshangchuan">
+  <result column="xueShengShangChuan" property="xueshengshangchuan" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap type="java.lang.String" id="fudaoyuanshenhe">
+  <result column="fuDaoYuanShenHe" property="fudaoyuanshenhe" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap type="java.lang.String" id="jiaoliumingcheng">
+  <result column="jiaoLiuMingCheng" property="jiaoliumingcheng" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap type="java.lang.String" id="shangchuanzhuangtai">
+  <result column="shangChuanZhuangTai" property="shangchuanzhuangtai" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    jiaoLiuID, jiaoLiuMingCheng,anPaiID, xueShengID, fuDaoYuanID, shangChuanZhuangTai, xueShengShangChuan, 
+    shenHeZhuangTai, fuDaoYuanShenHe,shangChuanRiQi,shenHeRiQi
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from jiaoliuneirong
+    where jiaoLiuID = #{jiaoliuid,jdbcType=INTEGER}
+  </select>
+  <select id="selectByanPaiID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from jiaoliuneirong
+    where anPaiID = #{anpaiid,jdbcType=INTEGER}
+  </select>
+  <select id="getCountByxueShengIDAndUnaudited" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+  	select count(*)
+  	from jiaoliuneirong
+  	where xueShengID = #{xueshengid,jdbcType=INTEGER} and shenHeZhuangTai = 0
+  	order by shangChuanRiQi desc
+  </select>
+  <select id="getCountByxueShengIDAndPass" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+  	select count(*)
+  	from jiaoliuneirong
+  	where xueShengID = #{xueshengid,jdbcType=INTEGER} and shenHeZhuangTai = 1
+  	order by shangChuanRiQi desc
+  </select>
+  <select id="getALLByxueShengIDAndLimitAndUnaudited" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from jiaoliuneirong
+  	where xueShengID = #{0,jdbcType=INTEGER} and shenHeZhuangTai = 0
+  	order by shangChuanRiQi desc limit #{1},#{2}
+  </select>
+  <select id="getALLByxueShengIDAndLimitAndPass" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from jiaoliuneirong
+  	where xueShengID = #{0,jdbcType=INTEGER} and shenHeZhuangTai = 1
+  	order by shangChuanRiQi desc limit #{1},#{2}
+  </select>
+  <select id="getALLByxueShengID" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select
+  	<include refid="Base_Column_List" />
+  	from jiaoliuneirong
+  	where xueShengID = #{xueshengid,jdbcType=INTEGER}
+  	order by shangChuanRiQi desc
+  </select>
+  
+  <select id="getAllByanPaiID" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select
+  	<include refid="Base_Column_List" />
+  	from jiaoliuneirong
+  	where anPaiID = #{anpaiid,jdbcType=INTEGER}
+  </select>
+  <select id="getxueShengShangChuanByjiaoLiuID" resultMap="xueshengshangchuan" parameterType="java.lang.Integer">
+  	select xueShengShangChuan
+  	from jiaoliuneirong
+  	where jiaoLiuID = #{jiaoliuid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getxueShengShangChuanByanPaiID" resultMap="xueshengshangchuan" parameterType="java.lang.Integer">
+  	select xueShengShangChuan
+  	from jiaoliuneirong
+  	where anPaiID = #{anpaiid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getfuDaoYuanShenHeByjiaoLiuID" resultMap="fudaoyuanshenhe" parameterType="java.lang.Integer">
+  	select fuDaoYuanShenHe
+  	from jiaoliuneirong
+  	where jiaoLiuID = #{jiaoliuid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getjiaoLiuMingChengByjiaoLiuID" resultMap="jiaoliumingcheng" parameterType="java.lang.Integer">
+  	select jiaoLiuMingCheng
+  	from jiaoliuneirong
+  	where jiaoLiuID = #{jiaoliuid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getshangchuanzhuangtaiByjiaoLiuID" resultMap="shangchuanzhuangtai" parameterType="java.lang.Integer">
+  	select shangchuanzhuangtai
+  	from jiaoliuneirong
+  	where jiaoLiuID = #{jiaoliuid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from jiaoliuneirong
+    where jiaoLiuID = #{jiaoliuid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByanPaiID" parameterType="java.lang.Integer" >
+    delete from jiaoliuneirong
+    where anPaiID = #{anpaiid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertByXueShengID" parameterType="map" >
+    insert into jiaoliuneirong (xueShengID, 
+      shangChuanZhuangTai, xueShengShangChuan, 
+      shenHeZhuangTai)
+    values (#{xueshengid,jdbcType=INTEGER},
+      '1',#{xueshengshangchuan,jdbcType=VARCHAR},'0')
+  </insert>
+  <insert id="insert" parameterType="com.web.model.JLNR" >
+    insert into jiaoliuneirong (jiaoLiuID,jiaoLiuMingCheng,anPaiID,xueShengID,fuDaoYuanID,shangChuanZhuangTai,shenHeZhuangTai)
+    values (#{jiaoliuid,jdbcType=INTEGER}, #{jiaoliumingcheng,jdbcType=VARCHAR}, 
+    	#{anpaiid,jdbcType=INTEGER}, #{xueshengid,jdbcType=INTEGER}, #{fudaoyuanid,jdbcType=INTEGER},
+    	#{shangchuanzhuangtai,jdbcType=VARCHAR},#{shenhezhuangtai,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.JLNR" >
+    insert into jiaoliuneirong
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="jiaoliuid != null" >
+        jiaoLiuID,
+      </if>
+      <if test="jiaoliumingcheng != null" >
+        jiaoLiuMingCheng,
+      </if>
+      <if test="anpaiid != null" >
+        anPaiID,
+      </if>
+      <if test="xueshengid != null" >
+        xueShengID,
+      </if>
+      <if test="fudaoyuanid != null" >
+        fuDaoYuanID,
+      </if>
+      <if test="shangchuanzhuangtai != null" >
+        shangChuanZhuangTai,
+      </if>
+      <if test="xueshengshangchuan != null" >
+        xueShengShangChuan,
+      </if>
+      <if test="shenhezhuangtai != null" >
+        shenHeZhuangTai,
+      </if>
+      <if test="fudaoyuanshenhe != null" >
+        fuDaoYuanShenHe,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="jiaoliuid != null" >
+        #{jiaoliuid,jdbcType=INTEGER},
+      </if>
+      <if test="jiaoliumingcheng != null" >
+        #{jiaoliumingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="anpaiid != null" >
+        #{anpaiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengid != null" >
+        #{xueshengid,jdbcType=INTEGER},
+      </if>
+      <if test="fudaoyuanid != null" >
+        #{fudaoyuanid,jdbcType=INTEGER},
+      </if>
+      <if test="shangchuanzhuangtai != null" >
+        #{shangchuanzhuangtai,jdbcType=VARCHAR},
+      </if>
+      <if test="xueshengshangchuan != null" >
+        #{xueshengshangchuan,jdbcType=VARCHAR},
+      </if>
+      <if test="shenhezhuangtai != null" >
+        #{shenhezhuangtai,jdbcType=VARCHAR},
+      </if>
+      <if test="fudaoyuanshenhe != null" >
+        #{fudaoyuanshenhe,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.JLNR" >
+    update jiaoliuneirong
+    <set >
+      <if test="jiaoliumingcheng != null" >
+        jiaoLiuMingCheng = #{jiaoLiuMingCheng,jdbcType=VARCHAR},
+      </if>
+      <if test="anpaiid != null" >
+        anPaiID = #{anpaiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengid != null" >
+        xueShengID = #{xueshengid,jdbcType=INTEGER},
+      </if>
+      <if test="fudaoyuanid != null" >
+        fuDaoYuanID = #{fudaoyuanid,jdbcType=INTEGER},
+      </if>
+      <if test="shangchuanzhuangtai != null" >
+        shangChuanZhuangTai = #{shangchuanzhuangtai,jdbcType=VARCHAR},
+      </if>
+      <if test="xueshengshangchuan != null" >
+        xueShengShangChuan = #{xueshengshangchuan,jdbcType=VARCHAR},
+      </if>
+      <if test="shenhezhuangtai != null" >
+        shenHeZhuangTai = #{shenhezhuangtai,jdbcType=VARCHAR},
+      </if>
+      <if test="fudaoyuanshenhe != null" >
+        fuDaoYuanShenHe = #{fudaoyuanshenhe,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where jiaoLiuID = #{jiaoliuid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="map" >
+    update jiaoliuneirong
+    set 
+      xueShengID = #{xueshengid,jdbcType=INTEGER},
+      shangChuanZhuangTai = #{shangchuanzhuangtai,jdbcType=VARCHAR},
+      xueShengShangChuan = #{xueshengshangchuan,jdbcType=VARCHAR},
+      shangChuanRiQi = #{shangchuanriqi,jdbcType=DATE}
+    where jiaoLiuID = #{jiaoliuid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByanPaiID" parameterType="com.web.model.JLNR" >
+    update jiaoliuneirong
+    set jiaoLiuMingCheng = #{jiaoliumingcheng,jdbcType=VARCHAR}
+    where anPaiID = #{anpaiid,jdbcType=INTEGER}
+  </update>
+  <update id="updatexueshengshangchuanByanPaiID" parameterType="map" >
+    update jiaoliuneirong
+    set 
+      xueShengShangChuan = #{xueshengshangchuan,jdbcType=VARCHAR} 
+    where anPaiID = #{anpaiid,jdbcType=INTEGER}
+  </update>
+  <update id="updatexueshengshangchuanByjiaoLiuID" parameterType="map" >
+    update jiaoliuneirong
+    set 
+      xueShengShangChuan = #{xueshengshangchuan,jdbcType=VARCHAR} 
+    where jiaoLiuID = #{jiaoliuid,jdbcType=INTEGER}
+  </update>
+  <update id="updateshangchuanzhuangtaiByjiaoLiuID" parameterType="map">
+  	update jiaoliuneirong
+  	set shangChuanZhuangTai = #{shangchuanzhuangtai,jdbcType=VARCHAR}
+  	where jiaoLiuID = #{jiaoliuid,jdbcType=INTEGER}
+  </update>
+  <update id="updatefuDaoYuanShenHeByjiaoLiuID" parameterType="com.web.model.JLNR">
+  	update jiaoliuneirong
+  	set 
+  		fuDaoYuanShenHe = #{fudaoyuanshenhe,jdbcType=VARCHAR},
+  	 	shenHeRiQi = #{shenheriqi,jdbcType=DATE},
+  	 	shenHeZhuangTai = #{shenhezhuangtai,jdbcType=VARCHAR}
+  	where jiaoLiuID = #{jiaoliuid,jdbcType=INTEGER}
+  </update>
+</mapper>

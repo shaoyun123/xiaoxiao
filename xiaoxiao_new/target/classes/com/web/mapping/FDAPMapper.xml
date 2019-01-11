@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.FDAPMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.FDAP" >
+    <id column="ID" property="anpaiid" jdbcType="INTEGER" />
+    <result column="mingCheng" property="mingcheng" jdbcType="VARCHAR" />
+    <result column="yaoQiu" property="yaoqiu" jdbcType="VARCHAR" />
+    <result column="kaiShiShiJian" property="kaishishijian" jdbcType="DATE" />
+    <result column="jieZhiShiJian" property="jiezhishijian" jdbcType="DATE" />
+    <result column="fuDaoYuanID" property="fudaoyuanid" jdbcType="INTEGER" />
+    <result column="banJiIDs" property="banjiids" jdbcType="VARCHAR" />
+    <result column="xueShengIDs" property="xueshengids" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap type="java.lang.Integer" id="anpaiid">
+  <result column="ID" property="anpaiid" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap type="java.lang.String" id="mingcheng">
+  <result column="mingCheng" property="mingcheng" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap type="java.lang.String" id="yaoqiu">
+  <result column="yaoQiu" property="yaoqiu" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap type="java.lang.String" id="jiezhishijian">
+  <result column="jieZhiShiJian" property="jiezhishijian" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, mingCheng, yaoQiu, kaiShiShiJian, jieZhiShiJian, fuDaoYuanID, banJiIDs, 
+    xueShengIDs
+  </sql>
+  <select id="getmingChengByanPaiID" resultMap="mingcheng" parameterType="java.lang.Integer" >
+    select mingCheng
+    from fudaoanpai
+    where ID = #{anpaiid,jdbcType=INTEGER}
+  </select>
+  <select id="getyaoQiuByanPaiID" resultMap="yaoqiu" parameterType="java.lang.Integer" >
+    select yaoQiu
+    from fudaoanpai
+    where ID = #{anpaiid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getjieZhiShiJianByanPaiID" resultMap="jiezhishijian" parameterType="java.lang.Integer">
+  	select jieZhiShiJian
+  	from fudaoanpai
+  	where ID = #{anpaiid,jdbcType=INTEGER}
+  </select>
+  <select id="getByanPaiID" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select
+  	<include refid="Base_Column_List" />
+  	from fudaoanpai
+  	where ID = #{anPaiID,jdbcType=INTEGER}
+  </select>
+  <select id="getAllByfuDaoYuanID" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select
+  	<include refid="Base_Column_List" />
+  	from fudaoanpai
+  	where fuDaoYuanID = #{fudaoyuanid,jdbcType=INTEGER}
+  	order by kaiShiShiJian desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from fudaoanpai
+    where ID = #{anpaiid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.FDAP">
+  	<selectKey keyProperty="anpaiid" order="AFTER" resultType="java.lang.Integer">
+         select LAST_INSERT_ID()
+    </selectKey>
+    insert into fudaoanpai (mingCheng, yaoQiu, 
+      kaiShiShiJian, jieZhiShiJian, fuDaoYuanID, 
+      banJiIDs, xueShengIDs)
+    values (#{mingcheng,jdbcType=VARCHAR}, #{yaoqiu,jdbcType=VARCHAR}, 
+      #{kaishishijian,jdbcType=DATE}, #{jiezhishijian,jdbcType=DATE}, #{fudaoyuanid,jdbcType=INTEGER}, 
+      #{banjiids,jdbcType=VARCHAR}, #{xueshengids,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.FDAP" >
+    insert into fudaoanpai
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="anpaiid != null" >
+        ID,
+      </if>
+      <if test="mingcheng != null" >
+        mingCheng,
+      </if>
+      <if test="yaoqiu != null" >
+        yaoQiu,
+      </if>
+      <if test="kaishishijian != null" >
+        kaiShiShiJian,
+      </if>
+      <if test="jiezhishijian != null" >
+        jieZhiShiJian,
+      </if>
+      <if test="fudaoyuanid != null" >
+        fuDaoYuanID,
+      </if>
+      <if test="banjiids != null" >
+        banJiIDs,
+      </if>
+      <if test="xueshengids != null" >
+        xueShengIDs,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="anpaiid != null" >
+        #{anpaiid,jdbcType=INTEGER},
+      </if>
+      <if test="mingcheng != null" >
+        #{mingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="yaoqiu != null" >
+        #{yaoqiu,jdbcType=VARCHAR},
+      </if>
+      <if test="kaishishijian != null" >
+        #{kaishishijian,jdbcType=DATE},
+      </if>
+      <if test="jiezhishijian != null" >
+        #{jiezhishijian,jdbcType=DATE},
+      </if>
+      <if test="fudaoyuanid != null" >
+        #{fudaoyuanid,jdbcType=INTEGER},
+      </if>
+      <if test="banjiids != null" >
+        #{banjiids,jdbcType=VARCHAR},
+      </if>
+      <if test="xueshengids != null" >
+        #{xueshengids,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.FDAP" >
+    update fudaoanpai
+    <set >
+      <if test="mingcheng != null" >
+        mingCheng = #{mingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="yaoqiu != null" >
+        yaoQiu = #{yaoqiu,jdbcType=VARCHAR},
+      </if>
+      <if test="kaishishijian != null" >
+        kaiShiShiJian = #{kaishishijian,jdbcType=DATE},
+      </if>
+      <if test="jiezhishijian != null" >
+        jieZhiShiJian = #{jiezhishijian,jdbcType=DATE},
+      </if>
+      <if test="fudaoyuanid != null" >
+        fuDaoYuanID = #{fudaoyuanid,jdbcType=INTEGER},
+      </if>
+      <if test="banjiids != null" >
+        banJiIDs = #{banjiids,jdbcType=VARCHAR},
+      </if>
+      <if test="xueshengids != null" >
+        xueShengIDs = #{xueshengids,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{anpaiid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.FDAP" >
+    update fudaoanpai
+    set mingCheng = #{mingcheng,jdbcType=VARCHAR},
+      yaoQiu = #{yaoqiu,jdbcType=VARCHAR},
+      kaiShiShiJian = #{kaishishijian,jdbcType=DATE},
+      jieZhiShiJian = #{jiezhishijian,jdbcType=DATE},
+      fuDaoYuanID = #{fudaoyuanid,jdbcType=INTEGER},
+      banJiIDs = #{banjiids,jdbcType=VARCHAR},
+      xueShengIDs = #{xueshengids,jdbcType=VARCHAR}
+    where ID = #{anpaiid,jdbcType=INTEGER}
+  </update>
+</mapper>

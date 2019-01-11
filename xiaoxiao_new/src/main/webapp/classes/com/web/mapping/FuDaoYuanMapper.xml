@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.FuDaoYuanMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.FuDaoYuan" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="fuDaoYuanID" property="fudaoyuanid" jdbcType="INTEGER" />
+    <result column="banJiID" property="banjiid" jdbcType="VARCHAR" />
+    <result column="shuJiID" property="shujiid" jdbcType="INTEGER" />
+    <result column="zhuangTai" property="zhuangtai" jdbcType="BIT" />
+    <result column="kaiShiShiJian" property="kaishishijian" jdbcType="DATE" />
+    <result column="jieShuShiJian" property="jieshushijian" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, fuDaoYuanID, banJiID, shuJiID, zhuangTai, kaiShiShiJian, jieShuShiJian
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from fudaoyuan
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getBybanJiID" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from fudaoyuan
+    where banJiID like "%,"#{banjiid,jdbcType=VARCHAR}",%" or banJiID like #{banjiid,jdbcType=VARCHAR}",%"
+  </select>
+  <select id="getByfuDaoYuanID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from fudaoyuan
+    where fuDaoYuanID = #{fudaoyuanid,jdbcType=INTEGER}
+  </select>
+  <select id="getAllByshuJiID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from fudaoyuan
+    where shuJiID = #{shujiid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from fudaoyuan
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.FuDaoYuan" >
+    insert into fudaoyuan (ID, fuDaoYuanID, banJiID, 
+      shuJiID, zhuangTai, kaiShiShiJian, 
+      jieShuShiJian)
+    values (#{id,jdbcType=INTEGER}, #{fudaoyuanid,jdbcType=INTEGER}, #{banjiid,jdbcType=VARCHAR}, 
+      #{shujiid,jdbcType=INTEGER}, #{zhuangtai,jdbcType=BIT}, #{kaishishijian,jdbcType=DATE}, 
+      #{jieshushijian,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.FuDaoYuan" >
+    insert into fudaoyuan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="fudaoyuanid != null" >
+        fuDaoYuanID,
+      </if>
+      <if test="banjiid != null" >
+        banJiID,
+      </if>
+      <if test="shujiid != null" >
+        shuJiID,
+      </if>
+      <if test="zhuangtai != null" >
+        zhuangTai,
+      </if>
+      <if test="kaishishijian != null" >
+        kaiShiShiJian,
+      </if>
+      <if test="jieshushijian != null" >
+        jieShuShiJian,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="fudaoyuanid != null" >
+        #{fudaoyuanid,jdbcType=INTEGER},
+      </if>
+      <if test="banjiid != null" >
+        #{banjiid,jdbcType=VARCHAR},
+      </if>
+      <if test="shujiid != null" >
+        #{shujiid,jdbcType=INTEGER},
+      </if>
+      <if test="zhuangtai != null" >
+        #{zhuangtai,jdbcType=BIT},
+      </if>
+      <if test="kaishishijian != null" >
+        #{kaishishijian,jdbcType=DATE},
+      </if>
+      <if test="jieshushijian != null" >
+        #{jieshushijian,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.FuDaoYuan" >
+    update fudaoyuan
+    <set >
+      <if test="fudaoyuanid != null" >
+        fuDaoYuanID = #{fudaoyuanid,jdbcType=INTEGER},
+      </if>
+      <if test="banjiid != null" >
+        banJiID = #{banjiid,jdbcType=VARCHAR},
+      </if>
+      <if test="shujiid != null" >
+        shuJiID = #{shujiid,jdbcType=INTEGER},
+      </if>
+      <if test="zhuangtai != null" >
+        zhuangTai = #{zhuangtai,jdbcType=BIT},
+      </if>
+      <if test="kaishishijian != null" >
+        kaiShiShiJian = #{kaishishijian,jdbcType=DATE},
+      </if>
+      <if test="jieshushijian != null" >
+        jieShuShiJian = #{jieshushijian,jdbcType=DATE},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.FuDaoYuan" >
+    update fudaoyuan
+    set fuDaoYuanID = #{fudaoyuanid,jdbcType=INTEGER},
+      banJiID = #{banjiid,jdbcType=VARCHAR},
+      shuJiID = #{shujiid,jdbcType=INTEGER},
+      zhuangTai = #{zhuangtai,jdbcType=BIT},
+      kaiShiShiJian = #{kaishishijian,jdbcType=DATE},
+      jieShuShiJian = #{jieshushijian,jdbcType=DATE}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

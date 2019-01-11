@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.ShuJiMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.ShuJi" >
+    <id column="ID" property="shujiid" jdbcType="INTEGER" />
+    <result column="xueShengChuGuanLiYuanID" property="xueshengchuguanliyuanid" jdbcType="INTEGER" />
+    <result column="yuanXiID" property="yuanxiid" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, xueShengChuGuanLiYuanID, yuanXiID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from shuji
+    where ID = #{shujiid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shuji
+    where ID = #{shujiid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.ShuJi" >
+    insert into shuji (ID, xueShengChuGuanLiYuanID, 
+      yuanXiID)
+    values (#{shujiid,jdbcType=INTEGER}, #{xueshengchuguanliyuanid,jdbcType=INTEGER}, 
+      #{yuanxiid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.ShuJi" >
+    insert into shuji
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="shujiid != null" >
+        ID,
+      </if>
+      <if test="xueshengchuguanliyuanid != null" >
+        xueShengChuGuanLiYuanID,
+      </if>
+      <if test="yuanxiid != null" >
+        yuanXiID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="shujiid != null" >
+        #{shujiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengchuguanliyuanid != null" >
+        #{xueshengchuguanliyuanid,jdbcType=INTEGER},
+      </if>
+      <if test="yuanxiid != null" >
+        #{yuanxiid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.ShuJi" >
+    update shuji
+    <set >
+      <if test="xueshengchuguanliyuanid != null" >
+        xueShengChuGuanLiYuanID = #{xueshengchuguanliyuanid,jdbcType=INTEGER},
+      </if>
+      <if test="yuanxiid != null" >
+        yuanXiID = #{yuanxiid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{shujiid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.ShuJi" >
+    update shuji
+    set xueShengChuGuanLiYuanID = #{xueshengchuguanliyuanid,jdbcType=INTEGER},
+      yuanXiID = #{yuanxiid,jdbcType=INTEGER}
+    where ID = #{shujiid,jdbcType=INTEGER}
+  </update>
+</mapper>

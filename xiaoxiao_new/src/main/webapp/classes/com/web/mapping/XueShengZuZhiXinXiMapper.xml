@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.XueShengZuZhiXinXiMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.XueShengZuZhiXinXi" >
+    <id column="xueShengZuZhiXinXiID" property="xueshengzuzhixinxiid" jdbcType="INTEGER" />
+    <result column="xueShengZuZhiID" property="xueshengzuzhiid" jdbcType="INTEGER" />
+    <result column="renShu" property="renshu" jdbcType="INTEGER" />
+    <result column="renYuanIDs" property="renyuanids" jdbcType="VARCHAR" />
+    <result column="fuZeRen" property="fuzeren" jdbcType="INTEGER" />
+    <result column="zhiDaoRen" property="zhidaoren" jdbcType="INTEGER" />
+    <result column="bianJi" property="bianji" jdbcType="INTEGER" />
+    <result column="nianDu" property="niandu" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    xueShengZuZhiXinXiID, xueShengZuZhiID, renShu, renYuanIDs, fuZeRen, zhiDaoRen, nianDu, bianJi
+  </sql>
+  <select id="selectByXueShengZuZhiXinXiID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from xueshengzuzhixinxi
+    where xueShengZuZhiXinXiID = #{xueshengzuzhixinxiid,jdbcType=INTEGER}
+  </select>
+  <select id="selectXueShengZuZhiXinXiByXueShengIDAndNianDu" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from xueshengzuzhixinxi
+    where (renYuanIDs like #{0,jdbcType=VARCHAR} or renYuanIDs like #{1,jdbcType=VARCHAR})
+    and nianDu = #{2}
+  </select>
+   <select id="selectXueShengZuZhiXinXiByIDAndXueShengID" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from xueshengzuzhixinxi
+    where (renYuanIDs like #{1,jdbcType=VARCHAR} or renYuanIDs like #{2,jdbcType=VARCHAR})
+    and xueShengZuZhiXinXiID = #{0,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectXueShengZuZhiXinXiByXueShengZuZhiIDAndNianDu" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from xueshengzuzhixinxi
+    where xueShengZuZhiID = #{0,jdbcType=INTEGER}
+    and nianDu = #{1}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from xueshengzuzhixinxi
+    where xueShengZuZhiXinXiID = #{xueshengzuzhixinxiid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertXueShengZuZhiXinXi" parameterType="com.web.model.XueShengZuZhiXinXi" >
+    insert into xueshengzuzhixinxi (xueShengZuZhiID, 
+      renShu, renYuanIDs, fuZeRen, 
+      zhiDaoRen, nianDu , bianJi)
+    values (#{xueshengzuzhiid,jdbcType=INTEGER}, 
+      #{renshu,jdbcType=INTEGER}, #{renyuanids,jdbcType=VARCHAR}, #{fuzeren,jdbcType=INTEGER}, 
+      #{zhidaoren,jdbcType=INTEGER}, #{niandu,jdbcType=INTEGER},  #{bianji,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.XueShengZuZhiXinXi" >
+    insert into xueshengzuzhixinxi
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="xueshengzuzhixinxiid != null" >
+        xueShengZuZhiXinXiID,
+      </if>
+      <if test="xueshengzuzhiid != null" >
+        xueShengZuZhiID,
+      </if>
+      <if test="renshu != null" >
+        renShu,
+      </if>
+      <if test="renyuanids != null" >
+        renYuanIDs,
+      </if>
+      <if test="fuzeren != null" >
+        fuZeRen,
+      </if>
+      <if test="zhidaoren != null" >
+        zhiDaoRen,
+      </if>
+      <if test="niandu != null" >
+        nianDu,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="xueshengzuzhixinxiid != null" >
+        #{xueshengzuzhixinxiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengzuzhiid != null" >
+        #{xueshengzuzhiid,jdbcType=INTEGER},
+      </if>
+      <if test="renshu != null" >
+        #{renshu,jdbcType=INTEGER},
+      </if>
+      <if test="renyuanids != null" >
+        #{renyuanids,jdbcType=VARCHAR},
+      </if>
+      <if test="fuzeren != null" >
+        #{fuzeren,jdbcType=INTEGER},
+      </if>
+      <if test="zhidaoren != null" >
+        #{zhidaoren,jdbcType=INTEGER},
+      </if>
+      <if test="niandu != null" >
+        #{niandu,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.XueShengZuZhiXinXi" >
+    update xueshengzuzhixinxi
+    <set >
+      <if test="xueshengzuzhiid != null" >
+        xueShengZuZhiID = #{xueshengzuzhiid,jdbcType=INTEGER},
+      </if>
+      <if test="renshu != null" >
+        renShu = #{renshu,jdbcType=INTEGER},
+      </if>
+      <if test="renyuanids != null" >
+        renYuanIDs = #{renyuanids,jdbcType=VARCHAR},
+      </if>
+      <if test="fuzeren != null" >
+        fuZeRen = #{fuzeren,jdbcType=INTEGER},
+      </if>
+      <if test="zhidaoren != null" >
+        zhiDaoRen = #{zhidaoren,jdbcType=INTEGER},
+      </if>
+      <if test="niandu != null" >
+        nianDu = #{niandu,jdbcType=INTEGER},
+      </if>
+    </set>
+    where xueShengZuZhiXinXiID = #{xueshengzuzhixinxiid,jdbcType=INTEGER}
+  </update>
+  <update id="updateXueShengZuZhiXinXi" parameterType="com.web.model.XueShengZuZhiXinXi" >
+    update xueshengzuzhixinxi
+    set renShu = #{renshu,jdbcType=INTEGER},
+      	renYuanIDs = #{renyuanids,jdbcType=VARCHAR},
+      	fuZeRen = #{fuzeren,jdbcType=INTEGER},
+      	zhiDaoRen = #{zhidaoren,jdbcType=INTEGER},
+      	bianJi = #{bianji,jdbcType=INTEGER},
+      	nianDu = #{niandu,jdbcType=INTEGER}
+    where xueShengZuZhiXinXiID = #{xueshengzuzhixinxiid,jdbcType=INTEGER}
+  </update>
+  <update id="updateFuZeRenByXueShengZuZhiXinXiID" >
+    update xueshengzuzhixinxi
+     set fuZeRen = #{1,jdbcType=INTEGER}
+    where xueShengZuZhiXinXiID = #{0,jdbcType=INTEGER}
+  </update>
+</mapper>

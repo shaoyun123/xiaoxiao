@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.XiaoZuWenDangMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.XiaoZuWenDang">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="xueXiZuID" property="xiaozuid" jdbcType="INTEGER" />
+		<result column="wenDangID" property="wendangid" jdbcType="VARCHAR" />
+		<result column="xueShengID" property="xueshengid" jdbcType="VARCHAR" />
+		<result column="shangChuanShiJian" property="shangchuanshijian"
+			jdbcType="VARCHAR" />
+		<result column="wenDangMing" property="wendangmingcheng"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, xueXiZuID,wenDangID,
+		xueShengID,shangChuanShiJian,wenDangMing
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from xiaozuwendang
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="getAllByXiaoZuID" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from xiaozuwendang
+		where xueXiZuID =
+		#{xiaozuid,jdbcType=INTEGER}
+	</select>
+
+	<select id="getAllByKeChengIDAndXiaoZuID" resultType="map"
+		parameterType="java.lang.Integer">
+		SELECT
+		wenDangMing,
+		xueShengID,
+		shangChuanShiJian,
+		xzwd.id AS zuWenDangID,
+		wenDangID,
+		kcwd.ID AS ID
+		FROM
+		xiaozuwendang AS xzwd
+		LEFT JOIN kechengwendang AS kcwd ON xzwd.wenDangID = kcwd.ID
+		WHERE
+		kcwd.keChengID = #{0,jdbcType=INTEGER}
+		AND xzwd.xueXiZuID = #{1,jdbcType=INTEGER};
+	</select>
+	<select id="getAllByKeChengID" resultType="map" parameterType="java.lang.Integer">
+			SELECT
+		wenDangMing,
+		xueShengID,
+		shangChuanShiJian,
+		xzwd.id AS zuWenDangID,
+		wenDangID,
+		kcwd.ID AS ID
+		FROM
+		xiaozuwendang AS xzwd
+		LEFT JOIN kechengwendang AS kcwd ON xzwd.wenDangID = kcwd.ID
+		WHERE
+		kcwd.keChengID = #{kechengid,jdbcType=INTEGER}
+	</select>
+
+	<insert id="insert" parameterType="com.web.model.XiaoZuWenDang">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into XiaoZuWenDang
+		(ID,
+		xueXiZuID,wenDangID,
+		xueShengID,shangChuanShiJian,wenDangMing)
+		values (
+		#{id,jdbcType=INTEGER},
+		#{xiaozuid,jdbcType=INTEGER},
+		#{wendangid,jdbcType=INTEGER},
+		#{xueshengid,jdbcType=INTEGER},
+		#{shangchuanshijian,jdbcType=VARCHAR},
+		#{wendangmingcheng,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="updateByPrimaryKey" parameterType="com.web.model.XiaoZuWenDang">
+		update
+		XiaoZuWenDang
+		set
+		kaiShiShiJian = #{kaiShiShiJian,jdbcType=VARCHAR},
+		jieShuShiJian =
+		#{jieShuShiJian,jdbcType=VARCHAR},
+		zhuangTai =
+		#{zhuangTai,jdbcType=INTEGER}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from
+		XiaoZuWenDang where
+		ID = #{zuwendangid,jdbcType=INTEGER}
+	</delete>
+
+</mapper>

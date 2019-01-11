@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.TiXingMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.TiXing" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="jieShouRenID" property="jieshourenid" jdbcType="INTEGER" />
+    <result column="shiJian" property="shijian" jdbcType="TIMESTAMP" />
+    <result column="neiRong" property="neirong" jdbcType="VARCHAR" />
+    <result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, jieShouRenID, shiJian, neiRong, zhuangTai
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tixing
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getCountByjieShouRenID" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+    select count(*)
+    from tixing
+    where jieShouRenID = #{jieshourenid,jdbcType=INTEGER}
+    order by shiJian desc
+  </select>
+  <select id="getAllByjieShouRenIDAndLimit" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from tixing
+    where jieShouRenID = #{jieshourenid,jdbcType=INTEGER}
+    order by shiJian desc limit ${start},${stop}
+  </select>
+  <select id="getAllByjieShouRenID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tixing
+    where jieShouRenID = #{jieshourenid,jdbcType=INTEGER}
+    order by shiJian desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tixing
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.TiXing" >
+    insert into tixing (ID, jieShouRenID, shiJian, 
+      neiRong, zhuangTai)
+    values (#{id,jdbcType=INTEGER}, #{jieshourenid,jdbcType=INTEGER}, #{shijian,jdbcType=TIMESTAMP}, 
+      #{neirong,jdbcType=VARCHAR}, #{zhuangtai,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.TiXing" >
+    insert into tixing
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="jieshourenid != null" >
+        jieShouRenID,
+      </if>
+      <if test="shijian != null" >
+        shiJian,
+      </if>
+      <if test="neirong != null" >
+        neiRong,
+      </if>
+      <if test="zhuangtai != null" >
+        zhuangTai
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="jieshourenid != null" >
+        #{jieshourenid,jdbcType=INTEGER},
+      </if>
+      <if test="shijian != null" >
+        #{shijian,jdbcType=TIMESTAMP},
+      </if>
+      <if test="neirong != null" >
+        #{neirong,jdbcType=VARCHAR},
+      </if>
+      <if test="zhuangtai != null" >
+        #{zhuangtai,jdbcType=INTEGER}
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.TiXing" >
+    update tixing
+    <set >
+      <if test="jieshourenid != null" >
+        jieShouRenID = #{jieshourenid,jdbcType=INTEGER},
+      </if>
+      <if test="shijian != null" >
+        shiJian = #{shijian,jdbcType=TIMESTAMP},
+      </if>
+      <if test="neirong != null" >
+        neiRong = #{neirong,jdbcType=VARCHAR},
+      </if>
+      <if test="zhuangtai != null" >
+        zhuangTai = #{zhuangtai,jdbcType=INTEGER}
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updatezhuangTaiByPrimaryKey" parameterType="com.web.model.TiXing" >
+    update tixing
+    set 
+      zhuangTai = #{zhuangtai,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

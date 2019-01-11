@@ -1,0 +1,253 @@
+package com.web.service.Impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.web.dao.XueShengMapper;
+import com.web.model.BanJi;
+import com.web.model.XueSheng;
+import com.web.service.XueShengService;
+@Service
+public class XueShengServiceImpl implements XueShengService{
+
+	@Autowired
+	private XueShengMapper xueShengMapper;
+
+//	@Cacheable(value="xueShengCache",key="'xuesheng:'+#id")
+	@Override
+	public XueSheng getUserById(int id) {
+		return xueShengMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public XueSheng selectUserByIdAndPasswd(Map<String, String> map) {
+		return xueShengMapper.selectByYongHuMingAndPasswd(map);
+	}
+
+	@Override
+	public List<Integer> getXueShengsByBanJiID(int banjiid) {
+		return xueShengMapper.getXueShengsByBanJiID(banjiid);
+	}
+
+	@Override
+	public List<XueSheng> getAllByBanJiID(int banjiid) {
+		return xueShengMapper.getAllByBanJiID(banjiid);
+	}
+
+	/*@Override
+	public List<Integer> getxueShengIDByxueXiaoXueHao(String xuexiaoxuehao) {
+		// TODO Auto-generated method stub
+		return xueShengMapper.getxueShengIDByxueXiaoXueHao(xuexiaoxuehao);
+	}*/
+
+	@Override
+	public XueSheng selectXueShengByXueXiaoXueHao(String xuexiaoxuehao) {
+		return xueShengMapper.selectXueShengByXueXiaoXueHao(xuexiaoxuehao);
+	}
+
+	@CacheEvict(value="xueShengCache",key="'xuesheng:'+#xueSheng.xueshengid")
+	@Override
+	public int updateInfo(XueSheng xueSheng) {
+		return xueShengMapper.updateByPrimaryKey(xueSheng);
+	}
+
+	@CacheEvict(value="xueShengCache",key="'xuesheng:'+#id")
+	@Override
+	public int updatePassWdByID(String passwd,int id) {
+		return xueShengMapper.updatePassWdByID(passwd,id);
+	}
+
+	@Override
+	public String selectPassWdByID(int id) {
+		return xueShengMapper.selectPassWdByID(id);
+	}
+
+	@Override
+	public List<Integer> getTongZhuanYeXueShengByBanJiID(int banjiid, String banjiqianzhui) {
+		return xueShengMapper.getTongZhuanYeXueShengByBanJiID(banjiid, banjiqianzhui);
+	}
+
+	@CacheEvict(value="xueShengCache",key="'xuesheng:'+#record.xueshengid")
+	@Override
+	@Transactional
+	public Boolean updateBanZhangByXueSheng(XueSheng record) {
+		int banJiID = record.getBanjiid();
+		Integer banZhangID = xueShengMapper.selectBanZhangIDByBanJiID(banJiID);
+		if (banZhangID==null) {
+			record.setIsbanzhang(true);
+			int i = xueShengMapper.updateByPrimaryKey(record);
+			if (i>0) {
+				return true; 
+			}else {
+				return false;
+			}
+		}else {
+			XueSheng xueSheng = xueShengMapper.selectByPrimaryKey(banZhangID);
+			xueSheng.setIsbanzhang(false);
+			int i = xueShengMapper.updateByPrimaryKey(xueSheng);
+			if (i>0) {
+				record.setIsbanzhang(true);
+				int j = xueShengMapper.updateByPrimaryKey(record);
+				if (j>0) {
+					return true;
+				}else {
+					return false;
+				}
+			}else {
+				return false;
+			}
+		}
+	}
+
+	@Override
+	public List<XueSheng> selectXueShengBysuSheIDandbanJiID(Map<String, String> map) {
+		return xueShengMapper.selectXueShengBysuSheIDandbanJiID(map);
+	}
+
+	@Override
+	public List<Integer> getXueShengIDsByBanJiIdAndSuSheId(int banjiid, int susheid) {
+		return xueShengMapper.getXueShengIDsByBanJiIdAndSuSheId(banjiid, susheid);
+	}
+
+	@Override
+	 public int insert(XueSheng record){
+		return xueShengMapper.insert(record);
+	}
+	
+	@Override
+	 public XueSheng selectByPrimaryKey(Integer xueshengid){
+		return xueShengMapper.selectByPrimaryKey(xueshengid);
+	}
+	
+	@CacheEvict(value="xueShengCache",key="'xuesheng:'+#record.xueshengid")
+	@Override
+	 public int updateByPrimaryKey(XueSheng record){
+		return xueShengMapper.updateByPrimaryKey(record);
+	}
+	
+	@CacheEvict(value="xueShengCache",key="'xuesheng:'+#xueshengid")
+	@Override
+	public int deleteByPrimaryKey(Integer xueshengid){
+		return xueShengMapper.deleteByPrimaryKey(xueshengid);
+	}
+
+	@Override
+	public int getcountByBanJiID(Integer banjiid) {
+		return xueShengMapper.getcountByBanJiID(banjiid);
+	}
+	
+	@Override
+	public List<XueSheng> getAllXueSheng(String newxuexiaoid){
+		return xueShengMapper.getAllXueSheng(newxuexiaoid);
+	}
+	
+	@Override
+	public int insertSelective(XueSheng record){
+		return xueShengMapper.insertSelective(record);
+	}
+	
+	@CacheEvict(value="xueShengCache",key="'xuesheng:'+#record.xueshengid")
+	@Override
+	public int updateByPrimaryKeySelective(XueSheng record){
+		return xueShengMapper.updateByPrimaryKeySelective(record);
+	}
+
+	@Override
+	public BanJi getBanJiByParam(Map<String, Object> paramMap) {
+		return xueShengMapper.getBanJiByParam(paramMap);
+	}
+
+	@Override
+	public List<XueSheng> getByBanJiIDPage(Map<String, String> paramMap) {
+		return xueShengMapper. getByBanJiIDPage(paramMap);
+	}
+
+	@Override
+	public XueSheng getKaoShiXinXi(Map<String,String> map) {
+		return xueShengMapper.getKaoShiXinXi(map);
+	}
+
+	@Override
+	public XueSheng selectXueShengByXueHao(String xueHao) {
+		// TODO Auto-generated method stub
+		return xueShengMapper.selectXueShengByXueHao(xueHao);
+	}
+
+	@Override
+	public XueSheng selectByXueHao(String xhao) {
+		// TODO Auto-generated method stub
+		return xueShengMapper.selectXueShengByXueHao(xhao);
+	}
+	@Override
+	public Map<String, Object> getuserinfo(String username){
+		return xueShengMapper.getuserinfo(username);
+	}
+	@Override
+	public List<Map<String, Object>> getkaoshi(Map<String, Integer> map){
+		return xueShengMapper.getkaoshi(map);
+	}
+	@Override
+	public Map<String, Object> getstat(Integer kaoshiid,Integer kaoshixueshengid){
+		return xueShengMapper.getstat(kaoshiid,kaoshixueshengid);
+	}
+	@Override
+	public Map<String, Object> getfangshi(Integer kaoshiid,Integer kaoshixueshengid){
+		return xueShengMapper.getfangshi(kaoshiid,kaoshixueshengid);
+	}
+	@Override
+	public Map<String, Object> getkaoshistatus(Integer kaoshiid){
+		return xueShengMapper.getkaoshistatus(kaoshiid);
+	}
+	@Override
+	public Map<String, Object> getcontent(Integer kaoshiid,Integer kaoshixueshengid){
+		return xueShengMapper.getcontent(kaoshiid,kaoshixueshengid);
+	}
+	@Override
+	public Map<String, Object> getkaoti(Integer kaotiid){
+		return xueShengMapper.getkaoti(kaotiid);
+	}
+	@Override
+	public Map<String, Object> selectkaoshi(Integer kaoshiid){
+		return xueShengMapper.selectkaoshi(kaoshiid);
+	}
+	@Override
+	public int update(Map<String, Object> map){
+		return xueShengMapper.update(map);
+	}
+	@Override
+	public Map<String , Object> getshenqingkaojuan(Integer kaoshixueshengid){
+		return xueShengMapper.getshenqingkaojuan(kaoshixueshengid);
+	}
+	
+	@Override
+	public int insertshenqingkaojuan(Map<String, Object> paraMap) {
+		return xueShengMapper.insertshenqingkaojuan(paraMap);
+	}
+	@Override
+	public Map<String, Object> getkaochangid(Map<String, Object> paraMap) {
+		return xueShengMapper.getkaochangid(paraMap);
+	}
+	
+	@Override
+	public int deletedajuan(Integer kaoshiid,Integer kaoshixueshengid) {
+		return xueShengMapper.deletedajuan(kaoshiid, kaoshixueshengid);
+	}
+	@Override
+	public int insertTongBuFaSong(Map<String, Object> map) {
+		return xueShengMapper.insertTongBuFaSong(map);
+	}
+	@Override
+	public int insertKaoShiRiZhi(Map<String, Object> map) {
+		return xueShengMapper.insertKaoShiRiZhi(map);
+	}
+	@Override
+	public List<Map<String, Object>> getKaoShiRiZhi(Integer kaoshiid,Integer xueshengid){
+		return xueShengMapper.getKaoShiRiZhi(kaoshiid,xueshengid);
+	}
+}

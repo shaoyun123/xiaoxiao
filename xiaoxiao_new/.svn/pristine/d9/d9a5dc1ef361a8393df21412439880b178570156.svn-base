@@ -1,0 +1,2366 @@
+package com.web.controller.app.stu;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
+import java.util.Collections;
+import java.util.Comparator;
+import java.lang.Math;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.web.controller.web.common.util.QRcode;
+import com.web.model.App_FenZu;
+import com.web.model.App_KaoPingChouQian;
+import com.web.model.App_KaoPingJieGuo;
+import com.web.model.App_KeChengKaoPing;
+import com.web.model.App_XueXiZu;
+import com.web.model.JiaoShi;
+import com.web.model.JiaoXueLou;
+import com.web.model.XiaoQu;
+import com.web.model.XueSheng;
+import com.web.service.App_FenZuService;
+import com.web.service.App_KaoPingChouQianService;
+import com.web.service.App_KaoPingJieGuoService;
+import com.web.service.App_KeChengKaoPingService;
+import com.web.service.App_XueXiZuService;
+import com.web.service.JiaoShiService;
+import com.web.service.JiaoXueLouService;
+import com.web.service.KeChengService;
+import com.web.service.XiaoQuService;
+import com.web.service.XueShengService;
+import com.web.util.GetPic;
+import com.web.util.UpdataImgerUtil;
+import com.web.util.Util;
+import com.web.util.UuidUtil;
+
+import net.sf.json.JSONObject;
+
+@Controller
+public class AppShiJianKeKaoPingController {
+	@Autowired
+	private KeChengService kechengService;
+	@Autowired
+	private JiaoShiService jiaoshiService;
+	@Autowired
+	private JiaoXueLouService jiaoXueLouService;
+	@Autowired
+	private XiaoQuService xiaoquService;
+	@Autowired
+	private App_KeChengKaoPingService app_KeChengKaoPingService;
+	@Autowired
+	private App_XueXiZuService app_XueXiZuService;
+	@Autowired
+	private XueShengService xueShengService;
+	@Autowired
+	private App_FenZuService app_FenZuService;
+	@Autowired
+	private App_KaoPingChouQianService app_KaoPingChouQianService;
+	@Autowired
+	private App_KaoPingJieGuoService app_KaoPingJieGuoService;
+
+	/**
+	 * 获得学生的实践课
+	 * 
+	 * @param xueshengid,token,status,banjiid
+	 * @return JSONObject
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_getshijiankecheng")
+	public JSONObject app_getshijiankecheng(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String banjiid = request.getParameter("banjiid");
+		JSONObject jsonObject = new JSONObject();
+		List<Map<String, Object>> keChengs2 = new ArrayList<>();
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (str.equals(token)) {
+			List<Map<String, Object>> keChengs = kechengService.getByBanJiIDAndXueShengID(Integer.parseInt(banjiid),
+					xueshengid);
+			for (int i = 0; i < keChengs.size(); i++) {
+				List<Map<String, Object>> shiJianKeCheng = kechengService
+						.selectShiJianKe((Integer) keChengs.get(i).get("ID"));
+				if (shiJianKeCheng != null && shiJianKeCheng.size() != 0) {
+					for (int j = 0; j < shiJianKeCheng.size(); j++) {
+						keChengs.get(i).put("shijiankechengid", (Integer) shiJianKeCheng.get(j).get("ID"));
+						JiaoShi jiaoShi = jiaoshiService.selectByPrimaryKey((Integer) keChengs.get(i).get("jiaoShiID"));
+						JiaoXueLou jiaoxuelou = jiaoXueLouService.selectByPrimaryKey(jiaoShi.getJiaoxuelouid());
+						XiaoQu xiaoQu = xiaoquService.selectByPrimaryKey(jiaoxuelou.getXiaoQuId());
+						keChengs.get(i).put("jiaoxuelouming", jiaoxuelou.getJiaoXueLouMing());
+						keChengs.get(i).put("jiaoshiming", jiaoShi.getJiaoshiming());
+						keChengs.get(i).put("xiaoquming", xiaoQu.getMingcheng());
+						keChengs.get(i).put("xiaozurongliang", shiJianKeCheng.get(0).get("xiaoZuRongLiang"));
+						keChengs2.add(keChengs.get(i));
+					}
+				}
+			}
+			jsonObject.put("kechengs", keChengs2);
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 判断是否分组，如果只有一个考评并且状态为1，即处于就绪状态，则未分组
+	 * 
+	 * @param xueshengid,token,status,kechengid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_isfenzu")
+	public JSONObject app_isfenzu(HttpServletRequest request, HttpServletResponse response) throws ParseException {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kechengid = request.getParameter("kechengid");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			List<Map<String, Object>> kaoPingList = app_KeChengKaoPingService.getKaoPing2(Integer.parseInt(kechengid));
+			Boolean isfenzu = false;
+			for (int i = 0; i < kaoPingList.size(); i++) {
+				if (kaoPingList.get(i).get("zhuangTai").toString().equals("0")) {
+					continue;
+				} else {
+					isfenzu = true;
+				}
+			}
+			if (isfenzu) {
+				jsonObject.put("status", "yifenzu");
+			} else {
+				jsonObject.put("status", "weifenzu");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 得到所有实践课下的小组
+	 * 
+	 * @param xueshengid,token,status,kechengid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_getxiaozu")
+	public JSONObject app_getxiaozu(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kechengid = request.getParameter("kechengid");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			List<App_XueXiZu> xueXiZus = app_XueXiZuService.getXueXiZuByKeCheng(Integer.parseInt(kechengid));
+			String string2 = "%," + xueshengid + ",%";
+			App_XueXiZu app_XueXiZu = new App_XueXiZu();
+			app_XueXiZu.setChengYuanLieBiao(string2);
+			app_XueXiZu.setShiJianKeChengId(Integer.parseInt(kechengid));
+			List<App_XueXiZu> xueXiZu = app_XueXiZuService.selectXueXiZuByXsID(app_XueXiZu);
+			for (int j = 0; j < xueXiZus.size(); j++) {
+				xueXiZus.get(j).setXiaozuzhang(
+						xueShengService.selectByPrimaryKey(xueXiZus.get(j).getXiaoZuZhangId()).getXingming());
+			}
+			jsonObject.put("allXiaoZu", xueXiZus);
+			if (xueXiZu.size() > 0) {
+				jsonObject.put("suoxuanxiaozu", xueXiZu.get(0));
+			} else {
+				jsonObject.put("suoxuanxiaozu", "");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 得到小组名称，成员姓名，小组长等
+	 * 
+	 * @param xueshengid,token,status,kechengid,xiaozuid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_getxiaozuxinxi")
+	public JSONObject app_getxiaozuxinxi(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String xiaozuid = request.getParameter("xiaozuid");
+		String kechengid = request.getParameter("kechengid");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			Map<String, Object> shijiankemap = kechengService.getshijianke(Integer.parseInt(kechengid));
+			Map<String, Object> xueXiMap = app_XueXiZuService.selectByPrimaryKey1(Integer.parseInt(xiaozuid));
+			if (xueXiMap.get("chengYuanIDLieBiao").toString() != null) {
+				String[] chengyuan = xueXiMap.get("chengYuanIDLieBiao").toString().substring(1).split(",");
+				List<Map<String, Object>> member = new ArrayList<>();
+				for (int j = 0; j < chengyuan.length; j++) {
+					Map<String, Object> map = new HashMap<>();
+					XueSheng xSheng = xueShengService.selectByPrimaryKey(Integer.parseInt(chengyuan[j]));
+					map.put("xingming", xSheng.getXingming());
+					map.put("xueshengid", xSheng.getXueshengid());
+					member.add(map);
+				}
+				xueXiMap.put("chengyuan", member);
+				xueXiMap.put("xiaozuzhang", xueShengService
+						.selectByPrimaryKey(Integer.parseInt(xueXiMap.get("xueShengID").toString())).getXingming());
+			}
+			jsonObject.put("xiaozuxinxi", xueXiMap);
+			jsonObject.put("xiaozurongliang", shijiankemap.get("xiaoZuRongLiang"));
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 得到所有大组，大组下面的小组，以及大组长，小组长，小组组员姓名
+	 * 
+	 * @param xueshengid,token,status,kechengid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_getzuxinxi")
+	public JSONObject app_getzuxinxi(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kechengid = request.getParameter("kechengid");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			List<Map<String, Object>> daZuList = app_FenZuService.getFenZu(Integer.parseInt(kechengid));
+			for (int i = 0; i < daZuList.size(); i++) {
+				List<Map<String, Object>> xiaozus = app_XueXiZuService
+						.getXueXZ(Integer.parseInt(daZuList.get(i).get("fenzuid").toString()));
+				for (int k = 0; k < xiaozus.size(); k++) {
+					Map<String, Object> xueXiMap = new HashMap<>();
+					if (xiaozus.get(k).get("chengYuanIDLieBiao").toString() != null) {
+						String[] chengyuan = xiaozus.get(k).get("chengYuanIDLieBiao").toString().substring(1)
+								.split(",");
+						List<Map<String, Object>> member = new ArrayList<>();
+						for (int j = 0; j < chengyuan.length; j++) {
+							Map<String, Object> map = new HashMap<>();
+							XueSheng xSheng = xueShengService.selectByPrimaryKey(Integer.parseInt(chengyuan[j]));
+							map.put("xingming", xSheng.getXingming());
+							map.put("xueshengid", xSheng.getXueshengid());
+							member.add(map);
+						}
+						xueXiMap.put("chengyuan", member);
+						xueXiMap.put("xiaozuzhang",
+								xueShengService
+										.selectByPrimaryKey(
+												Integer.parseInt(xiaozus.get(k).get("xueShengID").toString()))
+										.getXingming());
+						xiaozus.get(k).put("chengyuanxinxi", xueXiMap);
+					}
+				}
+				daZuList.get(i).put("baohanxiaozu", xiaozus);
+				XueSheng xueSheng = xueShengService
+						.selectByPrimaryKey(Integer.parseInt(daZuList.get(i).get("zuzhangid").toString()));
+				daZuList.get(i).put("dazuzhang", xueSheng.getXingming());
+			}
+			jsonObject.put("dazuxinxi", daZuList);
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 学生新建小组，建小组的学生即为小组长
+	 * 
+	 * @param xueshengid,token,status,kechengid,xiaozuming
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_insertxiaozu")
+	public JSONObject app_insertxiaozu(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kechengid = request.getParameter("kechengid");
+		String xiaozuming = request.getParameter("xiaozuming");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			List<App_XueXiZu> xueXiZus = app_XueXiZuService.getXueXiZuByKeCheng(Integer.parseInt(kechengid));
+			for (App_XueXiZu app_XueXiZu : xueXiZus) {
+				if (app_XueXiZu.getXueXiZuMing().equals(xiaozuming)) {
+					jsonObject.put("status", "samename");
+					return jsonObject;
+				} else {
+					continue;
+				}
+			}
+			App_XueXiZu app_XueXiZu = new App_XueXiZu();
+			app_XueXiZu.setShiJianKeChengId(Integer.parseInt(kechengid));
+			app_XueXiZu.setXueXiZuMing(xiaozuming);
+			app_XueXiZu.setXiaoZuZhangId(Integer.parseInt(xueshengid));
+			app_XueXiZu.setChengYuanLieBiao("," + xueshengid + ",");
+			app_XueXiZu.setZhuangTai(0);
+			int i = app_XueXiZuService.insert(app_XueXiZu);
+			if (i != 0) {
+				jsonObject.put("status", "success");
+			} else {
+				jsonObject.put("status", "fail");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 解散某个小组，即删除某个小组
+	 * 
+	 * @param xueshengid,token,status,xiaozuid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_deletexiaozu") // 解散小组
+	public JSONObject app_deletexiaozu(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String xiaozuid = request.getParameter("xiaozuid");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			int i = app_XueXiZuService.delete(Integer.parseInt(xiaozuid));
+			if (i != 0) {
+				jsonObject.put("status", "success");
+			} else {
+				jsonObject.put("status", "fail");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 学生加入某个小组
+	 * 
+	 * @param xueshengid,token,status,xiaozuid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_tianjiachengyuan")
+	public JSONObject app_tianjiachengyuan(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String xiaozuid = request.getParameter("xiaozuid");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			App_XueXiZu app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(xiaozuid));
+			if (app_XueXiZu == null) {
+				jsonObject.put("status", "noxuexizu");
+				return jsonObject;
+			}
+			String chengYuan = "";
+			if (app_XueXiZu.getChengYuanLieBiao() != null && !"".equals(app_XueXiZu.getChengYuanLieBiao())) {
+				chengYuan += app_XueXiZu.getChengYuanLieBiao() + xueshengid + ",";
+			} else {
+				chengYuan = "," + xueshengid + ",";
+			}
+			app_XueXiZu.setChengYuanLieBiao(chengYuan);
+			int i = app_XueXiZuService.update(app_XueXiZu);
+			if (i != 0) {
+				jsonObject.put("status", "success");
+			} else {
+				jsonObject.put("status", "fail");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 学生退出某个小组
+	 * 
+	 * @param xueshengid,token,status,xiaozuid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_tuichu")
+	public JSONObject app_tuichu(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String xiaozuid = request.getParameter("xiaozuid");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			App_XueXiZu app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(xiaozuid));
+			if (app_XueXiZu == null) {
+				jsonObject.put("status", "noxuexizu");
+				return jsonObject;
+			}
+			if (xueshengid.equals(app_XueXiZu.getXiaoZuZhangId().toString())) {
+				app_XueXiZuService.delete(Integer.parseInt(xiaozuid));
+			}
+			String chengYuan = "";
+			if (app_XueXiZu.getChengYuanLieBiao() != null && !"".equals(app_XueXiZu.getChengYuanLieBiao())) {
+				chengYuan = app_XueXiZu.getChengYuanLieBiao();
+			} else {
+				jsonObject.put("status", "nochengyuan");
+			}
+			String newchengyuan = "";
+			List<String> list = getNewArray(xueshengid, chengYuan.substring(1).split(","));
+			for (String s : list) {
+				newchengyuan += s + ",";
+			}
+			app_XueXiZu.setChengYuanLieBiao("," + newchengyuan);
+			int i = app_XueXiZuService.update(app_XueXiZu);
+			if (i != 0) {
+				jsonObject.put("status", "success");
+			} else {
+				jsonObject.put("status", "fail");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 获得剔除某个成员后的小组
+	 * 
+	 * @param vaule,array
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	private List<String> getNewArray(String value, String[] array) {
+		List<String> list = new ArrayList<>();
+		for (int k = 0; k < array.length; k++) {
+			if (!value.equals(array[k])) {
+				if (array[k] != null) {
+					list.add(array[k]);
+				} else {
+					continue;
+				}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 剔除小组成员
+	 * 
+	 * @param xueshengid,token,status,xiaozuid,kickid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_kickmember")
+	public JSONObject app_kickmember(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String xiaozuid = request.getParameter("xiaozuid");
+		String kickid = request.getParameter("kickid");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			App_XueXiZu app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(xiaozuid));
+			if (app_XueXiZu == null) {
+				jsonObject.put("status", "noxuexizu");
+				return jsonObject;
+			}
+			if (kickid == null || "".equals(kickid)) {
+				jsonObject.put("status", "nokickmember");
+				return jsonObject;
+			}
+			String kickids = "," + kickid + ",";
+			if (kickids.contains("," + app_XueXiZu.getXiaoZuZhangId().toString() + ",")) {
+				// app_XueXiZuService.delete(Integer.parseInt(xiaozuid));
+				jsonObject.put("status", "jiesan");
+				return jsonObject;
+			}
+			String chengYuan = "";
+			if (app_XueXiZu.getChengYuanLieBiao() != null && !"".equals(app_XueXiZu.getChengYuanLieBiao())) {
+				chengYuan = app_XueXiZu.getChengYuanLieBiao();
+			} else {
+				jsonObject.put("status", "nochengyuan");
+			}
+			String[] kickmemberid = kickid.split(",");
+			String[] chengyuanid = chengYuan.substring(1).split(",");
+			String newchengyuanid = "";
+			Set<String> set = new HashSet<>();
+			for (int m = 0; m < chengyuanid.length; m++) {
+				set.add(chengyuanid[m]);
+			}
+			for (int k = 0; k < kickmemberid.length; k++) {
+				if (set.contains(kickmemberid[k])) {
+					set.remove(kickmemberid[k]);
+				}
+			}
+			if (set.size() > 0) {
+				Iterator<String> iterator = set.iterator();
+				while (iterator.hasNext()) {
+					newchengyuanid += iterator.next() + ",";
+				}
+			}
+			app_XueXiZu.setChengYuanLieBiao("," + newchengyuanid);
+			int i = app_XueXiZuService.update(app_XueXiZu);
+			if (i != 0) {
+				jsonObject.put("status", "success");
+			} else {
+				jsonObject.put("status", "fail");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * count是大组数量，随机选择一个大组
+	 * 
+	 * @param count
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	private int randomChioce(int count) {
+		Random random = new Random();
+		int k = random.nextInt(100);
+		int m = k % count;
+		return m;
+	}
+
+	/**
+	 * 提交创建小组，并为小组随机分配大组
+	 * 
+	 * @param xueshengid,
+	 *            token, status, xiaozuid, kechengid, chengyuanid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_submitxiaozu")
+	public JSONObject app_submitxiaozu(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String xiaozuid = request.getParameter("xiaozuid");
+		String kechengid = request.getParameter("kechengid");
+		String chengyuanid = request.getParameter("chengyuanid");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			App_XueXiZu app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(xiaozuid));
+			if (app_XueXiZu == null) {
+				jsonObject.put("status", "noxuexizu");
+				return jsonObject;
+			}
+			List<Map<String, Object>> daZuList = app_FenZuService.getDaZu(Integer.parseInt(kechengid));
+			Integer fenZuId = 0;
+			if (daZuList.size() > 0) {
+				int m = randomChioce(daZuList.size());
+				fenZuId = Integer.parseInt(daZuList.get(m).get("ID").toString());
+				App_FenZu app_FenZu = app_FenZuService.selectByPrimaryKey(fenZuId);
+				List<App_XueXiZu> xiaozulist = app_FenZuService.getXueXiZu(fenZuId);
+				int count = 1;
+				while (app_FenZu.getRongLiang() - 1 < xiaozulist.size()) {
+					m = randomChioce(daZuList.size());
+					fenZuId = Integer.parseInt(daZuList.get(m).get("ID").toString());
+					app_FenZu = app_FenZuService.selectByPrimaryKey(fenZuId);
+					xiaozulist = app_FenZuService.getXueXiZu(fenZuId);
+					++count;
+					if (count > daZuList.size()) {
+						jsonObject.put("status", "full");
+						return jsonObject;
+					}
+				}
+			} else {
+				jsonObject.put("status", "weifendazu");
+				return jsonObject;
+			}
+			app_XueXiZu.setChengYuanLieBiao(chengyuanid);
+			app_XueXiZu.setFenZuId(fenZuId);
+			int i = app_XueXiZuService.update(app_XueXiZu);
+			if (i != 0) {
+				jsonObject.put("status", "success");
+				App_FenZu app_FenZu = app_FenZuService.selectByPrimaryKey(fenZuId);
+				List<App_XueXiZu> xiaozulist = app_FenZuService.getXueXiZu(fenZuId);
+				app_FenZu.setYiJiaRu(xiaozulist.size());
+				app_FenZuService.update(app_FenZu);
+			} else {
+				jsonObject.put("status", "fail");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 得到某个小组的基本信息，包括小组长，组员姓名，大组长，小组排序状态，签到状态
+	 * 
+	 * @param keID,
+	 *            kaoPingID, xueshengid,
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	private Map<String, Object> getBenZuXinXi(Integer keID, Integer kaoPingID, Integer xueshengid) {
+		Map<String, Object> map = new HashMap<>();
+		App_XueXiZu tmp = new App_XueXiZu();
+		tmp.setShiJianKeChengId(keID);
+		String str = "%," + xueshengid + ",%";
+		tmp.setChengYuanLieBiao(str);
+		List<App_XueXiZu> xueXiZus = app_XueXiZuService.selectXueXiZuByXsID(tmp);
+		if (xueXiZus.size() == 0) {
+			return map;
+		}
+		map.put("zuming", xueXiZus.get(0).getXueXiZuMing());
+		map.put("suozaixiaozuid", xueXiZus.get(0).getId());
+		map.put("xiaozuzhang", xueXiZus.get(0).getXiaoZuZhangId());
+		List<Object> members = new ArrayList<>();
+		String[] item = xueXiZus.get(0).getChengYuanLieBiao().substring(1).split(",");
+		for (int i = 0; i < item.length; i++) {
+			if (item[i].length() == 0) {
+				continue;
+			}
+			XueSheng xsZuzhang = xueShengService.selectByPrimaryKey(Integer.parseInt(item[i]));
+			members.add(xsZuzhang);
+		}
+		map.put("dangqianxiaozu", members);
+		App_FenZu fenZu = app_FenZuService.selectByPrimaryKey(xueXiZus.get(0).getFenZuId());
+		if (fenZu == null) {
+			map.put("dazumingcheng", "");
+			map.put("dazuzhang", "");
+		} else {
+			map.put("dazumingcheng", fenZu.getZuMingCheng());
+			map.put("dazuzhang", fenZu.getZuZhangId());
+		}
+		App_KaoPingChouQian chouqian = app_KaoPingChouQianService.selectByPrimaryKey1(kaoPingID, fenZu.getId());
+		if (chouqian == null) {
+			// 还没有抽签的信息
+			App_KaoPingChouQian app_KaoPingChouQian = new App_KaoPingChouQian();
+			chouqian = new App_KaoPingChouQian();
+			app_KaoPingChouQian.setKaoPingId(kaoPingID);
+			app_KaoPingChouQian.setDaZuXuHao(fenZu.getId());
+			app_KaoPingChouQian.setZhuangTai(1);
+			int n = app_KaoPingChouQianService.insert(app_KaoPingChouQian);
+			chouqian.setId(app_KaoPingChouQian.getId());
+			chouqian.setKaoPingId(kaoPingID);
+			chouqian.setDaZuXuHao(fenZu.getId());
+			chouqian.setZhuangTai(1);
+			map.put("qiandaostatus", 0);
+		} else {
+			if (chouqian.getQianDao() != null) {
+				if (chouqian.getQianDao().indexOf("," + xueXiZus.get(0).getId() + ",") >= 0) {
+					map.put("qiandaostatus", 1);
+				} else {
+					map.put("qiandaostatus", 0);
+				}
+			} else {
+				map.put("qiandaostatus", 0);
+			}
+		}
+		List<App_XueXiZu> xueXiZus2 = new ArrayList<>();
+		if (chouqian.getXiaozupaixu() != null && chouqian.getXiaozupaixu().length() > 0) {
+			String[] paixuxiaozus = chouqian.getXiaozupaixu().split(",");
+			for (int j = 0; j < paixuxiaozus.length; j++) {
+				App_XueXiZu app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(paixuxiaozus[j]));
+				if (app_XueXiZu != null) {
+					xueXiZus2.add(app_XueXiZu);
+				} else {
+					continue;
+				}
+			}
+			map.put("paixustatus", "sort");
+		} else {
+			map.put("paixustatus", "unsort");
+		}
+		map.put("yipaixuxuexizu", xueXiZus2);
+		map.put("chouqian", chouqian);
+		return map;
+	}
+
+	/**
+	 * 获取正在进行的考评信息，根据学生所在大组的抽签状态，获得对应的信息
+	 * 
+	 * @param kechengid
+	 *            kaopingid xueshengid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	private Map<String, Object> getXinXi(Integer kechengid, Integer kaopingid, Integer xueshengid) {
+		Map<String, Object> map = new HashMap<>();
+		App_XueXiZu tmp = new App_XueXiZu();
+		tmp.setShiJianKeChengId(kechengid);
+		String str = "%," + xueshengid + ",%";
+		tmp.setChengYuanLieBiao(str);
+		List<App_XueXiZu> xueXiZus = app_XueXiZuService.selectXueXiZuByXsID(tmp);
+		if (xueXiZus.size() == 0) {
+			return map;
+		}
+		App_KaoPingChouQian chouqian = app_KaoPingChouQianService.selectByPrimaryKey1(kaopingid,
+				xueXiZus.get(0).getFenZuId());
+		if (chouqian == null) {
+			// 还没有抽签的信息
+			App_KaoPingChouQian app_KaoPingChouQian = new App_KaoPingChouQian();
+			chouqian = new App_KaoPingChouQian();
+			app_KaoPingChouQian.setKaoPingId(kaopingid);
+			app_KaoPingChouQian.setDaZuXuHao(xueXiZus.get(0).getFenZuId());
+			app_KaoPingChouQian.setZhuangTai(1);
+			int n = app_KaoPingChouQianService.insert(app_KaoPingChouQian);
+			chouqian.setId(app_KaoPingChouQian.getId());
+			chouqian.setKaoPingId(kaopingid);
+			chouqian.setDaZuXuHao(xueXiZus.get(0).getFenZuId());
+			chouqian.setZhuangTai(1);
+		}
+		switch (chouqian.getZhuangTai().toString()) {
+
+		case "1":
+			// 准备签到，显示本组的详细信息,开始
+			map = getBenZuXinXi(kechengid, kaopingid, xueshengid);
+			break;
+		case "2":
+			// 处于简报过程中，显示当前正在答辩的小组信息和下一个小组的信息
+			map = getDangQianAndNextZu(kechengid, kaopingid, xueshengid);
+			break;
+		case "3":
+			// 显示本组打分排序的情况，小组长提交后可以看到本组排序的结果
+			map = getQianDaoXiaoZuXinXi(kaopingid, kechengid, xueshengid);
+			break;
+		case "4":
+			// 显示本组打分排序的情况，小组长提交后可以看到本组排序的结果
+			map = getDaZuFenShu(kaopingid, kechengid, xueshengid);
+			break;
+		default:
+			break;
+		}
+		return map;
+	}
+
+	/**
+	 * 获得大组信息
+	 * 
+	 * @param kaopingid
+	 *            kechengid xueshengid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	public Map<String, Object> getDaZuFenShu(Integer kaopingid, Integer kechengid, Integer xueshengid) {
+		Map<String, Object> map = new HashMap<>();
+		App_XueXiZu tmp = new App_XueXiZu();
+		tmp.setShiJianKeChengId(kechengid);
+		String str = "%," + xueshengid + ",%";
+		tmp.setChengYuanLieBiao(str);
+		List<App_XueXiZu> xueXiZus = app_XueXiZuService.selectXueXiZuByXsID(tmp);
+		if (xueXiZus.size() == 0) {
+			return map;
+		}
+		App_KaoPingChouQian chouqian = app_KaoPingChouQianService.selectByPrimaryKey1(kaopingid,
+				xueXiZus.get(0).getFenZuId());
+		map.put("chouqian", chouqian);
+		// List<App_XueXiZu> xiaozus =
+		// app_XueXiZuService.getXueXiZu(xueXiZus.get(0).getFenZuId());
+		List<Map<String, Object>> daZuList = app_FenZuService.getDaZu(kechengid);
+		for (int k = 0; k < daZuList.size(); k++) {
+			App_KaoPingChouQian chouqian2 = app_KaoPingChouQianService.selectByPrimaryKey1(kaopingid,
+					Integer.parseInt(daZuList.get(k).get("ID").toString()));
+			if (chouqian2 == null) {
+				// 还没有抽签信息
+				App_KaoPingChouQian app_KaoPingChouQian = new App_KaoPingChouQian();
+				chouqian2 = new App_KaoPingChouQian();
+				app_KaoPingChouQian.setKaoPingId(kaopingid);
+				app_KaoPingChouQian.setDaZuXuHao(xueXiZus.get(0).getFenZuId());
+				app_KaoPingChouQian.setZhuangTai(1);
+				int n = app_KaoPingChouQianService.insert(app_KaoPingChouQian);
+				chouqian2.setId(app_KaoPingChouQian.getId());
+				chouqian2.setKaoPingId(kaopingid);
+				chouqian2.setDaZuXuHao(xueXiZus.get(0).getFenZuId());
+				chouqian2.setZhuangTai(1);
+			}
+			if (chouqian2.getZhuangTai() == 4) {
+				List<Map<String, Object>> xiaozus = app_XueXiZuService
+						.selectXiaoZu(Integer.parseInt(daZuList.get(k).get("ID").toString()));
+				for (int i = 0; i < xiaozus.size(); i++) {
+					App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(kaopingid,
+							Integer.parseInt(xiaozus.get(i).get("ID").toString()));
+					xiaozus.get(i).put("kaopingjieguo", app_KaoPingJieGuo);
+				}
+				daZuList.get(k).put("xiaozu", xiaozus);
+			}
+		}
+		map.put("dazulist", daZuList);
+		return map;
+	}
+
+	/**
+	 * 获得每个小组的分数
+	 * 
+	 * @param kaopingid
+	 *            kechengid xueshengid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	public Map<String, Object> getFenShu(Integer kaopingid, Integer kechengid, Integer xueshengid) {
+		Map<String, Object> map = new HashMap<>();
+		App_XueXiZu tmp = new App_XueXiZu();
+		tmp.setShiJianKeChengId(kechengid);
+		String str = "%," + xueshengid + ",%";
+		tmp.setChengYuanLieBiao(str);
+		List<App_XueXiZu> xueXiZus = app_XueXiZuService.selectXueXiZuByXsID(tmp);
+		if (xueXiZus.size() == 0) {
+			return map;
+		}
+		App_KaoPingChouQian chouqian = app_KaoPingChouQianService.selectByPrimaryKey1(kaopingid,
+				xueXiZus.get(0).getFenZuId());
+		if (chouqian == null) {
+			// 还没有抽签的信息
+			App_KaoPingChouQian app_KaoPingChouQian = new App_KaoPingChouQian();
+			chouqian = new App_KaoPingChouQian();
+			app_KaoPingChouQian.setKaoPingId(kaopingid);
+			app_KaoPingChouQian.setDaZuXuHao(xueXiZus.get(0).getFenZuId());
+			app_KaoPingChouQian.setZhuangTai(1);
+			int n = app_KaoPingChouQianService.insert(app_KaoPingChouQian);
+			chouqian.setId(app_KaoPingChouQian.getId());
+			chouqian.setKaoPingId(kaopingid);
+			chouqian.setDaZuXuHao(xueXiZus.get(0).getFenZuId());
+			chouqian.setZhuangTai(1);
+		}
+		map.put("chouqian", chouqian);
+		List<Map<String, Object>> daZuList = app_FenZuService.getFenZu(kechengid);
+		for (int i = 0; i < daZuList.size(); i++) {
+			List<Map<String, Object>> xiaozus = app_XueXiZuService.selectXiaoZu(xueXiZus.get(0).getFenZuId());
+			for (int j = 0; j < xiaozus.size(); j++) {
+				App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(kaopingid,
+						Integer.parseInt(xiaozus.get(j).get("ID").toString()));
+				xiaozus.get(j).put("kaopingjieguo", app_KaoPingJieGuo);
+			}
+			daZuList.get(i).put("baohanxiaozu", xiaozus);
+
+		}
+		map.put("dazuxinxi", daZuList);
+		return map;
+	}
+
+	/**
+	 * 获取签到小组的信息
+	 * 
+	 * @param kaopingid
+	 *            kechengid xueshengid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	private Map<String, Object> getQianDaoXiaoZuXinXi(Integer kaopingid, Integer kechengid, Integer xueshengid) {
+		Map<String, Object> map = new HashMap<>();
+		List<Object> qiandaoxiaozu = new ArrayList<>();
+		App_XueXiZu tmp = new App_XueXiZu();
+		tmp.setShiJianKeChengId(kechengid);
+		String str = "%," + xueshengid + ",%";
+		tmp.setChengYuanLieBiao(str);
+		List<App_XueXiZu> xueXiZus = app_XueXiZuService.selectXueXiZuByXsID(tmp);
+		if (xueXiZus.size() == 0) {
+			return map;
+		}
+		App_KaoPingChouQian app_KaoPingChouQian = app_KaoPingChouQianService.selectByPrimaryKey1(kaopingid,
+				xueXiZus.get(0).getFenZuId());
+		if (app_KaoPingChouQian.getQianDao() != null) {
+			String[] qiandao = app_KaoPingChouQian.getQianDao().substring(1).split(",");
+			for (int k = 0; k < qiandao.length; k++) {
+				App_XueXiZu app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(qiandao[k]));
+				App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(kaopingid,
+						app_XueXiZu.getId());
+				if (app_KaoPingJieGuo != null) {
+					if (app_KaoPingJieGuo.getPaiXu() != null)
+						app_XueXiZu.setPaixu(app_KaoPingJieGuo.getPaiXu());
+					else {
+						app_XueXiZu.setPaixu("");
+					}
+				} else {
+					app_XueXiZu.setPaixu("");
+				}
+				qiandaoxiaozu.add(app_XueXiZu);
+			}
+			map.put("yiqiandaoxiaozu", qiandaoxiaozu);
+			map.put("suozaixiaozuid", xueXiZus.get(0).getId());
+			map.put("xiaozupaixu", app_KaoPingChouQian.getXiaozupaixu());
+			map.put("chouqian", app_KaoPingChouQian);
+		} else {
+			return map;
+		}
+		return map;
+	}
+
+	/**
+	 * 获得当前和下一小组的信息
+	 * 
+	 * @param kechengid
+	 *            kaopingid xueshengid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	private Map<String, Object> getDangQianAndNextZu(Integer kechengid, Integer kaopingid, Integer xueshengid) {
+		Map<String, Object> map = new HashMap<>();
+		App_XueXiZu tmp = new App_XueXiZu();
+		tmp.setShiJianKeChengId(kechengid);
+		String str = "%," + xueshengid + ",%";
+		tmp.setChengYuanLieBiao(str);
+		List<App_XueXiZu> xueXiZus = app_XueXiZuService.selectXueXiZuByXsID(tmp);
+		if (xueXiZus.size() == 0) {
+			return map;
+		}
+		Map<String, Object> mapss = new HashMap<>();
+		mapss.put("kechengid", kechengid);
+		mapss.put("xueshengid2", "%," + xueshengid + ",%");
+		mapss.put("kaopingid", kaopingid);
+		List<Map<String, Object>> xueXiZu2 = app_XueXiZuService.selectBykaoPingIdAndXueshengId(mapss);
+		App_KaoPingChouQian app_KaoPingChouQian = app_KaoPingChouQianService.selectByPrimaryKey1(kaopingid,
+				xueXiZus.get(0).getFenZuId());
+		App_FenZu app_FenZu = app_FenZuService
+				.selectByPrimaryKey(Integer.parseInt(xueXiZu2.get(0).get("fenzuid").toString()));
+		if (app_KaoPingChouQian.getXiaozupaixu() != null && app_KaoPingChouQian.getXiaozupaixu().length() > 0) {
+			List<App_XueXiZu> xueXiZus2 = new ArrayList<>();
+			String[] paixuxiaozus = app_KaoPingChouQian.getXiaozupaixu().split(",");
+			for (int j = 0; j < paixuxiaozus.length; j++) {
+				App_XueXiZu app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(paixuxiaozus[j]));
+				if (app_XueXiZu != null) {
+					xueXiZus2.add(app_XueXiZu);
+				} else {
+					continue;
+				}
+			}
+			map.put("yipaixuxuexizu", xueXiZus2);
+			map.put("paixustatus", "sort");
+		} else {
+			map.put("paixustatus", "unsort");
+			return map;
+		}
+		if ((app_KaoPingChouQian.getChouQian() == null || "".equals(app_KaoPingChouQian.getChouQian()))
+				&& (app_KaoPingChouQian.getDangQianZuId() == null
+						|| "".equals(app_KaoPingChouQian.getDangQianZuId().toString()))) {
+			map.put("chouqianstatus", "init");
+		} else {
+			map.put("chouqianstatus", "started");
+			Map<String, Object> yanjiangmap = new HashMap<>();
+			String[] paixuxiaozu = app_KaoPingChouQian.getXiaozupaixu().split(",");
+			String fanyanrenid = "";
+			App_XueXiZu app_XueXiZu = null;
+			if (app_KaoPingChouQian.getDangQianZuId() != null
+					&& !"".equals(app_KaoPingChouQian.getDangQianZuId().toString())) {
+				app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(app_KaoPingChouQian.getDangQianZuId());
+			} else {
+				return map;
+			}
+			if (app_XueXiZu != null) {
+				Map<String, Object> dangQianMap = new HashMap<>();
+				App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(kaopingid,
+						app_XueXiZu.getId());
+				if (app_XueXiZu.getChengYuanLieBiao() != null) {
+					String[] aMembers = app_XueXiZu.getChengYuanLieBiao().substring(1).split(",");
+					List<Object> list2 = new ArrayList<>();
+					if (aMembers != null && aMembers.length > 0) {
+						for (int j = 0; j < aMembers.length; j++) {
+							Map<String, Object> map2 = new HashMap<>();
+							if (aMembers[j] != null) {
+								XueSheng xs = xueShengService.selectByPrimaryKey(Integer.parseInt(aMembers[j]));
+								if (xs != null) {
+									map2.put("xingming", xs.getXingming());
+									map2.put("xueshengid", xs.getXueshengid());
+								} else {
+									continue;
+								}
+								list2.add(map2);
+							} else {
+								continue;
+							}
+						}
+						dangQianMap.put("chengyuan", list2);
+						dangQianMap.put("dangqianzuming", app_XueXiZu.getXueXiZuMing());
+						dangQianMap.put("dangqianyanjiangzuid", app_XueXiZu.getId());
+						if (app_KaoPingJieGuo != null) {
+							Map<String, Object> map2 = new HashMap<>();
+							Integer fayanrenid = app_KaoPingJieGuo.getFaYanRenId();
+							XueSheng xSheng = xueShengService.selectByPrimaryKey(fayanrenid);
+							map2.put("fayanrenid", xSheng.getXueshengid());
+							map2.put("fayanrenxingming", xSheng.getXingming());
+							dangQianMap.put("fayanren", map2);
+							map.put("kaopingjieguo", app_KaoPingJieGuo);
+						} else {
+							map.put("status", "nokaopingjieguo");// 可以新插入一条数据
+							map.put("kaopingjieguo", app_KaoPingJieGuo);
+						}
+					}
+				}
+				yanjiangmap.put("dangqianyanjiang", dangQianMap);
+			}
+			if (app_KaoPingChouQian.getChouQian() != null && !"".equals(app_KaoPingChouQian.getChouQian())) {
+				fanyanrenid = app_KaoPingChouQian.getChouQian();
+				Map<String, Object> parammap = new HashMap<>();
+				String xueshengid2 = "%," + fanyanrenid + ",%";
+				parammap.put("kaopingid", kaopingid);
+				parammap.put("xueshengid2", xueshengid2);
+				parammap.put("kechengid", kechengid);
+				List<Map<String, Object>> app_XueXiZu3 = app_XueXiZuService.selectBykaoPingIdAndXueshengId(parammap);
+				if (app_XueXiZu3 != null && app_XueXiZu3.size() > 0) {
+					Map<String, Object> xiaYiMap = new HashMap<>();
+					App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(kaopingid,
+							Integer.parseInt(app_XueXiZu3.get(0).get("xiaozuid").toString()));
+					if (app_XueXiZu3.get(0).get("chengYuanIDLieBiao").toString() != null) {
+						String[] aMembers = app_XueXiZu3.get(0).get("chengYuanIDLieBiao").toString().substring(1)
+								.split(",");
+						List<Object> list2 = new ArrayList<>();
+						if (aMembers != null && aMembers.length > 0) {
+							for (int j = 0; j < aMembers.length; j++) {
+								Map<String, Object> map2 = new HashMap<>();
+								if (aMembers[j] != null) {
+									XueSheng xs = xueShengService.selectByPrimaryKey(Integer.parseInt(aMembers[j]));
+									if (xs != null) {
+										map2.put("xingming", xs.getXingming());
+										map2.put("xueshengid", xs.getXueshengid());
+									} else {
+										continue;
+									}
+									list2.add(map2);
+								} else {
+									continue;
+								}
+							}
+							xiaYiMap.put("chengyuan", list2);
+							xiaYiMap.put("xiayizuming", app_XueXiZu3.get(0).get("xiaozuming").toString());
+							xiaYiMap.put("xiayiyanjiangzuid", app_XueXiZu3.get(0).get("xiaozuid").toString());
+							if (app_KaoPingJieGuo != null) {
+								Map<String, Object> map2 = new HashMap<>();
+								Integer fayanrenid = app_KaoPingJieGuo.getFaYanRenId();
+								XueSheng xSheng = xueShengService.selectByPrimaryKey(fayanrenid);
+								map2.put("fayanrenid", xSheng.getXueshengid());
+								map2.put("fayanrenxingming", xSheng.getXingming());
+								xiaYiMap.put("fayanren", map2);
+							} else {
+								map.put("status", "nokaopingjieguo");// 可以新插入一条数据
+							}
+						}
+					}
+					yanjiangmap.put("xiayiyanjiang", xiaYiMap);
+				}
+			} else {
+				String xiayizuid = "";
+				if (!app_KaoPingChouQian.getDangQianZuId().toString().equals(paixuxiaozu[paixuxiaozu.length - 1])) {
+					for (int m = 0; m < paixuxiaozu.length - 1; m++) {
+						if (paixuxiaozu[m].equals(app_KaoPingChouQian.getDangQianZuId().toString())) {
+							if (m + 1 <= paixuxiaozu.length - 1) {
+								xiayizuid = paixuxiaozu[m + 1];
+								break;
+							} else {
+								break;
+							}
+						} else {
+							continue;
+						}
+					}
+				} else {
+					map.put("yanjiangstatus", "last");
+				}
+				Map<String, Object> xiaYiMap = new HashMap<>();
+				if (xiayizuid != null && !"".equals(xiayizuid)) {
+					App_XueXiZu app_XueXiZu3 = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(xiayizuid));
+					App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(kaopingid,
+							Integer.parseInt(xiayizuid));
+					if (app_XueXiZu3.getChengYuanLieBiao() != null) {
+						String[] aMembers = app_XueXiZu3.getChengYuanLieBiao().substring(1).split(",");
+						List<Object> list2 = new ArrayList<>();
+						if (aMembers != null && aMembers.length > 0) {
+							for (int j = 0; j < aMembers.length; j++) {
+								Map<String, Object> map2 = new HashMap<>();
+								if (aMembers[j] != null) {
+									XueSheng xs = xueShengService.selectByPrimaryKey(Integer.parseInt(aMembers[j]));
+									if (xs != null) {
+										map2.put("xingming", xs.getXingming());
+										map2.put("xueshengid", xs.getXueshengid());
+									} else {
+										continue;
+									}
+									list2.add(map2);
+								} else {
+									continue;
+								}
+							}
+							xiaYiMap.put("chengyuan", list2);
+							xiaYiMap.put("xiayizuming", app_XueXiZu3.getXueXiZuMing());
+							xiaYiMap.put("xiayiyanjiangzuid", app_XueXiZu3.getId());
+							if (app_KaoPingJieGuo != null) {
+								Map<String, Object> map2 = new HashMap<>();
+								Integer fayanrenid = app_KaoPingJieGuo.getFaYanRenId();
+								XueSheng xSheng = xueShengService.selectByPrimaryKey(fayanrenid);
+								map2.put("fayanrenid", xSheng.getXueshengid());
+								map2.put("fayanrenxingming", xSheng.getXingming());
+								xiaYiMap.put("fayanren", map2);
+							} else {
+								Map<String, Object> map2 = new HashMap<>();
+								map.put("status", "nokaopingjieguo");// 可以新插入一条数据
+								map2.put("fayanrenid", "");
+								map2.put("fayanrenxingming", "");
+								xiaYiMap.put("fayanren", map2);
+							}
+						}
+					}
+				}
+				yanjiangmap.put("xiayiyanjiang", xiaYiMap);
+			}
+			map.put("yanjiang", yanjiangmap);
+		}
+		map.put("chouqian", app_KaoPingChouQian);
+		map.put("suozaixiaozuid", xueXiZu2.get(0).get("xiaozuid"));
+		map.put("dazuzhangid", app_FenZu.getZuZhangId());
+		return map;
+	}
+
+	/**
+	 * 得到所有实践课考评
+	 * 
+	 * @param xueshengid
+	 *            token status
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_getkaoping")
+	public JSONObject app_getkaoping(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		JSONObject jsonObject = new JSONObject();
+		String shijiankechengid = request.getParameter("shijiankechengid");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (!str.equals(token)) {
+			// 登录信息失效
+			return jsonObject;
+		}
+		List<Map<String, Object>> kaoPingList = app_KeChengKaoPingService
+				.getKaoPing(Integer.parseInt(shijiankechengid));
+		if (kaoPingList == null || kaoPingList.size() == 0) {
+			// 没有查到课程的考评信息
+			return jsonObject;
+		}
+		for (int i = 0; i < kaoPingList.size(); i++) {
+			// 检查是否有正在进行的考评，如果有，转入考评，没有，则返回考评列表
+			// if (Integer.parseInt(kaoPingList.get(i).get("zhuangTai").toString()) >3) {
+			// continue;
+			// }
+			Map<String, Object> map = null;
+			// 找到了正在进行的考评
+			switch (kaoPingList.get(i).get("zhuangTai").toString()) {
+			case "1":
+				// 考评开始，打分
+				map = getXinXi(Integer.parseInt(shijiankechengid),
+						Integer.parseInt(kaoPingList.get(i).get("ID").toString()), Integer.parseInt(xueshengid));
+				break;
+			// case "2":
+			// 已经签到过了，显示所有已经签到的小组信息,处于开始状态
+			// map =
+			// getQianDaoXiaoZuXinXi(Integer.parseInt(kaoPingList.get(i).get("ID").toString()),
+			// Integer.parseInt(shijiankechengid), Integer.parseInt(xueshengid));
+			// break;
+			/*
+			 * case "2": // 处于简报过程中，显示当前正在答辩的小组信息和下一个小组的信息 map =
+			 * getDangQianAndNextZu(Integer.parseInt(shijiankechengid),
+			 * Integer.parseInt(kaoPingList.get(i).get("ID").toString()),
+			 * Integer.parseInt(xueshengid)); break; case "3": //
+			 * 显示本组打分排序的情况，小组长提交后可以看到本组排序的结果 map =
+			 * getQianDaoXiaoZuXinXi(Integer.parseInt(kaoPingList.get(i).get("ID").toString(
+			 * )), Integer.parseInt(shijiankechengid), Integer.parseInt(xueshengid)); break;
+			 */
+			case "4":
+				// 查看各小组排序结果
+				map = getFenShu(Integer.parseInt(kaoPingList.get(i).get("ID").toString()),
+						Integer.parseInt(shijiankechengid), Integer.parseInt(xueshengid));
+				// break;
+			default:
+				break;
+			}
+			kaoPingList.get(i).put("qiandaoxinxi", map);
+			// break;
+		}
+		jsonObject.put("kaoPing", kaoPingList);
+		return jsonObject;
+	}
+
+	/**
+	 * 获得大组信息
+	 * 
+	 * @param xueshengid
+	 *            token status
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_getdazu")
+	public JSONObject app_getdazu(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		JSONObject jsonObject = new JSONObject();
+		String shijiankechengid = request.getParameter("kechengid");
+		String kaopingid = request.getParameter("kaopingid");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (!str.equals(token)) {
+			return jsonObject;
+		}
+		List<Map<String, Object>> daZuList = app_FenZuService.getDaZu(Integer.parseInt(shijiankechengid));
+		for (int k = 0; k < daZuList.size(); k++) {
+			App_KaoPingChouQian chouqian = app_KaoPingChouQianService.selectByPrimaryKey1(Integer.parseInt(kaopingid),
+					Integer.parseInt(daZuList.get(k).get("ID").toString()));
+			if (chouqian == null) {
+				// 还没有抽签的信息
+				App_KaoPingChouQian app_KaoPingChouQian = new App_KaoPingChouQian();
+				chouqian = new App_KaoPingChouQian();
+				app_KaoPingChouQian.setKaoPingId(Integer.parseInt(kaopingid));
+				app_KaoPingChouQian.setDaZuXuHao(Integer.parseInt(daZuList.get(k).get("ID").toString()));
+				app_KaoPingChouQian.setZhuangTai(1);
+				int n = app_KaoPingChouQianService.insert(app_KaoPingChouQian);
+				chouqian.setId(app_KaoPingChouQian.getId());
+				chouqian.setKaoPingId(Integer.parseInt(kaopingid));
+				chouqian.setDaZuXuHao(Integer.parseInt(daZuList.get(k).get("ID").toString()));
+				chouqian.setZhuangTai(1);
+			}
+			daZuList.get(k).put("chouqian", chouqian);
+		}
+		jsonObject.put("dazuxinxi", daZuList);
+		// }
+		return jsonObject;
+	}
+
+	/**
+	 * 小组长签到
+	 * 
+	 * @param xueshengid
+	 *            status kaopingchouqianid suozaixiaozuid dazuid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_qiandao")
+	public JSONObject app_qiandao(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String chouqianid = request.getParameter("kaopingchouqianid");
+		String xiaozuid = request.getParameter("suozaixiaozuid");
+		String dazuid = request.getParameter("dazuid");
+		JSONObject jsonObject = new JSONObject();
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (str.equals(token)) {
+			Map<String, Object> map = new HashMap<>();
+			App_KaoPingChouQian app_KaoPingChouQian = app_KaoPingChouQianService
+					.selectByPrimaryKey(Integer.parseInt(chouqianid));
+			List<App_XueXiZu> xueXiZus = new ArrayList<>();
+			String qianDao = null;
+			if (app_KaoPingChouQian != null) {
+				if (app_KaoPingChouQian.getQianDao() != null && app_KaoPingChouQian.getQianDao().length() > 0) {
+					qianDao = app_KaoPingChouQian.getQianDao();
+					if (qianDao.contains("," + xiaozuid + ",")) {
+						jsonObject.put("yiqiandao", "yiqiandao");
+					} else {
+						qianDao += xiaozuid + ",";
+					}
+				} else {
+					qianDao = "," + xiaozuid + ",";
+				}
+				app_KaoPingChouQian.setQianDao(qianDao);
+				int k = app_KaoPingChouQianService.updateByPrimaryKey(app_KaoPingChouQian);
+				if (k != 0) {
+					jsonObject.put("status", "success");
+					String[] qiandaoxiaozu = qianDao.substring(1).split(",");
+					for (int i = 0; i < qiandaoxiaozu.length; i++) {
+						App_XueXiZu app_XueXiZu = app_XueXiZuService
+								.selectByPrimaryKey(Integer.parseInt(qiandaoxiaozu[i]));
+						if (app_XueXiZu != null) {
+							xueXiZus.add(app_XueXiZu);
+
+						} else {
+							continue;
+						}
+					}
+					App_FenZu app_FenZu = app_FenZuService.selectByPrimaryKey(Integer.parseInt(dazuid));
+					// List<Map<String, Object>> allXueXiZu =
+					// app_XueXiZuService.getXueXZ(Integer.parseInt(dazuid));
+					List<App_XueXiZu> allXueXiZu = app_XueXiZuService.getXueXiZu(Integer.parseInt(dazuid));
+					for (int i = 0; i < allXueXiZu.size(); i++) {
+						allXueXiZu.get(i).setXiaozuzhang(
+								xueShengService.selectByPrimaryKey(allXueXiZu.get(i).getXiaoZuZhangId()).getXingming());
+						for (String string2 : qiandaoxiaozu) {
+							if (allXueXiZu.get(i).getId().toString().equals(string2)) {
+								allXueXiZu.get(i).setQiandao("1");
+							} else {
+								continue;
+							}
+						}
+					}
+					map.put("dazuming", app_FenZu.getZuMingCheng());
+					map.put("mxiaozu", allXueXiZu);
+					jsonObject.put("dazu", map);
+				} else {
+					jsonObject.put("status", "fail");
+				}
+			} else {
+				jsonObject.put("error", "error");
+			}
+			jsonObject.put("yiqiandaoxiaozu", xueXiZus);
+
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 大组组长对所有已签到小组排序
+	 * 
+	 * @param xueshengid
+	 *            token status yidao kaopingchouqianid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_xiaozupaixu")
+	public JSONObject app_xiaozupaixu(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String[] xiaozuids = request.getParameterValues("yidao");
+		String chouqianid = request.getParameter("kaopingchouqianid");
+		JSONObject jsonObject = new JSONObject();
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (str.equals(token)) {
+			App_KaoPingChouQian app_KaoPingChouQian = app_KaoPingChouQianService
+					.selectByPrimaryKey(Integer.parseInt(chouqianid));
+			List<App_XueXiZu> xueXiZusNew = new ArrayList<>();
+			if (xiaozuids != null && xiaozuids.length > 0) {
+				for (int i = 0; i < xiaozuids.length; i++) {
+					if (xiaozuids[i] != null) {
+						Random random = new Random();
+						int k = random.nextInt(xiaozuids.length);
+						String temp = xiaozuids[i];
+						xiaozuids[i] = xiaozuids[k];
+						xiaozuids[k] = temp;
+					} else {
+						continue;
+					}
+				}
+				String string2 = "";
+				for (int i = 0; i < xiaozuids.length; i++) {
+					if (xiaozuids[i] != null && !"".equals(xiaozuids[i])) {
+						string2 += xiaozuids[i] + ",";
+					} else {
+						continue;
+					}
+				}
+				app_KaoPingChouQian.setXiaozupaixu(string2);
+				// app_KaoPingChouQian.setZhuangTai(2);
+				int k = app_KaoPingChouQianService.updateByPrimaryKey(app_KaoPingChouQian);
+				if (k != 0) {
+					jsonObject.put("status", "success");
+				} else {
+					jsonObject.put("status", "fail");
+				}
+			} else {
+				jsonObject.put("error", "error");
+			}
+			if (xiaozuids != null) {
+				for (int k = 0; k < xiaozuids.length; k++) {
+					App_XueXiZu app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(xiaozuids[k]));
+					if (app_XueXiZu != null) {
+						xueXiZusNew.add(app_XueXiZu);
+					} else {
+						continue;
+					}
+				}
+			}
+			jsonObject.put("xuexizus", xueXiZusNew);
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 考评开始
+	 * 
+	 * @param xueshengid
+	 *            token status kaopingid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_kaopingkaishi")
+	public JSONObject app_kaishi(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kaopingid = request.getParameter("kaopingid");
+		App_KeChengKaoPing app_KeChengKaoPing = app_KeChengKaoPingService
+				.selectByPrimaryKey(Integer.parseInt(kaopingid));
+		JSONObject jsonObject = new JSONObject();
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (str.equals(token)) {
+			App_XueXiZu tmp = new App_XueXiZu();
+			tmp.setShiJianKeChengId(app_KeChengKaoPing.getShiJianKeChengId());
+			String chengyuanid = "%," + xueshengid + ",%";
+			tmp.setChengYuanLieBiao(chengyuanid);
+			List<App_XueXiZu> xueXiZus = app_XueXiZuService.selectXueXiZuByXsID(tmp);
+			if (xueXiZus.size() == 0) {
+				return jsonObject;
+			}
+			App_KaoPingChouQian app_KaoPingChouQian = app_KaoPingChouQianService
+					.selectByPrimaryKey1(Integer.parseInt(kaopingid), xueXiZus.get(0).getFenZuId());
+			// Boolean isKaiShi = false;
+			// List<Map<String, Object>> dazuList =
+			// app_FenZuService.getFenZu(app_KeChengKaoPing.getShiJianKeChengId());
+			// for (int j = 0; j < dazuList.size(); j++) {
+			// App_KaoPingChouQian app_KaoPingChouQian =
+			// app_KaoPingChouQianService.selectByPrimaryKey1(
+			// Integer.parseInt(kaopingid),
+			// Integer.parseInt(dazuList.get(j).get("fenzuid").toString()));
+			// if (app_KaoPingChouQian.getZhuangTai() != 2) {
+			// isKaiShi = true;
+			// }
+			// }
+			// if (isKaiShi == false) {
+			// app_KeChengKaoPing.setZhuangTai(2);
+			// }
+			app_KaoPingChouQian.setZhuangTai(2);
+			int k = app_KaoPingChouQianService.updateByPrimaryKey(app_KaoPingChouQian);
+			if (k != 0) {
+				jsonObject.put("status", "success");
+			} else {
+				jsonObject.put("status", "fail");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 小组长抽签，抽取下一组演讲人信息
+	 * 
+	 * @param xueshengid
+	 *            token status kaopingid dangqianxiaozuid chouqianid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_xiaozuchouqian")
+	public JSONObject app_xiaozuchouqian(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kaopingid = request.getParameter("kaopingid");
+		String dangqianxiaozuid = request.getParameter("dangqianxiaozuid");
+		String chouqianid = request.getParameter("chouqianid");
+		JSONObject jsonObject = new JSONObject();
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (str.equals(token)) {
+			App_KaoPingChouQian app_KaoPingChouQian = app_KaoPingChouQianService
+					.selectByPrimaryKey(Integer.parseInt(chouqianid));
+			App_XueXiZu app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(dangqianxiaozuid));
+			if (app_KaoPingChouQian != null) {
+				String fayanrenid = "";
+				if (xueshengid.equals(app_XueXiZu.getXiaoZuZhangId().toString())) {
+					if (app_KaoPingChouQian.getXiaozupaixu() != null) {
+						String[] paixuxiaozu = app_KaoPingChouQian.getXiaozupaixu().split(",");
+						if (dangqianxiaozuid.equals(paixuxiaozu[paixuxiaozu.length - 1])) {
+							App_XueXiZu app_XueXiZu2 = app_XueXiZuService
+									.selectByPrimaryKey(Integer.parseInt(paixuxiaozu[0]));
+							if (app_XueXiZu2 != null && app_XueXiZu2.getChengYuanLieBiao() != null) {
+								String[] memberid = app_XueXiZu2.getChengYuanLieBiao().substring(1).split(",");
+								List<Object> list = new ArrayList<>();
+								Random random = new Random();
+								int n = random.nextInt(100);
+								int k = n % (memberid.length);
+								Map<String, Object> map = new HashMap<>();
+								XueSheng xSheng = xueShengService.selectByPrimaryKey(Integer.parseInt(memberid[k]));
+								fayanrenid = xSheng.getXueshengid().toString();
+								map.put("fayanrenid", fayanrenid);
+								map.put("fayanrenxingming", xSheng.getXingming());
+								for (int m = 0; m < memberid.length; m++) {
+									Map<String, Object> map2 = new HashMap<>();
+									XueSheng xueSheng = xueShengService
+											.selectByPrimaryKey(Integer.parseInt(memberid[m]));
+									map2.put("xingming", xueSheng.getXingming());
+									map2.put("chengyuanid", xueSheng.getXueshengid());
+									list.add(map2);
+								}
+								map.put("xiayixiaozuid", paixuxiaozu[0]);
+								map.put("xiaozuxinxi", list);
+								jsonObject.put("fayanren", map);
+							}
+							app_XueXiZu2.setZhuangTai(2);
+							int n = app_XueXiZuService.update(app_XueXiZu2);
+							app_KaoPingChouQian.setDangQianZuId(Integer.parseInt(paixuxiaozu[0]));
+							App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(
+									Integer.parseInt(kaopingid), Integer.parseInt(paixuxiaozu[0]));
+							if (app_KaoPingJieGuo != null) {
+								app_KaoPingJieGuo.setFaYanRenId(Integer.parseInt(fayanrenid));
+								app_KaoPingJieGuo.setZhuangTai(2);
+								int m = app_KaoPingJieGuoService.update(app_KaoPingJieGuo);
+							} else {
+								App_KaoPingJieGuo app_KaoPingJieGuo2 = new App_KaoPingJieGuo();
+								app_KaoPingJieGuo2.setKaoPingId(Integer.parseInt(kaopingid));
+								app_KaoPingJieGuo2.setXueXiZuId(Integer.parseInt(paixuxiaozu[0]));
+								app_KaoPingJieGuo2.setFaYanRenId(Integer.parseInt(fayanrenid));
+								app_KaoPingJieGuo2.setZhuangTai(2);
+								int j = app_KaoPingJieGuoService.insert(app_KaoPingJieGuo2);
+							}
+						} else {
+							String xiayixiaozuid = "";
+							for (int i = 0; i < paixuxiaozu.length; i++) {
+								if (paixuxiaozu[i].equals(dangqianxiaozuid)) {
+									if (i + 1 < paixuxiaozu.length) {
+										xiayixiaozuid = paixuxiaozu[i + 1];
+										break;
+									} else {
+										jsonObject.put("status", "last");
+									}
+								}
+							}
+							if (xiayixiaozuid != null) {
+								App_XueXiZu app_XueXiZu2 = app_XueXiZuService
+										.selectByPrimaryKey(Integer.parseInt(xiayixiaozuid));
+								if (app_XueXiZu2 != null && app_XueXiZu2.getChengYuanLieBiao() != null) {
+									String[] memberid = app_XueXiZu2.getChengYuanLieBiao().substring(1).split(",");
+									Random random = new Random();
+									int k = random.nextInt(memberid.length);
+									Map<String, Object> map = new HashMap<>();
+									List<Map<String, Object>> list = new ArrayList<>();
+									XueSheng xSheng = xueShengService.selectByPrimaryKey(Integer.parseInt(memberid[k]));
+									fayanrenid = xSheng.getXueshengid().toString();
+									map.put("fayanrenid", fayanrenid);
+									map.put("fayanrenxingming", xSheng.getXingming());
+									for (int m = 0; m < memberid.length; m++) {
+										Map<String, Object> map2 = new HashMap<>();
+										XueSheng xueSheng = xueShengService
+												.selectByPrimaryKey(Integer.parseInt(memberid[m]));
+										map2.put("xingming", xueSheng.getXingming());
+										map2.put("chengyuanid", xueSheng.getXueshengid());
+										list.add(map2);
+									}
+									map.put("xiayixiaozuid", xiayixiaozuid);
+									map.put("xiaozuxinxi", list);
+									jsonObject.put("fayanren", map);
+								}
+								App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(
+										Integer.parseInt(kaopingid), Integer.parseInt(xiayixiaozuid));
+								if (app_KaoPingJieGuo != null) {
+									app_KaoPingJieGuo.setFaYanRenId(Integer.parseInt(fayanrenid));
+									app_KaoPingJieGuo.setZhuangTai(2);
+									int m = app_KaoPingJieGuoService.update(app_KaoPingJieGuo);
+								} else {
+									App_KaoPingJieGuo app_KaoPingJieGuo2 = new App_KaoPingJieGuo();
+									app_KaoPingJieGuo2.setKaoPingId(Integer.parseInt(kaopingid));
+									app_KaoPingJieGuo2.setXueXiZuId(Integer.parseInt(xiayixiaozuid));
+									app_KaoPingJieGuo2.setFaYanRenId(Integer.parseInt(fayanrenid));
+									app_KaoPingJieGuo2.setZhuangTai(2);
+									int j = app_KaoPingJieGuoService.insert(app_KaoPingJieGuo2);
+								}
+							}
+							app_KaoPingChouQian.setChouQian(fayanrenid);
+						}
+					} else {
+						jsonObject.put("status", "unsort");
+					}
+				} else {
+					jsonObject.put("status", "notxiaozuzhang");
+				}
+				int i = app_KaoPingChouQianService.updateByPrimaryKey(app_KaoPingChouQian);
+			} else {
+				jsonObject.put("status", "nokaopingchouqian");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 大组长拍照
+	 * 
+	 * @param xueshengid
+	 *            token status xiaozuid kaopingid base64Str
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_paizhao")
+	public JSONObject app_paizhao(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String xiaozuid = request.getParameter("xiaozuid");
+		String kaopingid = request.getParameter("kaopingid");
+		String base64Str = request.getParameter("base64Str");
+		JSONObject jsonObject = new JSONObject();
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (str.equals(token)) {
+			App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService
+					.selectJieGuoByXiaoZuId(Integer.parseInt(kaopingid), Integer.parseInt(xiaozuid));
+			String image[] = base64Str.split(",");
+			String name = UUID.randomUUID().toString().replaceAll("-", "") + ".jpg";
+			String path = request.getSession().getServletContext().getRealPath("/") + "upload/kckp/" + xiaozuid + "/";
+			File file = new File(path);
+			if (!file.exists()) {
+				file.mkdirs();
+			}
+			boolean x = UpdataImgerUtil.GenerateImage(image[1], path + name);
+			if (x) {
+				if (app_KaoPingJieGuo != null) {
+					app_KaoPingJieGuo.setZhaoPian(name);
+					app_KaoPingJieGuoService.update(app_KaoPingJieGuo);
+					jsonObject.put("kaopingjieguo", app_KaoPingJieGuo);
+					jsonObject.put("status", "success");
+				} else {
+					App_KaoPingJieGuo app_KaoPingJieGuo2 = new App_KaoPingJieGuo();
+					app_KaoPingJieGuo2.setKaoPingId(Integer.parseInt(kaopingid));
+					app_KaoPingJieGuo2.setXueXiZuId(Integer.parseInt(xiaozuid));
+					app_KaoPingJieGuo2.setZhaoPian(name);
+					app_KaoPingJieGuoService.insert(app_KaoPingJieGuo2);
+					jsonObject.put("status", "success");
+				}
+			} else {
+				jsonObject.put("status", "fail");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 解析大组长所拍照片
+	 * 
+	 * @param id
+	 *            xiaozuid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@RequestMapping(value = "app_getPict")
+	@ResponseBody
+	public void app_getPict(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String filename = request.getParameter("id");
+		String xiaozuid = request.getParameter("xiaozuid");
+		// 设置header
+		response.setHeader("Pragma", "No-cache");
+		response.setHeader("Cache-Control", "no-cache");
+		response.setDateHeader("Expires", 0L);
+		OutputStream os = response.getOutputStream();
+		byte[] btImg = null;
+		btImg = GetPic.getBytes(request.getSession().getServletContext().getRealPath("/") + "upload" + File.separator
+				+ "kckp" + File.separator + xiaozuid + File.separator + filename);
+		if (btImg != null) {
+			os.write(btImg);
+			os.flush();
+		}
+	}
+
+	/**
+	 * 小组结束演讲
+	 * 
+	 * @param xueshengid
+	 *            token status kaopingid dangqianxiaozuid kaopingchouqianid qiangzhi
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_complete") // 小组演讲完成
+	public JSONObject app_complete(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kaopingid = request.getParameter("kaopingid");
+		String xiaozuid = request.getParameter("dangqianxiaozuid");
+		String chouqianid = request.getParameter("kaopingchouqianid");
+		String qiangzhi = request.getParameter("qiangzhi");
+		App_KeChengKaoPing app_KeChengKaoPing = app_KeChengKaoPingService
+				.selectByPrimaryKey(Integer.parseInt(kaopingid));
+		App_KaoPingChouQian app_KaoPingChouQian = app_KaoPingChouQianService
+				.selectByPrimaryKey(Integer.parseInt(chouqianid));
+		App_XueXiZu app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(xiaozuid));
+		App_KaoPingJieGuo app_kaopingjieguo = app_KaoPingJieGuoService
+				.selectJieGuoByXiaoZuId(Integer.parseInt(kaopingid), Integer.parseInt(xiaozuid));
+		JSONObject jsonObject = new JSONObject();
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (str.equals(token)) {
+			if (app_KaoPingChouQian != null) {
+				String fayanrenid = app_KaoPingChouQian.getChouQian();
+				Map<String, Object> mapss = new HashMap<>();
+				Map<String, Object> yanjiangmap = new HashMap<>();
+				if (app_KaoPingChouQian.getXiaozupaixu() != null && app_KaoPingChouQian.getXiaozupaixu().length() > 0) {
+					String[] paixuxiaozu = app_KaoPingChouQian.getXiaozupaixu().split(",");
+					if ((fayanrenid == null || "".equals(fayanrenid))
+							&& !xiaozuid.equals(paixuxiaozu[paixuxiaozu.length - 1])) {
+						jsonObject.put("status", "nochouqian");
+						return jsonObject;
+					}
+					if (qiangzhi == null || "".equals(qiangzhi)) {
+						if (app_kaopingjieguo.getZhaoPian() == null || "".equals(app_kaopingjieguo.getZhaoPian())) {
+							jsonObject.put("status", "nopaizhao");
+							return jsonObject;
+						}
+					}
+					String xueshengid2 = "%," + fayanrenid + ",%";
+					mapss.put("kaopingid", kaopingid);
+					mapss.put("xueshengid2", xueshengid2);
+					mapss.put("kechengid", app_KeChengKaoPing.getShiJianKeChengId());
+					List<Map<String, Object>> list = app_XueXiZuService.selectBykaoPingIdAndXueshengId(mapss);
+					if (xiaozuid.equals(paixuxiaozu[paixuxiaozu.length - 1])) {// 当前组为本大组最后一组，抽签状态变为3，进入打分状态
+						app_XueXiZu.setZhuangTai(3);
+						int n = app_XueXiZuService.update(app_XueXiZu);
+						if (n != 0) {
+							app_KaoPingChouQian.setZhuangTai(3);
+							int m = app_KaoPingChouQianService.updateByPrimaryKey(app_KaoPingChouQian);
+						}
+					} else { // 选取下一组演讲人，作为当前组演讲人
+						String xiayixiaozuid = "";
+						String currentxiaozuid = list.get(0).get("xiaozuid").toString();
+						if (!currentxiaozuid.equals(paixuxiaozu[paixuxiaozu.length - 1])) {
+							for (int i = 0; i < paixuxiaozu.length - 1; i++) {
+								if (paixuxiaozu[i].equals(currentxiaozuid)) {
+									if (i + 1 <= paixuxiaozu.length - 1) {
+										xiayixiaozuid = paixuxiaozu[i + 1];
+										break;
+									} else {
+										break;
+									}
+								}
+							}
+						} else {
+							jsonObject.put("status", "last");
+							// return jsonObject;
+						}
+						App_XueXiZu app_XueXiZu3 = new App_XueXiZu();
+						App_XueXiZu app_XueXiZu2 = app_XueXiZuService
+								.selectByPrimaryKey(Integer.parseInt(currentxiaozuid));
+						if (app_XueXiZu != null) {
+							app_XueXiZu.setZhuangTai(3);
+							int k = app_XueXiZuService.update(app_XueXiZu);
+							if (k != 0) {
+								jsonObject.put("status", "success");
+								if (app_XueXiZu2 != null) {
+									Map<String, Object> map = new HashMap<>();
+									List<Object> list2 = new ArrayList<>();
+									XueSheng xSheng = xueShengService.selectByPrimaryKey(Integer.parseInt(fayanrenid));
+									map.put("fayanrenid", fayanrenid);
+									map.put("fayanrenxingming", xSheng.getXingming());
+									if (app_XueXiZu2.getChengYuanLieBiao() != null) {
+										String[] memeber = app_XueXiZu2.getChengYuanLieBiao().substring(1).split(",");
+										for (int i = 0; i < memeber.length; i++) {
+											Map<String, Object> map2 = new HashMap<>();
+											XueSheng xs = xueShengService
+													.selectByPrimaryKey(Integer.parseInt(memeber[i]));
+											map2.put("xingming", xs.getXingming());
+											map2.put("xueshengid", xs.getXueshengid());
+											list2.add(map2);
+										}
+										map.put("chengyuan", list2);
+										yanjiangmap.put("dangqianyan", map);
+									}
+									app_XueXiZu2.setZhuangTai(2);
+									app_KaoPingChouQian.setDangQianZuId(app_XueXiZu2.getId());
+									app_KaoPingChouQian.setChouQian("");
+									int m = app_XueXiZuService.update(app_XueXiZu2);
+									int n = app_KaoPingChouQianService.updateByPrimaryKey(app_KaoPingChouQian);
+								}
+								// 选取下下一组的演讲人，作为即将开始演讲的下一组的演讲人
+								if (xiayixiaozuid != null && !"".equals(xiayixiaozuid)) {
+									app_XueXiZu3 = app_XueXiZuService
+											.selectByPrimaryKey(Integer.parseInt(xiayixiaozuid));
+									if (app_XueXiZu3 != null) {
+										Map<String, Object> map = new HashMap<>();
+										List<Object> list2 = new ArrayList<>();
+										if (app_XueXiZu3.getChengYuanLieBiao() != null) {
+											String[] memeber = app_XueXiZu3.getChengYuanLieBiao().substring(1)
+													.split(",");
+											for (int i = 0; i < memeber.length; i++) {
+												Map<String, Object> map2 = new HashMap<>();
+												XueSheng xs = xueShengService
+														.selectByPrimaryKey(Integer.parseInt(memeber[i]));
+												map2.put("xingming", xs.getXingming());
+												map2.put("xueshengid", xs.getXueshengid());
+												list2.add(map2);
+											}
+											map.put("chengyuan", list2);
+											map.put("fayanrenid", "");
+											map.put("fayanrenxingming", "");
+											yanjiangmap.put("xiayiyanjiang", map);
+										}
+									}
+								}
+								jsonObject.put("yanjiang", yanjiangmap);
+							} else {
+								jsonObject.put("status", "fail");
+							}
+						} else {
+							jsonObject.put("status", "none");
+						}
+					}
+				} else {
+					jsonObject.put("status", "unsort");
+				}
+			} else {
+				jsonObject.put("status", "unchouqian");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 小组长给其他小组打分
+	 * 
+	 * @param xueshengid
+	 *            token status dangqianxiaozuid xiaozupaimingid kaopingid kechengid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_dafen")
+	public JSONObject app_dafen(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String xiaozuid = request.getParameter("dangqianxiaozuid");
+		String paiXu = request.getParameter("xiaozupaimingid");
+		String kaopingid = request.getParameter("kaopingid");
+		String kechengid = request.getParameter("kechengid");
+		JSONObject jsonObject = new JSONObject();
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (str.equals(token)) {
+			App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService
+					.selectJieGuoByXiaoZuId(Integer.parseInt(kaopingid), Integer.parseInt(xiaozuid));
+			if (paiXu != null) {
+				app_KaoPingJieGuo.setPaiXu(paiXu);
+				app_KaoPingJieGuo.setZhuangTai(4);
+				int k = app_KaoPingJieGuoService.update(app_KaoPingJieGuo);
+				if (k != 0) {
+					jsonObject.put("status", "success");
+					App_XueXiZu app_XueXiZu = app_XueXiZuService.selectByPrimaryKey(Integer.parseInt(xiaozuid));
+					app_XueXiZu.setZhuangTai(4);
+					app_XueXiZuService.update(app_XueXiZu);
+				} else {
+					jsonObject.put("status", "fail");
+				}
+			}
+			List<Map<String, Object>> daZuList = app_FenZuService.getFenZu(Integer.parseInt(kechengid));
+			boolean isin = false;
+			for (int m = 0; m < daZuList.size(); m++) {
+				App_KaoPingChouQian app_KaoPingChouQian = app_KaoPingChouQianService.selectByPrimaryKey1(
+						Integer.parseInt(kaopingid), Integer.parseInt(daZuList.get(m).get("fenzuid").toString()));
+				if (app_KaoPingChouQian == null) {
+					isin = true;
+				} else {
+					if (app_KaoPingChouQian.getXiaozupaixu() != null
+							&& !"".equals(app_KaoPingChouQian.getXiaozupaixu())) {
+						String[] paixuxiaozu = app_KaoPingChouQian.getXiaozupaixu().split(",");
+						boolean isover = false;
+						for (int i = 0; i < paixuxiaozu.length; i++) {
+
+							App_XueXiZu xueXiZu = app_XueXiZuService
+									.selectByPrimaryKey(Integer.parseInt(paixuxiaozu[i]));
+							if (xueXiZu != null) {
+								if (xueXiZu.getZhuangTai() != 4) {
+									isover = true;
+								} else {
+									continue;
+								}
+							} else {
+								isover = true;
+							}
+						}
+						if (isover == false) {
+							app_KaoPingChouQian.setZhuangTai(4);
+							int n = app_KaoPingChouQianService.updateByPrimaryKey(app_KaoPingChouQian);
+							if (n == 0) {
+								isin = true;
+							}
+						} else {
+							isin = true;
+						}
+					} else {
+						isin = true;
+					}
+				}
+
+			}
+			if (isin == false) {
+				App_KeChengKaoPing app_KeChengKaoPing = app_KeChengKaoPingService
+						.selectByPrimaryKey(Integer.parseInt(kaopingid));
+				app_KeChengKaoPing.setZhuangTai(4);
+				int n = app_KeChengKaoPingService.update(app_KeChengKaoPing);
+				if (n != 0) {
+					for (int m = 0; m < daZuList.size(); m++) {
+						List<App_XueXiZu> xueXiZus = app_XueXiZuService
+								.getXueXiZu(Integer.parseInt(daZuList.get(m).get("fenzuid").toString()));
+						for (int i = 0; i < xueXiZus.size(); i++) {
+							App_XueXiZu xueXiZu = app_XueXiZuService.selectByPrimaryKey(xueXiZus.get(i).getId());
+							if (xueXiZu != null) {
+								xueXiZu.setZhuangTai(1);
+								app_XueXiZuService.update(xueXiZu);
+							} else {
+								continue;
+							}
+						}
+					}
+				}
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 取得每个小组得分
+	 * 
+	 * @param count
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	public List<Map<String, Object>> getdefen(List<Map<String, Object>> list, String kaopingid, Object xiaozuid) {
+		List<Map<String, Object>> beidafens = new ArrayList<>();
+		// for (int i = 0; i < list.size(); i++) {
+		if (xiaozuid == null || "".equals(xiaozuid)) {
+			return beidafens;
+		}
+		for (int j = 0; j < list.size(); j++) {// 其他小组给本组打分
+			if (!xiaozuid.toString().equals(list.get(j).get("ID").toString())) {
+				App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(
+						Integer.parseInt(kaopingid), Integer.parseInt(list.get(j).get("ID").toString()));
+				if (app_KaoPingJieGuo != null) {
+					if (app_KaoPingJieGuo.getPaiXu() == null || "".equals(app_KaoPingJieGuo.getPaiXu())) {
+						return beidafens;
+					}
+					String[] paiMing = app_KaoPingJieGuo.getPaiXu().split(";");
+					if (paiMing == null || paiMing.length == 0) {
+						return beidafens;
+					}
+					for (int k = 0; k < paiMing.length; k++) {
+						Map<String, Object> map2 = new HashMap<>();
+						String[] mingci = paiMing[k].split("_");
+						if (mingci == null || mingci.length == 0) {
+							return beidafens;
+						}
+						if (mingci[1].equals(xiaozuid.toString())) {
+							if (mingci[2] != null && !"".equals(mingci[2])) {
+								map2.put("dafenxiaozuming", app_XueXiZuService
+										.selectByPrimaryKey(Integer.parseInt(mingci[0])).getXueXiZuMing());
+								map2.put("dafenxiaozuid", mingci[0]);
+								map2.put("defen", mingci[2]);
+							} else {
+								map2.put("defen", 0d);
+							}
+							beidafens.add(map2);
+						} else {
+							continue;
+						}
+					}
+
+				} else {
+					list.get(j).put("dafenstatus", "nokaopingjieguo");
+				}
+			}
+		}
+		return beidafens;
+	}
+
+	/**
+	 * 获得每个小组给其他小组的打分
+	 * 
+	 * @param list
+	 *            kaopingid xiaozuid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	public List<Map<String, Object>> getdafen(List<Map<String, Object>> list, String kaopingid, Object xiaozuid) {
+		// 给其他小组打分
+		List<Map<String, Object>> dafens = new ArrayList<>();
+		for (int j = 0; j < list.size(); j++) {
+			if (xiaozuid.toString().equals(list.get(j).get("ID").toString())) {
+				App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService
+						.selectJieGuoByXiaoZuId(Integer.parseInt(kaopingid), Integer.parseInt(xiaozuid.toString()));
+				if (app_KaoPingJieGuo.getPaiXu() == null) {
+					return dafens;
+				}
+				String[] paiMing = app_KaoPingJieGuo.getPaiXu().split(";");
+				if (paiMing == null || paiMing.length == 0) {
+					return dafens;
+				}
+				for (int k = 0; k < paiMing.length; k++) {
+					String[] mingci = paiMing[k].split("_");
+					if (mingci == null || mingci.length == 0) {
+						return dafens;
+					}
+					Map<String, Object> map2 = new HashMap<>();
+					if (mingci[0].equals(list.get(j).get("ID").toString())) {
+						if (mingci[2] != null && !"".equals(mingci[2])) {
+							map2.put("dafenxiaozuid", mingci[0]);
+							map2.put("beidafenxiaozuid", mingci[1]);
+							map2.put("beidafenxiaozuming", app_XueXiZuService
+									.selectByPrimaryKey(Integer.parseInt(mingci[1])).getXueXiZuMing());
+							map2.put("dafen", mingci[2]);
+						} else {
+							map2.put("dafenxiaozuid", mingci[0]);
+							map2.put("beidafenxiaozuid", mingci[1]);
+							map2.put("beidafenxiaozuming", app_XueXiZuService
+									.selectByPrimaryKey(Integer.parseInt(mingci[1])).getXueXiZuMing());
+							map2.put("dafen", 0d);
+						}
+						dafens.add(map2);
+					} else {
+						continue;
+					}
+				}
+			}
+		}
+		return dafens;
+	}
+
+	/**
+	 * 计算每个小组的得分，有则从考评结果里面取，没有则计算
+	 * 
+	 * @param count
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_score")
+	public String app_score(HttpServletRequest request, HttpServletResponse response) {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String dazuid = request.getParameter("dazuid");
+		String kaopingid = request.getParameter("kaopingid");
+		JSONObject jsonObject = new JSONObject();
+		String string = xueshengid + "," + status;
+		Map<String, Double> aveMap = new HashMap<String, Double>();
+		String str = Util.SHA1Encode(string);
+		if (str.equals(token)) {
+			// App_KeChengKaoPing app_KeChengKaoPing =
+			// app_KeChengKaoPingService.selectByPrimaryKey(Integer.parseInt(kaopingid));
+			List<Map<String, Object>> list = app_XueXiZuService.selectXiaoZu(Integer.parseInt(dazuid));
+			Integer shuliang = list.size();
+			Map<String, Object> chouqian = app_KaoPingChouQianService.selectchouqian(Integer.parseInt(kaopingid),
+					Integer.parseInt(dazuid));
+			String qiandaoxiaozu = "";
+			if (chouqian == null) {
+				return null;
+			}
+			qiandaoxiaozu = chouqian.get("qianDao").toString();
+			for (int i = 0; i < list.size(); i++) {
+				if (qiandaoxiaozu.contains("," + list.get(i).get("ID").toString() + ",")) {
+					continue;
+				} else {
+					list.remove(i);
+				}
+			}
+			
+			if (list != null && list.size() > 0) {
+				// 每个小组的总得分
+				for (int i = 0; i < list.size(); i++) {
+					App_KaoPingJieGuo kaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(
+							Integer.parseInt(kaopingid), Integer.parseInt(list.get(i).get("ID").toString()));
+					if (kaoPingJieGuo != null && kaoPingJieGuo.getMingCi() != null) {
+						list.get(i).put("zongkoufen", kaoPingJieGuo.getZongKouFen());
+						list.get(i).put("finalscore", kaoPingJieGuo.getZuiZhongDeFen());
+						list.get(i).put("zongdefen", kaoPingJieGuo.getZongFen());
+						list.get(i).put("quMaxAndMin", kaoPingJieGuo.getQuMaxAndMin());
+						list.get(i).put("average", kaoPingJieGuo.getPingJunFen());
+						list.get(i).put("mingci", kaoPingJieGuo.getMingCi());
+						list.get(i).put("fayanren",
+								xueShengService.selectByPrimaryKey(kaoPingJieGuo.getFaYanRenId()).getXingming());
+						list.get(i).put("kaopingjieguo", kaoPingJieGuo);
+						if (list.get(i).get("chengYuanIDLieBiao") != null
+								&& !"".equals(list.get(i).get("chengYuanIDLieBiao"))) {
+							String[] members = list.get(i).get("chengYuanIDLieBiao").toString().substring(1).split(",");
+							List<Map<String, Object>> list2 = new ArrayList<>();
+							for (int m = 0; m < members.length; m++) {
+								Map<String, Object> map2 = new HashMap<>();
+								XueSheng xueSheng = xueShengService.selectByPrimaryKey(Integer.parseInt(members[m]));
+								map2.put("xueshengid", xueSheng.getXueshengid());
+								map2.put("xingming", xueSheng.getXingming());
+								list2.add(map2);
+							}
+							list.get(i).put("chengyuan", list2);
+						}
+						List<Map<String, Object>> beidafen = new ArrayList<>();
+						beidafen = getdefen(list, kaopingid, list.get(i).get("ID"));
+						list.get(i).put("defenliebiao", beidafen);
+						List<Map<String, Object>> dafen = new ArrayList<>();
+						dafen = getdafen(list, kaopingid, list.get(i).get("ID"));
+						list.get(i).put("dafen", dafen);
+						continue;
+					}
+					// 计算当前小组得分
+					Double defensum = 0d;
+					List<Map<String, Object>> beidafen = new ArrayList<>();
+					List<Double> beidafen2 = new ArrayList<>();
+					if (list.get(i).get("ID") == null || "".equals(list.get(i).get("ID"))) {
+						return null;
+					}
+					for (int j = 0; j < list.size(); j++) {// 其他小组给本组打分
+						if (!list.get(i).get("ID").toString().equals(list.get(j).get("ID").toString())) {
+							App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(
+									Integer.parseInt(kaopingid), Integer.parseInt(list.get(j).get("ID").toString()));
+							if (app_KaoPingJieGuo != null) {
+								if (app_KaoPingJieGuo.getPaiXu() == null || "".equals(app_KaoPingJieGuo.getPaiXu())) {
+									return null;
+								}
+								String[] paiMing = app_KaoPingJieGuo.getPaiXu().split(";");
+								if (paiMing == null || paiMing.length == 0) {
+									return null;
+								}
+								for (int k = 0; k < paiMing.length; k++) {
+									Map<String, Object> map2 = new HashMap<>();
+									String[] mingci = paiMing[k].split("_");
+									if (mingci == null || mingci.length == 0) {
+										return null;
+									}
+									if (mingci[1].equals(list.get(i).get("ID").toString())) {
+										if (mingci[2] != null && !"".equals(mingci[2])) {
+											map2.put("dafenxiaozuming", app_XueXiZuService
+													.selectByPrimaryKey(Integer.parseInt(mingci[0])).getXueXiZuMing());
+											map2.put("dafenxiaozuid", mingci[0]);
+											map2.put("defen", mingci[2]);
+											beidafen2.add(Double.valueOf(mingci[2]));
+											defensum += Double.valueOf(mingci[2]);
+										} else {
+											map2.put("defen", 0d);
+											beidafen2.add(0d);
+											defensum += Double.valueOf(mingci[2]);
+										}
+										beidafen.add(map2);
+									} else {
+										continue;
+									}
+								}
+
+							} else {
+								list.get(j).put("dafenstatus", "nokaopingjieguo");
+							}
+						}
+					}
+					// 计算总得分，去掉最高分和最低分后的得分
+					Collections.sort(beidafen2);
+					double tempdefen = defensum - (double) Math.round((beidafen2.get(beidafen2.size() - 1)) * 100) / 100
+							- (double) Math.round((beidafen2.get(0)) * 100) / 100;
+					if (beidafen2.size() > 0 && beidafen2 != null) {
+						list.get(i).put("defenliebiao", beidafen);
+						list.get(i).put("zuigaofen", beidafen2.get(beidafen2.size() - 1));
+						list.get(i).put("zuidifen", beidafen2.get(0));
+						list.get(i).put("zongdefen", (double) Math.round(defensum * 100) / 100);
+						list.get(i).put("quMaxAndMin",
+								defensum - (beidafen2.get(beidafen.size() - 1)) - (beidafen2.get(0)));
+						Double aveValue = tempdefen / ((double) Math.round((beidafen2.size() - 2) * 100) / 100);
+						list.get(i).put("average", String.format("%.2f", aveValue));
+						aveMap.put(list.get(i).get("ID").toString(),
+								Double.valueOf(new DecimalFormat("#.00").format(aveValue)));
+					} else {
+						list.get(i).put("defenliebiao", 0d);
+						list.get(i).put("zuigaofen", 0d);
+						list.get(i).put("zuidifen", 0d);
+						list.get(i).put("zongdefen", 0d);
+						list.get(i).put("quMaxAndMin", 0d);
+						list.get(i).put("average", 0d);
+						aveMap.put(list.get(i).get("ID").toString(), 0d);
+
+					}
+					// 给其他小组打分
+					for (int j = 0; j < list.size(); j++) {
+						List<Map<String, Object>> dafen = new ArrayList<>();
+						if (list.get(i).get("ID").toString().equals(list.get(j).get("ID").toString())) {
+							App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(
+									Integer.parseInt(kaopingid), Integer.parseInt(list.get(i).get("ID").toString()));
+							if (app_KaoPingJieGuo.getPaiXu() != null) {
+								String[] paiMing = app_KaoPingJieGuo.getPaiXu().split(";");
+								if (paiMing == null || paiMing.length == 0) {
+									return null;
+								}
+								for (int k = 0; k < paiMing.length; k++) {
+									String[] mingci = paiMing[k].split("_");
+									if (mingci == null || mingci.length == 0) {
+										return null;
+									}
+									Map<String, Object> map2 = new HashMap<>();
+									if (mingci[0].equals(list.get(j).get("ID").toString())) {
+										if (mingci[2] != null && !"".equals(mingci[2])) {
+											map2.put("dafenxiaozuid", mingci[0]);
+											map2.put("beidafenxiaozuid", mingci[1]);
+											map2.put("beidafenxiaozuming", app_XueXiZuService
+													.selectByPrimaryKey(Integer.parseInt(mingci[1])).getXueXiZuMing());
+											map2.put("dafen", mingci[2]);
+										} else {
+											map2.put("dafenxiaozuid", mingci[0]);
+											map2.put("beidafenxiaozuid", mingci[1]);
+											map2.put("beidafenxiaozuming", app_XueXiZuService
+													.selectByPrimaryKey(Integer.parseInt(mingci[1])).getXueXiZuMing());
+											map2.put("dafen", 0d);
+										}
+										dafen.add(map2);
+										list.get(i).put("dafen", dafen);
+										// app_KaoPingJieGuo.setDafen(dafen);
+									} else {
+										continue;
+									}
+								}
+							} else {
+								list.get(i).put("paixustatus", "unsort");
+							}
+						}
+					}
+					App_XueXiZu app_XueXiZu = app_XueXiZuService
+							.selectByPrimaryKey(Integer.parseInt(list.get(i).get("ID").toString()));
+					if (app_XueXiZu.getChengYuanLieBiao() != null
+							&& !"".equals(app_XueXiZu.getChengYuanLieBiao().toString())) {
+						String[] members = app_XueXiZu.getChengYuanLieBiao().substring(1).split(",");
+						List<Map<String, Object>> list2 = new ArrayList<>();
+						for (int m = 0; m < members.length; m++) {
+							Map<String, Object> map2 = new HashMap<>();
+							XueSheng xueSheng = xueShengService.selectByPrimaryKey(Integer.parseInt(members[m]));
+							map2.put("xueshengid", xueSheng.getXueshengid());
+							map2.put("xingming", xueSheng.getXingming());
+							list2.add(map2);
+						}
+						list.get(i).put("chengyuan", list2);
+					}
+				}
+				// 分数写入数据库,计算排名
+				List<Double> paiMing = new ArrayList<>();
+				// double[] paiMing = new double[list.size()];
+				List<Map<String, Object>> paixuxinxi = new ArrayList<>();
+				Double aveTmepNum = 0d;
+				Double tempNum = 0d;
+				Double sumNum = 0d;
+				for (int i = 0; i < list.size(); i++) {
+					App_KaoPingJieGuo kaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(
+							Integer.parseInt(kaopingid), Integer.parseInt(list.get(i).get("ID").toString()));
+					if (kaoPingJieGuo != null && kaoPingJieGuo.getZongFen() != 0) {
+						break;
+					}
+					@SuppressWarnings("unchecked")
+					List<Map<String, Object>> dafen = (List<Map<String, Object>>) list.get(i).get("dafen");
+					sumNum = 0d;
+					if (dafen == null) {
+						list.get(i).put("paixustatus", "unsort");
+						continue;
+					}
+					for (Map<String, Object> tempMap : dafen) {
+						aveTmepNum = aveMap.get(tempMap.get("beidafenxiaozuid"));
+						if (aveTmepNum == null)
+							continue;
+						tempNum = Double.valueOf(tempMap.get("dafen").toString());
+						if (aveTmepNum != tempNum) {
+							sumNum = (sumNum + Math.abs((aveTmepNum - tempNum) / 2));
+						}
+					}
+					list.get(i).put("zongkoufen", (double) Math.round((sumNum/(list.size() - 1)) * 100) / 100);
+					list.get(i).put("finalscore",
+							String.format("%.2f", (((Double.parseDouble(list.get(i).get("average").toString())))-((double) Math.round((sumNum/(list.size() - 1)) * 100) / 100))
+									/ (Double.valueOf((shuliang - 1)))));
+					paiMing.add(Double.valueOf(list.get(i).get("finalscore").toString()));
+					Map<String, Object> paraMap = new HashMap<>();
+					paraMap.put("score", Double.valueOf(list.get(i).get("finalscore").toString()));
+					paraMap.put("xiaozu", list.get(i).get("ID"));
+					paraMap.put("xiaozuming", list.get(i).get("xueXiZuMing"));
+					paraMap.put("zongkoufen",(double) Math.round((sumNum/(list.size() - 1)) * 100) / 100);
+					paixuxinxi.add(paraMap);
+					App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(
+							Integer.parseInt(kaopingid), Integer.parseInt(list.get(i).get("ID").toString()));
+					app_KaoPingJieGuo.setZongFen(Double.valueOf(list.get(i).get("zongdefen").toString()));
+					app_KaoPingJieGuo
+							.setQuMaxAndMin(Double.valueOf(list.get(i).get("quMaxAndMin").toString().toString()));
+					app_KaoPingJieGuo.setPingJunFen(Double.valueOf(list.get(i).get("average").toString().toString()));
+					app_KaoPingJieGuo
+							.setZongKouFen(Double.valueOf(list.get(i).get("zongkoufen").toString().toString()));
+					app_KaoPingJieGuo
+							.setZuiZhongDeFen(Double.valueOf(list.get(i).get("finalscore").toString().toString()));
+					app_KaoPingJieGuoService.update(app_KaoPingJieGuo);
+				}
+				// 排名
+				if (paiMing!=null && paiMing.size()!=0) {// 只要有为0.0的说明前面的考评结果有不为空的，所以该大组下的所有小组应该都不为空
+//					for (int i = 0; i < paiMing.size(); i++) {
+//						for (int j = 0; j < paiMing.size(); j++) {
+//							if (!String.valueOf(paiMing.get(i)).equals(String.valueOf(paiMing.get(j)))) {
+//								if(i!=j) {
+//									paiMing.remove(j);
+//								}else {
+//									continue;
+//								}
+//								
+//							}else {
+//								continue;
+//							}
+//						}
+//					}
+					Double[] paiMing2 = new HashSet<>(paiMing).toArray(new Double[0]);
+					Arrays.sort(paiMing2);
+					for (int m = 0; m < paiMing2.length; m++) {
+						for (int k = 0; k < paixuxinxi.size(); k++) {
+							if (paixuxinxi.get(k).get("score").equals(paiMing2[m])) {
+								App_KaoPingJieGuo app_KaoPingJieGuo = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(
+										Integer.parseInt(kaopingid),
+										Integer.parseInt(paixuxinxi.get(k).get("xiaozu").toString()));
+								app_KaoPingJieGuo.setMingCi(paiMing2.length-m);
+								app_KaoPingJieGuoService.update(app_KaoPingJieGuo);
+								for(Map<String, Object> mapss : list) {
+									if(mapss.get("ID").toString().equals(paixuxinxi.get(k).get("xiaozu").toString())) {
+										mapss.put("mingci",paiMing2.length-m );
+										break;
+									}else {
+										continue;
+									}
+								}
+							} else {
+								continue;
+							}
+						}
+					}
+
+				}
+			}
+			App_KaoPingJieGuo kaoPingJieGuoss = app_KaoPingJieGuoService.selectJieGuoByXiaoZuId(
+					Integer.parseInt(kaopingid), Integer.parseInt(list.get(0).get("ID").toString()));
+			if (kaoPingJieGuoss.getMingCi() != null && !"".equals(kaoPingJieGuoss.getMingCi().toString())) {
+				Collections.sort(list, new Comparator<Map<String, Object>>() {
+					@Override
+					public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+
+						if (Integer.parseInt(o1.get("mingci").toString()) > Integer
+								.parseInt(o2.get("mingci").toString())) {
+							return -1;
+						}
+						if (Integer.parseInt(o1.get("mingci").toString()) == Integer
+								.parseInt(o2.get("mingci").toString())) {
+							return 0;
+						}
+						return 1;
+					}
+				});
+			}
+			jsonObject.put("xiaozulist", list);
+		}
+		return jsonObject.toString();
+	}
+	
+}

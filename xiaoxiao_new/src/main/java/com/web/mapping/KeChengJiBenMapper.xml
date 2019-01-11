@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.KeChengJiBenMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.KeChengJiBen" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="keMuID" property="kemuid" jdbcType="INTEGER" />
+    <result column="xueXiaoID" property="xuexiaoid" jdbcType="INTEGER" />
+    <result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, keMuID,  xueXiaoID, zhuangTai
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from xuexiaokemu
+    where ID = #{kechengid,jdbcType=INTEGER}
+  </select>
+  <select id="getAllByyuanXiIDs" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from kechengjiben
+    where yuanXiIDs like #{0,jdbcType=VARCHAR} or yuanXiIDs like #{1,jdbcType=VARCHAR}
+  </select>
+  <select id="getAllByrenKeJiaoShi" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from kechengjiben
+    where renKeJiaoShiIDs like #{0,jdbcType=VARCHAR} or renKeJiaoShiIDs like #{1,jdbcType=VARCHAR}
+  </select>
+  <select id="getAllByxueXiaoID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from xuexiaokemu
+    where xueXiaoID = #{xuexiaoid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getAllByxueXiaoIDandkeChengIDandyuanXiIDandjiaoShiID" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from kechengjiben
+    where xueXiaoID = #{xuexiaoid,jdbcType=INTEGER}
+    <if test="kechengid!=''"> and keChengID = #{kechengid,jdbcType=INTEGER}</if>
+    <if test="yuanxiid1!=',%'"> and (yuanXiIDs like #{yuanxiid1,jdbcType=VARCHAR} or yuanXiIDs like #{yuanxiid2,jdbcType=VARCHAR})</if>
+    <if test="jiaoshiid1!=',%'"> and (renKeJiaoShiIDs like #{jiaoshiid1,jdbcType=VARCHAR} or renKeJiaoShiIDs like #{jiaoshiid2,jdbcType=VARCHAR})</if>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from kechengjiben
+    where keChengID = #{kechengid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.KeChengJiBen" >
+    insert into kechengjiben (keChengID, keChengMingCheng, yuanXiIDs, 
+      renKeJiaoShiIDs, xueXiaoID, tianJiaRenID)
+    values (#{kechengid,jdbcType=INTEGER}, #{kechengmingcheng,jdbcType=VARCHAR}, #{yuanxiids,jdbcType=VARCHAR}, 
+      #{renkejiaoshiids,jdbcType=VARCHAR}, #{xuexiaoid,jdbcType=INTEGER}, #{tianjiarenid,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.KeChengJiBen" >
+    update kechengjiben
+    set keChengMingCheng = #{kechengmingcheng,jdbcType=VARCHAR},
+      yuanXiIDs = #{yuanxiids,jdbcType=VARCHAR},
+      renKeJiaoShiIDs = #{renkejiaoshiids,jdbcType=VARCHAR}
+    where keChengID = #{kechengid,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getAllJiBenKeMuByxueXiaoID" resultType="map" parameterType="java.lang.Integer" >
+    SELECT xx.ID as ID,xx.keMuID as keMuID ,xx.xueXiaoID as xueXiaoID,xx.zhuangTai as zhuangTai,km. mingCheng as mingCheng,km.daiMa as daiMa 
+       from xuexiaokemu xx LEFT JOIN kemu km on xx.keMuID=km.ID  where xx.xueXiaoID = #{xuexiaoid,jdbcType=INTEGER} and zhuangTai=1
+  </select>
+  
+  <select id="selectByIDAndXueXiaoID" resultType="map" parameterType="map" >
+  	 SELECT km. mingCheng as mingCheng
+       from xuexiaokemu xx LEFT JOIN kemu km on xx.keMuID=km.ID  where xx.xueXiaoID = #{xuexiaoid,jdbcType=INTEGER} and zhuangTai=1 and xx.ID= #{id,jdbcType=INTEGER}
+  </select>
+</mapper>

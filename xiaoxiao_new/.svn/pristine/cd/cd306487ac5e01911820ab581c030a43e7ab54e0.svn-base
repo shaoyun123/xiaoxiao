@@ -1,0 +1,5 @@
+#mysql version database druid setting
+validationQuery=SELECT 1
+jdbc.url=jdbc:mysql://101.200.229.7:3306/xiaoyuanzhushou?useUnicode=true&characterEncoding=utf-8
+jdbc.username=root
+jdbc.password=k_aos_hi#304@(2^0^1^5)

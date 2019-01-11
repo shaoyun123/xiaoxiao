@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.SheTuanBuMenXinXinMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.SheTuanBuMenXinXin" >
+    <id column="sheTuanBuMenXinXiID" property="shetuanbumenxinxiid" jdbcType="INTEGER" />
+    <result column="buMenID" property="bumenid" jdbcType="INTEGER" />
+    <result column="buMenRenShu" property="bumenrenshu" jdbcType="VARCHAR" />
+    <result column="renYuanIDs" property="renyuanids" jdbcType="VARCHAR" />
+    <result column="zhiWu" property="zhiwu" jdbcType="VARCHAR" />
+    <result column="buZhang" property="buzhang" jdbcType="INTEGER" />
+    <result column="nianDu" property="niandu" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sheTuanBuMenXinXiID, buMenID, buMenRenShu, renYuanIDs, zhiWu, buZhang, nianDu
+  </sql>
+  <select id="selectSheTuanBuMenXinXiBySheTuanBuMenXinXiID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanbumenxinxi
+    where sheTuanBuMenXinXiID = #{shetuanbumenxinxiid,jdbcType=INTEGER}
+  </select>
+  <select id="selectSheTuanBuMenByBuMenID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanbumenxinxi
+    where buMenID = #{0,jdbcType=INTEGER}
+    and nianDu=#{1}
+  </select>
+  <select id="selectSheTuanBuMenByBuMenIDAndNianDuAndXueShengID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanbumenxinxi
+    where (renYuanIDs like #{2,jdbcType=VARCHAR} or renYuanIDs like #{3,jdbcType=VARCHAR}) 
+    and buMenID = #{0,jdbcType=INTEGER}
+    and nianDu=#{1}
+  </select>
+  <select id="selectSheTuanBuMenXinXiByXueShengIDAndNianDu" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanbumenxinxi
+    where (renYuanIDs like #{0,jdbcType=VARCHAR} or renYuanIDs like #{1,jdbcType=VARCHAR}) 
+    and nianDu=#{2}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shetuanbumenxinxi
+    where sheTuanBuMenXinXiID = #{shetuanbumenxinxiid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.SheTuanBuMenXinXin" >
+    insert into shetuanbumenxinxi (buMenID, buMenRenShu, 
+      renYuanIDs, zhiWu, buZhang, 
+      nianDu)
+    values (#{bumenid,jdbcType=INTEGER}, #{bumenrenshu,jdbcType=VARCHAR}, 
+      #{renyuanids,jdbcType=VARCHAR}, #{zhiwu,jdbcType=VARCHAR}, #{buzhang,jdbcType=INTEGER}, 
+      #{niandu,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSheTuanBuMenXinXi" parameterType="com.web.model.SheTuanBuMenXinXin" >
+    insert into shetuanbumenxinxi
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bumenid != null" >
+        buMenID,
+      </if>
+      <if test="bumenrenshu != null" >
+        buMenRenShu,
+      </if>
+      <if test="renyuanids != null" >
+        renYuanIDs,
+      </if>
+      <if test="zhiwu != null" >
+        zhiWu,
+      </if>
+      <if test="buzhang != null" >
+        buZhang,
+      </if>
+      <if test="niandu != null" >
+        nianDu,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bumenid != null" >
+        #{bumenid,jdbcType=INTEGER},
+      </if>
+      <if test="bumenrenshu != null" >
+        #{bumenrenshu,jdbcType=VARCHAR},
+      </if>
+      <if test="renyuanids != null" >
+        #{renyuanids,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiwu != null" >
+        #{zhiwu,jdbcType=VARCHAR},
+      </if>
+      <if test="buzhang != null" >
+        #{buzhang,jdbcType=INTEGER},
+      </if>
+      <if test="niandu != null" >
+        #{niandu,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.SheTuanBuMenXinXin" >
+    update shetuanbumenxinxi
+    <set >
+      <if test="bumenid != null" >
+        buMenID = #{bumenid,jdbcType=INTEGER},
+      </if>
+      <if test="bumenrenshu != null" >
+        buMenRenShu = #{bumenrenshu,jdbcType=VARCHAR},
+      </if>
+      <if test="renyuanids != null" >
+        renYuanIDs = #{renyuanids,jdbcType=VARCHAR},
+      </if>
+      <if test="zhiwu != null" >
+        zhiWu = #{zhiwu,jdbcType=VARCHAR},
+      </if>
+      <if test="buzhang != null" >
+        buZhang = #{buzhang,jdbcType=INTEGER},
+      </if>
+      <if test="niandu != null" >
+        nianDu = #{niandu,jdbcType=INTEGER},
+      </if>
+    </set>
+    where sheTuanBuMenXinXiID = #{shetuanbumenxinxiid,jdbcType=INTEGER}
+  </update>
+  <update id="updateSheTuanBuMenXinXiBySheTuanBuMenXinXi" parameterType="com.web.model.SheTuanBuMenXinXin" >
+    update shetuanbumenxinxi
+    set buMenID = #{bumenid,jdbcType=INTEGER},
+      buMenRenShu = #{bumenrenshu,jdbcType=VARCHAR},
+      renYuanIDs = #{renyuanids,jdbcType=VARCHAR},
+      zhiWu = #{zhiwu,jdbcType=VARCHAR},
+      buZhang = #{buzhang,jdbcType=INTEGER},
+      nianDu = #{niandu,jdbcType=INTEGER}
+    where sheTuanBuMenXinXiID = #{shetuanbumenxinxiid,jdbcType=INTEGER}
+  </update>
+  <update id="updateSheTuanBuMenRenYuanByBuMenXinXiID">
+    update shetuanbumenxinxi
+    set buMenRenShu = buMenRenShu+1,
+      renYuanIDs = #{1,jdbcType=VARCHAR}
+    where sheTuanBuMenXinXiID = #{0,jdbcType=INTEGER}
+  </update>
+</mapper>

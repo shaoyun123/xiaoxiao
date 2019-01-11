@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.BeiWLMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.BeiWL">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="leiXing" property="leixing" jdbcType="INTEGER" />
+		<result column="neiRong" property="neirong" jdbcType="VARCHAR" />
+		<result column="ShiJian" property="shijian" jdbcType="VARCHAR" />
+		<result column="userID" property="userid" jdbcType="VARCHAR" />
+		<result column="huiZhi" property="huizhi" jdbcType="INTEGER" />
+		<result column="huoDongID" property="huodongid" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, leiXing, neiRong, ShiJian, userID, huiZhi,huoDongID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from beiwanglu
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="getAllByuserID" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from beiwanglu
+		where userID = #{userid,jdbcType=INTEGER}
+	</select>
+	
+	<select id="getByHuoDongId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from beiwanglu
+		where huoDongID = #{huodongid,jdbcType=INTEGER}
+	</select>
+
+	<select id="getAllByBanJiIdsandJuJueRenIds" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from beiwanglu
+		where (banJiIDs like #{banjiids1,jdbcType=VARCHAR} or banJiIDs like
+		#{banjiids2,jdbcType=VARCHAR}) and (juJueRenIDs
+		not like #{jujuerenids1,jdbcType=VARCHAR} or juJueRenIDs not like
+		#{jujuerenids1,jdbcType=VARCHAR} or juJueRenIDs is null)
+	</select>
+
+	<select id="getAllByuserIDAndjieShouRen" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from beiwanglu
+		where userID = #{userid,jdbcType=INTEGER} or jieShouRen like #{jieshouren1}
+		or jieShouRen like #{jieshouren2}
+		order by ShiJian
+	</select>
+	<select id="getAllByJieShouRenAndRiQi" parameterType="map" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" /> from beiwanglu where
+		( jieShouRen like #{jieshouren1} or jieShouRen like #{jieshouren2} 
+		or banJiIDs like #{banjiid1} or banJiIDs like #{banjiid2} )
+		and shijian between #{start}  and #{end} 
+		and (leixing=1 or leixing=2)
+	</select>
+	<select id="getByJieShouRenAndRiQi" parameterType="map"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from beiwanglu
+		where userID=#{id}
+		<if test="jieshouren != null ||  jieshouren !=''">
+			or jieShouRen like #{jieshouren}
+		</if>
+		and shijian between #{kaishi} and #{jieshu}
+	</select>
+	<select id="getBeiWLByJieShouRenAndRiQi" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from beiwanglu where userID= #{id}
+		<if test="jieshouren != null ||  jieshouren !=''">
+			or jieShouRen like #{jieshouren}
+		</if>
+		and ShiJian BETWEEN #{kaishi} AND #{jieshu}
+	</select>
+	<select id="getAllByuserIDAndLeiXingOrJieShouRen" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from beiwanglu
+		where ( userID = #{userid,jdbcType=INTEGER} and leiXing =
+		#{leixing,jdbcType=INTEGER} ) or ( jieShouRen like
+		#{jieshouren1,jdbcType=VARCHAR}
+		or jieShouRen like #{jieshouren2,jdbcType=VARCHAR} or banJiIDs like #{banjiid1} or banJiIDs like #{banjiid2} ) order by ShiJian desc
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from beiwanglu
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="map" keyProperty="id" >
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.String">
+			select LAST_INSERT_ID()
+		</selectKey>
+		insert into beiwanglu
+		(ID, leiXing, neiRong, ShiJian,userID,huoDongID,huiZhi)
+		values (#{id,jdbcType=INTEGER}, #{leixing,jdbcType=INTEGER},
+		#{neirong,jdbcType=VARCHAR}, #{shijian,jdbcType=VARCHAR},
+	    #{userid,jdbcType=VARCHAR},#{huodongid,jdbcType=INTEGER},#{huizhi,jdbcType=INTEGER})
+	</insert>
+
+	<insert id="insertforxuesheng" parameterType="com.web.model.BeiWL" keyProperty="id" >
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+		insert into beiwanglu
+		(ID, leiXing, neiRong, ShiJian, userID,huiZhi,huoDongID)
+		values (#{id,jdbcType=INTEGER}, #{leixing,jdbcType=INTEGER},
+		#{neirong,jdbcType=VARCHAR}, #{shijian,jdbcType=VARCHAR},
+		#{userid,jdbcType=VARCHAR}, #{huizhi,jdbcType=INTEGER},
+		#{huodongid,jdbcType=INTEGER})
+	</insert>
+
+	<insert id="insertforbanji" parameterType="com.web.model.BeiWL" keyProperty="id">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+		select LAST_INSERT_ID()
+		</selectKey>
+		insert into beiwanglu
+		(ID, leiXing, neiRong, ShiJian,userID, huiZhi,huoDongID)
+		values (#{id,jdbcType=INTEGER}, #{leixing,jdbcType=INTEGER},
+		#{neirong,jdbcType=VARCHAR}, #{shijian,jdbcType=VARCHAR},
+		 #{userid,jdbcType=VARCHAR},#{huizhi,jdbcType=INTEGER},
+		#{huodongid,jdbcType=INTEGER})
+	</insert>
+
+	<update id="updateByPrimaryKey" parameterType="com.web.model.BeiWL">
+		update beiwanglu
+		set leiXing = #{leixing,jdbcType=INTEGER},
+		neiRong = #{neirong,jdbcType=VARCHAR},
+		ShiJian = #{shijian,jdbcType=VARCHAR},
+		userID = #{userid,jdbcType=VARCHAR},
+		huoDongID = #{huodongid,jdbcType=INTEGER}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateShiJian" parameterType="com.web.model.BeiWL">
+		update beiwanglu
+		set leiXing = #{leixing,jdbcType=INTEGER},
+		neiRong = #{neirong,jdbcType=VARCHAR},
+		ShiJian = #{shijian,jdbcType=VARCHAR},
+		userID = #{userid,jdbcType=VARCHAR},
+		huiZhi = #{huizhi,jdbcType=INTEGER},
+		huoDongID = #{huodongid,jdbcType=INTEGER}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateshijianforxuesheng" parameterType="com.web.model.BeiWL">
+		update beiwanglu
+		set leiXing = #{leixing,jdbcType=INTEGER},
+		neiRong = #{neirong,jdbcType=VARCHAR},
+		ShiJian = #{shijian,jdbcType=VARCHAR},
+		userID = #{userid,jdbcType=VARCHAR},
+		huiZhi = #{huizhi,jdbcType=INTEGER},
+		huoDongID = #{huodongid,jdbcType=INTEGER}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="getBeiWLByRenIDAndRenLeiXingAndRiQi" resultMap="BaseResultMap" parameterType="map">
+		SELECT
+					*
+				FROM
+					(
+						SELECT
+							b.*
+						FROM
+							beiwangluren br
+						LEFT JOIN beiwanglu b ON br.beiWLID = b.ID
+						WHERE
+							br.jieShouRenID = #{renid,jdbcType=INTEGER}
+						AND br.leiXing = #{renleixing,jdbcType=INTEGER}
+						AND b.userID != #{renid,jdbcType=INTEGER}
+						<if test="kaishi!=null and kaishi!='' and jieshu!=null and jieshu!='' ">
+							AND b.shiJian BETWEEN #{kaishi,jdbcType=VARCHAR}
+							     AND #{jieshu,jdbcType=VARCHAR}
+						</if>
+						UNION
+							SELECT
+								b.*
+							FROM
+								beiwanglu b
+							WHERE
+								b.userID = #{renid,jdbcType=INTEGER}
+							<if test="kaishi!=null and kaishi!='' and jieshu!=null and jieshu!='' ">
+								AND b.shiJian BETWEEN #{kaishi,jdbcType=VARCHAR}
+								    AND #{jieshu,jdbcType=VARCHAR}
+							</if>
+							<if test="banjiid!=null and banjiid!='' ">
+							UNION
+								SELECT
+									b.*
+								FROM
+									beiwanglubanji bb
+								LEFT JOIN beiwanglu b ON bb.beiWLID = b.ID
+								WHERE
+									bb.banJiID = #{banjiid,jdbcType=INTEGER}
+								AND b.leiXing = 1 
+								AND b.userID != #{renid,jdbcType=INTEGER}
+								<if test="kaishi!=null and kaishi!='' and jieshu!=null and jieshu!='' ">
+									AND b.shiJian BETWEEN #{kaishi,jdbcType=VARCHAR}
+									     AND #{jieshu,jdbcType=VARCHAR}
+								</if>
+							</if>
+					) tt order by tt.shiJian desc
+	</select>
+	
+		<insert id="insert_beiwangluren" parameterType="map">
+		 	insert into beiwangluren(beiWLID,jieShouRenID,leiXing) 
+		 	 values (#{beiwlid,jdbcType=INTEGER},#{jieshourenid,jdbcType=INTEGER},#{leixing,jdbcType=INTEGER})
+	  </insert>
+		<insert id="insert_beiwlhuizhi" parameterType="map">
+		 	insert into beiwlhuizhi(beiWLID,huiZhiRenID,leiXing,zhuangTai) 
+		 	 values (#{beiwlid,jdbcType=INTEGER},#{huizhirenid,jdbcType=INTEGER},#{leixing,jdbcType=INTEGER},#{zhuangtai,jdbcType=INTEGER})
+	  </insert>
+	  <insert id="insert_beiwanglubanji" parameterType="map">
+	 	insert into beiwanglubanji(beiWLID,banJiID) 
+	 	 values (#{beiwlid,jdbcType=INTEGER},#{banjiid,jdbcType=INTEGER})
+	  </insert>
+	  <delete id="delete_beiwanglubanji" parameterType="map">
+	  	delete from beiwanglubanji where beiWLID=#{beiwlid,jdbcType=INTEGER}
+	  </delete>
+	  <delete id="delete_beiwangluren" parameterType="map">
+	  	delete from beiwangluren where beiWLID=#{beiwlid,jdbcType=INTEGER}
+	  </delete>
+	  <delete id="delete_beiwlhuizhi" parameterType="map">
+	  	delete from beiwlhuizhi where beiWLID=#{beiwlid,jdbcType=INTEGER}
+	  </delete>
+	  <select id="getAllBanJiIDByBeiWLID"  resultType="java.lang.String">
+	  	select banJiID from beiwanglubanji where beiWLID=#{id,jdbcType=INTEGER}
+	  </select>
+	  <select id="getBeiWLRenByBeiWLIDAndRenIDAndRenLeiXing" resultType="map" parameterType="map">
+	  	select ID,beiWLID,jieShouRenID,leiXing from beiwangluren where beiWLID=#{beiwlid,jdbcType=INTEGER}
+	  	  <if test="renid!=null and renid!=''">
+	  	  	and jieShouRenID=#{renid,jdbcType=INTEGER}
+	  	  </if>
+	  	  <if test="renleixing!=null and renleixing!=''">
+	  	  	and leiXing=#{renleixing,jdbcType=INTEGER}
+	  	  </if>
+	  </select>
+	  <select id="getBeiWLHuiZhiByBeiWLIDAndRenIDAndRenLeiXing" resultType="map" parameterType="map">
+	  	select ID,beiWLID,huiZhiRenID,leiXing,zhuangTai from beiwlhuizhi where beiWLID=#{beiwlid,jdbcType=INTEGER}
+	  	  <if test="renid!=null and renid!=''">
+	  	  	and huiZhiRenID=#{renid,jdbcType=INTEGER}
+	  	  </if>
+	  	  <if test="renleixing!=null and renleixing!=''">
+	  	  	and leiXing=#{renleixing,jdbcType=INTEGER}
+	  	  </if>
+	  </select>
+</mapper>

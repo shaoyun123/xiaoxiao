@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.YuanXiMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.YuanXi" >
+    <id column="ID" property="yuanxiid" jdbcType="INTEGER" />
+    <result column="xueXiaoID" property="xuexiaoid" jdbcType="INTEGER" />
+    <result column="yuanXiMingCheng" property="yuanximingcheng" jdbcType="VARCHAR" />
+    <result column="daima" property="daima" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, xueXiaoID, yuanXiMingCheng, daiMa
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yuanxi
+    where ID = #{yuanxiid,jdbcType=INTEGER}
+  </select>
+  <select id="selectByYuanXiMingChengAndXueXiaoId" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from yuanxi
+    where yuanXiMingCheng = #{0,jdbcType=VARCHAR} and xueXiaoID=#{1,jdbcType=VARCHAR}
+  </select>
+  <select id="getAllByxueXiaoID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yuanxi
+    where xueXiaoID = #{xuexiaoid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from yuanxi
+    where ID = #{yuanxiid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.YuanXi" >
+    insert into yuanxi (ID, xueXiaoID, yuanXiMingCheng, 
+      daiMa)
+    values (#{yuanxiid,jdbcType=INTEGER}, #{xuexiaoid,jdbcType=INTEGER}, #{yuanximingcheng,jdbcType=VARCHAR}, 
+      #{daima,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.YuanXi" >
+    insert into yuanxi
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="yuanxiid != null" >
+        ID,
+      </if>
+      <if test="xuexiaoid != null" >
+        xueXiaoID,
+      </if>
+      <if test="yuanximingcheng != null" >
+        yuanXiMingCheng,
+      </if>
+      <if test="daima != null" >
+        daiMa,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="yuanxiid != null" >
+        #{yuanxiid,jdbcType=INTEGER},
+      </if>
+      <if test="xuexiaoid != null" >
+        #{xuexiaoid,jdbcType=INTEGER},
+      </if>
+      <if test="yuanximingcheng != null" >
+        #{yuanximingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="daima != null" >
+        #{daima,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.YuanXi" >
+    update yuanxi
+    <set >
+      <if test="xuexiaoid != null" >
+        xueXiaoID = #{xuexiaoid,jdbcType=INTEGER},
+      </if>
+      <if test="yuanximingcheng != null" >
+        yuanXiMingCheng = #{yuanximingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="daima != null" >
+        daiMa = #{daima,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{yuanxiid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.YuanXi" >
+    update yuanxi
+    set xueXiaoID = #{xuexiaoid,jdbcType=INTEGER},
+      yuanXiMingCheng = #{yuanximingcheng,jdbcType=VARCHAR},
+      daiMa = #{daima,jdbcType=VARCHAR}
+    where ID = #{yuanxiid,jdbcType=INTEGER}
+  </update>
+</mapper>

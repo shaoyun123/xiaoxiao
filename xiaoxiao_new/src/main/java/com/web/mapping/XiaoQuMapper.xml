@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.XiaoQuMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.XiaoQu" >
+    <id column="ID" property="xiaoquid" jdbcType="INTEGER" />
+    <result column="xueXiaoID" property="xuexiaoid" jdbcType="INTEGER" />
+    <result column="mingCheng" property="mingcheng" jdbcType="VARCHAR" />
+    <result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+    <result column="provinceID" property="provinceID" jdbcType="INTEGER" />
+    <result column="cityID" property="cityID" jdbcType="INTEGER" />
+    <result column="districtID" property="districtID" jdbcType="INTEGER" />
+    <result column="street" property="street" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, xueXiaoID, mingCheng, zhuangTai, provinceID, cityID, districtID, street
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from xiaoqu
+    where ID = #{xiaoquid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getAllByxueXiaoID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from xiaoqu
+    where xueXiaoID = #{xuexiaoid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from xiaoqu
+    where ID = #{xiaoquid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertXiaoQu" parameterType="com.web.model.XiaoQu" >
+    insert into xiaoqu (ID,xueXiaoID, mingCheng, 
+      zhuangTai, provinceID, cityID, districtID, street)
+    values (#{xiaoquid,jdbcType=INTEGER},#{xuexiaoid,jdbcType=INTEGER}, #{mingcheng,jdbcType=VARCHAR}, 
+      #{zhuangtai,jdbcType=INTEGER},#{provinceID,jdbcType=INTEGER},#{cityID,jdbcType=INTEGER},#{districtID,jdbcType=INTEGER},#{street,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.XiaoQu" >
+    insert into xiaoqu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="xiaoquid != null" >
+        ID,
+      </if>
+      <if test="xuexiaoid != null" >
+        xueXiaoID,
+      </if>
+      <if test="mingcheng != null" >
+        mingCheng,
+      </if>
+      <if test="zhuangtai != null" >
+        zhuangTai,
+      </if>
+      <if test="provinceID != null">
+      	provinceID,
+      </if>
+      <if test="cityID != null">
+        cityID,
+      </if>
+      <if test="districtID">
+      	districtID,
+      </if>
+      <if test="street != null">
+      	street,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="xiaoquid != null" >
+        #{xiaoquid,jdbcType=INTEGER},
+      </if>
+      <if test="xuexiaoid != null" >
+        #{xuexiaoid,jdbcType=INTEGER},
+      </if>
+      <if test="mingcheng != null" >
+        #{mingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="zhuangtai != null" >
+        #{zhuangtai,jdbcType=INTEGER},
+      </if>
+      <if test="provinceID != null" >
+        #{provinceID,jdbcType=INTEGER},
+      </if>
+      <if test="cityID != null" >
+        #{cityID,jdbcType=INTEGER},
+      </if>
+      <if test="districtID != null" >
+        #{districtID,jdbcType=INTEGER},
+      </if>
+      <if test="street != null" >
+        #{street,jdbcType=VARCHAT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.XiaoQu" >
+    update xiaoqu
+    <set >
+      <if test="xuexiaoid != null" >
+        xueXiaoID = #{xuexiaoid,jdbcType=INTEGER},
+      </if>
+      <if test="mingcheng != null" >
+        mingCheng = #{mingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="zhuangtai != null" >
+        zhuangTai = #{zhuangtai,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{xiaoquid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.XiaoQu" >
+    update xiaoqu
+    set xueXiaoID = #{xuexiaoid,jdbcType=INTEGER},
+      mingCheng = #{mingcheng,jdbcType=VARCHAR},
+      zhuangTai = #{zhuangtai,jdbcType=INTEGER}
+    where ID = #{xiaoquid,jdbcType=INTEGER}
+  </update>
+</mapper>

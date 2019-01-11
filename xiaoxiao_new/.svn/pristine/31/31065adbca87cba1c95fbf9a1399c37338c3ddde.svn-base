@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.MenuMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.Menu" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="menuName" property="menuname" jdbcType="VARCHAR" />
+    <result column="action" property="action" jdbcType="VARCHAR" />
+    <result column="fatherID" property="fatherid" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="icon" property="icon" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, menuName, action, fatherID,status,icon
+  </sql>
+  <select id="getAllMenuByStatus" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from menu
+    where status = #{status,jdbcType=INTEGER}
+    order by ID
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from menu
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.Menu" >
+    insert into menu (ID, menuName, action, 
+      fatherID, status,icon)
+    values (#{id,jdbcType=INTEGER}, #{menuname,jdbcType=VARCHAR}, #{action,jdbcType=VARCHAR}, 
+      #{fatherid,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR},#{icon,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.Menu" >
+    insert into menu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="menuname != null" >
+        menuName,
+      </if>
+      <if test="action != null" >
+        action,
+      </if>
+      <if test="fatherid != null" >
+        fatherID,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="icon != null" >
+        icon
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="menuname != null" >
+        #{menuname,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null" >
+        #{action,jdbcType=VARCHAR},
+      </if>
+      <if test="fatherid != null" >
+        #{fatherid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null" >
+        #{icon,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.Menu" >
+    update menu
+    <set >
+      <if test="menuname != null" >
+        menuName = #{menuname,jdbcType=VARCHAR},
+      </if>
+      <if test="action != null" >
+        action = #{action,jdbcType=VARCHAR},
+      </if>
+      <if test="fatherid != null" >
+        fatherID = #{fatherid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        icon = #{icon,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.Menu" >
+    update menu
+    set menuName = #{menuname,jdbcType=VARCHAR},
+      action = #{action,jdbcType=VARCHAR},
+      fatherID = #{fatherid,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      icon = #{icon,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  <select id="getDeYuMenuByStatus" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from menu
+    where status = #{status,jdbcType=INTEGER} and fatherID=3 
+    order by ID
+  </select>
+  
+  <select id="findAllDeYuAction" parameterType="java.lang.String" resultType="java.lang.String">
+  	select action from menu where 
+		fatherID = (select id from menu where menuName='德育分' and status=#{status})
+		and status=#{status};
+  </select>
+</mapper>

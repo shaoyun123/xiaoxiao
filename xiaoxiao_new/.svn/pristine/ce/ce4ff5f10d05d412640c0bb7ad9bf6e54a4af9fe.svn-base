@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.XueShengSuSheMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.XueShengSuShe" >
+    <id column="ID" property="suSheId" jdbcType="INTEGER" />
+    <result column="suSheLouID" property="suSheLouId" jdbcType="INTEGER" />
+    <result column="zhuangTai" property="zhuangTai" jdbcType="INTEGER" />
+    <result column="louCeng" property="louCeng" jdbcType="INTEGER" />
+    <result column="menPaiHao" property="menPaiHao" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, suSheLouID, zhuangTai,menPaiHao,louCeng 
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from sushe
+    where ID = #{suSheId,jdbcType=INTEGER}
+  </select>
+  <select id="selectXueShengSuSheByXueXiaoIDAndXiaoQuAndSuSheLouAndMenPaiHao" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from  sushe
+    WHERE
+	 sushe.menPaiHao = #{3} 
+	AND suSheLouID = (
+	SELECT
+		ID 
+	FROM
+		sushelou 
+	WHERE
+		mingCheng = #{2}
+		AND suSheLou.xiaoQuID = (SELECT ID FROM xiaoqu WHERE xiaoqu.mingCheng = #{1} AND xiaoqu.xueXiaoID = #{0} ) 
+	)
+  </select>
+  
+  <select id="selectXueShengSuSheBySuSheLouIdAndMenPaiHao" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from sushe
+    where suSheLouID = #{0,jdbcType=INTEGER} and menPaiHao = #{1,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getAllBySuSheLouId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from sushe
+    where suSheLouID = #{suSheLouId,jdbcType=INTEGER} order by menPaiHao asc;
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from sushe
+    where ID = #{suSheId,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" parameterType="com.web.model.XueShengSuShe" >
+    insert into sushe (ID, suSheLouID, zhuangTai, 
+      menPaiHao,louCeng)
+    values (#{suSheId,jdbcType=INTEGER}, #{suSheLouId,jdbcType=VARCHAR}, #{zhuangTai,jdbcType=INTEGER}, 
+      #{ menPaiHao,jdbcType=VARCHAR}, #{louCeng,jdbcType=INTEGER})
+  </insert>
+  
+  <insert id="inserList" parameterType="java.util.List" >
+    insert into sushe (ID, suSheLouID, zhuangTai, 
+      menPaiHao,louCeng)
+    values <foreach collection="list" item="xueshengsushes" index="index" separator=","> (#{xueshengsushes.suSheId,jdbcType=INTEGER}, #{xueshengsushes.suSheLouId,jdbcType=VARCHAR}, #{xueshengsushes.zhuangTai,jdbcType=INTEGER}, 
+      #{xueshengsushes.menPaiHao,jdbcType=VARCHAR},#{xueshengsushes.louCeng,jdbcType=INTEGER})
+     </foreach>
+  </insert>
+  
+  
+  
+  <update id="updateByPrimaryKey" parameterType="com.web.model.XueShengSuShe" >
+    update sushe
+    set menPaiHao = #{menPaiHao,jdbcType=VARCHAR},
+      zhuangTai = #{zhuangTai,jdbcType=INTEGER},
+      louCeng = #{louCeng,jdbcType=INTEGER},
+      suSheLouID = #{suSheLouId,jdbcType=INTEGER}
+    where ID = #{suSheId,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getBySuSheID" resultType="map" parameterType="java.lang.Integer">
+  	select ss.ID susheid,ss.menPaiHao menpaihao,ssls.mingCheng mingcheng from sushe ss LEFT JOIN sushelou ssls on ss.suSheLouID=ssls.ID 
+  where ss.ID = #{susheid}
+  </select>
+</mapper>

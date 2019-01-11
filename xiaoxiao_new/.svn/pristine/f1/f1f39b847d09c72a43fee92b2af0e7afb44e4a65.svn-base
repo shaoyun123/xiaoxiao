@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.App_LiaoTianQunMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.App_LiaoTianQun">
+		<id column="qunID" property="qunid" jdbcType="INTEGER" />
+		<result column="banJiID" property="banjiid" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		qunID, banJiID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_liaotianqun
+		where qunID = #{qunid,jdbcType=INTEGER}
+	</select>
+	<select id="selectByBanJiID" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_liaotianqun
+		where banJiID = #{banjiid,jdbcType=INTEGER}
+	</select>
+</mapper>

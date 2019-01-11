@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.BanBenMapper" >
+ 
+
+    <select id="getZuiXinBanBenXinXi" resultType="com.web.model.BanBen" parameterType="java.util.HashMap" >
+  	select * from banbenxinxi where keYong = 1 and appType = #{appType,jdbcType=VARCHAR}
+  </select>
+ 
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.YuanXiZhuanYeMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.YuanXiZhuanYe" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="zhuanYeID" property="zhuanyeid" jdbcType="INTEGER" />
+    <result column="yuanXiID" property="yuanxiid" jdbcType="INTEGER" />
+     <result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID,zhuanYeID, yuanXiID,zhuangTai
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yuanxizhuanye
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByZhuanYeId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yuanxizhuanye
+    where zhuanYeID = #{zhuanyeid,jdbcType=INTEGER}
+  </select>
+<!--   <select id="getZhuanYe" resultMap="BaseResultMap"> -->
+<!--     select  -->
+<!--     <include refid="Base_Column_List" /> -->
+<!--     from zhuanye -->
+<!--   </select> -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from yuanxizhuanye
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.YuanXiZhuanYe" >
+    insert into yuanxizhuanye (ID, zhuanYeID,YuanXiID,zhuangTai)
+    values (#{id,jdbcType=INTEGER},#{zhuanyeid,jdbcType=INTEGER}, #{yuanxiid,jdbcType=INTEGER},#{zhuangtai,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.YuanXiZhuanYe" >
+    insert into yuanxizhuanye
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="zhuanyeid != null" >
+        zhuanYeID,
+      </if>
+      <if test="yuanxiid != null" >
+        yuanXiID,
+      </if>
+       <if test="zhuangtai != null" >
+        zhuangTai,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{ID,jdbcType=INTEGER},
+      </if>
+      <if test="zhuanyeid != null" >
+        #{zhuanYeID,jdbcType=INTEGER},
+      </if>
+      <if test="yuanxiid != null" >
+        #{yuanXiID,jdbcType=INTEGER},
+      </if>
+       <if test="zhuangtai != null" >
+        #{zhuangTai,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.YuanXiZhuanYe" >
+    update yuanxizhuanye
+    <set >
+      <if test="zhuangtai != null" >
+        zhuangTai = #{zhuangtai,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.YuanXiZhuanYe" >
+    update yuanxizhuanye
+    set zhuangTai = #{zhuangtai,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+   <select id="getAllByYuanXiID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yuanxizhuanye
+    where yuanXiID = #{yuanxiid,jdbcType=INTEGER} and zhuangTai = 1
+  </select>
+</mapper>

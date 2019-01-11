@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.TiXingTongZhiShiTuMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.TiXingTongZhiShiTu" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="shiJian" property="shijian" jdbcType="TIMESTAMP" />
+    <result column="jieShouRenID" property="jieshourenid" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, shiJian, title, zhuangTai, type, jieShouRenID
+  </sql>
+  <select id="selectAllByjieShouRenIDandNewTarget" resultMap="BaseResultMap" parameterType="map" >
+    select * from
+    (select ID as id,neiRong as title,shiJian as shijian,'' as chakanrenids,zhuangTai as zhuangtai,type as type,shijian as oderby FROM tixing WHERE jieShouRenID= #{jieshourenid,jdbcType=INTEGER} 
+    UNION ALL
+    select id as id,title as title,update_time as shijian,chaKanRenIDs as chakanrenids,'' as zhuangtai,'4' as type,id as oderby 
+    FROM tongzhi WHERE (target like #{target1,jdbcType=VARCHAR} or target like #{target2,jdbcType=VARCHAR} or target = '' or target is null) and school_id = #{school_id,jdbcType=INTEGER}
+    )
+    as tixingtongzhi  order by oderby desc
+  </select>
+  <select id="selectAllByjieShouRenIDandNewTargetandLimit" resultMap="BaseResultMap" parameterType="map" >
+    <if test="searchStatus == 1">
+    		<![CDATA[ 
+					select ID as id,neiRong as title,shiJian as shijian,'' as chakanrenids,zhuangTai as zhuangtai,type as type	,shijian as oderby  FROM tixing WHERE jieShouRenID= #{jieshourenid,jdbcType=INTEGER} ORDER BY shijian desc limit ${start},${stop}
+    		 ]]>
+    		</if>
+	<if test="searchStatus == 2">
+    		<![CDATA[ 
+    		 	select id as id,title as title,update_time as shijian,chaKanRenIDs as chakanrenids,'' as zhuangtai,'4' as type ,id as oderby
+    FROM tongzhi WHERE (target like #{target1,jdbcType=VARCHAR} or target like #{target2,jdbcType=VARCHAR} or target = '' or target is null) and school_id = #{school_id,jdbcType=INTEGER} order BY id desc limit ${start},${stop}
+    		  ]]>
+    		</if>
+  </select>
+  <select id="getCountByjieShouRenIDandNewTarget"  resultType="java.lang.Integer" parameterType="map" >
+    select count(*) from
+    (<if test="searchStatus == 1">
+    		<![CDATA[ 
+					select ID as id,neiRong as title,shiJian as shijian,'' as chakanrenids,zhuangTai as zhuangtai,type as type	,shijian as oderby  FROM tixing WHERE jieShouRenID= #{jieshourenid,jdbcType=INTEGER} ORDER BY shijian desc
+    		 ]]>
+    		</if>
+	<if test="searchStatus == 2">
+    		<![CDATA[ 
+    		 	select id as id,title as title,update_time as shijian,chaKanRenIDs as chakanrenids,'' as zhuangtai,'4' as type ,id as oderby
+    FROM tongzhi WHERE (target like #{target1,jdbcType=VARCHAR} or target like #{target2,jdbcType=VARCHAR} or target = '' or target is null) and school_id = #{school_id,jdbcType=INTEGER} order BY id desc
+    		  ]]>
+    		</if>
+    )
+    as tixingtongzhi
+  </select>
+</mapper>

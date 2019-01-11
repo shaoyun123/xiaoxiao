@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.JiaoShiMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.JiaoShi" >
+    <id column="ID" property="jiaoshiid" jdbcType="INTEGER" />
+    <result column="jiaoShiMing" property="jiaoshiming" jdbcType="VARCHAR" />
+    <result column="jiaoXueLouID" property="jiaoxuelouid" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, jiaoShiMing, jiaoXueLouID
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from jiaoshi
+    where ID = #{jiaoshiid,jdbcType=INTEGER}
+  </select>
+  
+   <select id="selectByJiaoXueLouIdAndJiaoShiMing" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from jiaoshi
+    where jiaoXueLouID = #{0,jdbcType=INTEGER} AND jiaoShiMing = #{1,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getAllByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from jiaoshi
+    where jiaoXueLouID = #{jiaoXueLouId,jdbcType=INTEGER} order by jiaoShiMing asc
+  </select>
+  
+  <select id="getAllByxiaoQuID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+   		js.ID as ID,js.jiaoShiMing as jiaoShiMing,js.jiaoXueLouID as jiaoXueLouID
+    from jiaoshi js left join jiaoxuelou jxl on js.jiaoXueLouID=jxl.ID 
+     left join xiaoqu xq on jxl.xiaoQuID=xq.ID 
+    where jxl.xiaoQuID = #{xiaoquid,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from jiaoshi
+    where ID = #{jiaoshiid,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" parameterType="com.web.model.JiaoShi" >
+    insert into jiaoshi (ID, jiaoShiMing, jiaoXueLouID)
+    values (#{jiaoshiid,jdbcType=INTEGER}, #{jiaoshiming,jdbcType=VARCHAR}, #{jiaoxuelouid,jdbcType=INTEGER})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.web.model.JiaoShi" >
+    insert into jiaoshi
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="jiaoshiid != null" >
+        ID,
+      </if>
+      <if test="jiaoshiming != null" >
+        jiaoShiMing,
+      </if>
+      <if test="jiaoxuelouid != null" >
+        jiaoXueLouID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="jiaoshiid != null" >
+        #{jiaoshiid,jdbcType=INTEGER},
+      </if>
+      <if test="jiaoshiming != null" >
+        #{jiaoshiming,jdbcType=VARCHAR},
+      </if>
+      <if test="jiaoxuelouid != null" >
+        #{jiaoxuelouid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.JiaoShi" >
+    update jiaoshi
+    <set >
+      <if test="jiaoshiming != null" >
+        jiaoShiMing = #{jiaoshiming,jdbcType=VARCHAR},
+      </if>
+      <if test="jiaoxuelouid != null" >
+        jiaoXueLouID = #{jiaoxuelouid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{jiaoshiid,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.web.model.JiaoShi" >
+    update jiaoshi
+    set jiaoShiMing = #{jiaoshiming,jdbcType=VARCHAR},
+      jiaoXueLouID = #{jiaoxuelouid,jdbcType=INTEGER}
+    where ID = #{jiaoshiid,jdbcType=INTEGER}
+  </update>
+</mapper>

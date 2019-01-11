@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.ChaQinAnPaiMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.ChaQinAnPai">
+		<id column="ID" property="anpaiid" jdbcType="INTEGER" />
+		<result column="jiaoShiID" property="jiaoshiid" jdbcType="INTEGER" />
+		<result column="riQi" property="riqi" jdbcType="DATE" />
+		<result column="paiZhaoYaoQiu" property="paizhaoyaoqiu"
+			jdbcType="VARCHAR" />
+		<result column="kaiShiShiJian" property="kaishishijian"
+			jdbcType="TIME" />
+		<result column="jieShuShiJian" property="jieshushijian"
+			jdbcType="TIME" />
+		<result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, jiaoShiID, riQi, paiZhaoYaoQiu, kaiShiShiJian, jieShuShiJian,
+		zhuangTai
+	</sql>
+	<select id="selectChaQinAnPaiByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from chaqinanpai
+		where ID = #{anpaiid,jdbcType=INTEGER}
+	</select>
+	<select id="getChaQinByYongHuIdAndRiQi" resultMap="BaseResultMap"
+		parameterType="map">
+		select * from chaqinanpai where jiaoShiID=#{id} and riQi =#{riqi}
+	</select>
+	<select id="selectByYongHuId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from chaqinanpai
+		where jiaoShiID = #{yonghuid,jdbcType=INTEGER}
+		order by riQi desc
+	</select>
+	<select id="selectByFuDaoYuanId" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from chaqinanpai
+		where jiaoShiID = #{yonghuid,jdbcType=INTEGER}
+		order by riQi desc
+		<if test="stop>0">limit ${start},${stop}</if>
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from chaqinanpai
+		where ID = #{anpaiid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.web.model.ChaQinAnPai">
+		<selectKey keyProperty="anpaiid" order="AFTER" resultType="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+		insert into chaqinanpai (jiaoShiID, riQi,
+		paiZhaoYaoQiu, kaiShiShiJian, jieShuShiJian,
+		zhuangTai)
+		values (#{jiaoshiid,jdbcType=INTEGER}, #{riqi,jdbcType=DATE},
+		#{paizhaoyaoqiu,jdbcType=VARCHAR}, #{kaishishijian,jdbcType=TIME},
+		#{jieshushijian,jdbcType=TIME},
+		#{zhuangtai,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.web.model.ChaQinAnPai">
+		insert into chaqinanpai
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="anpaiid != null">
+				ID,
+			</if>
+			<if test="jiaoshiid != null">
+				jiaoShiID,
+			</if>
+			<if test="riqi != null">
+				riQi,
+			</if>
+			<if test="paizhaoyaoqiu != null">
+				paiZhaoYaoQiu,
+			</if>
+			<if test="kaishishijian != null">
+				kaiShiShiJian,
+			</if>
+			<if test="jieshushijian != null">
+				jieShuShiJian,
+			</if>
+			<if test="zhuangtai != null">
+				zhuangTai,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="anpaiid != null">
+				#{anpaiid,jdbcType=INTEGER},
+			</if>
+			<if test="jiaoshiid != null">
+				#{jiaoshiid,jdbcType=INTEGER},
+			</if>
+			<if test="riqi != null">
+				#{riqi,jdbcType=DATE},
+			</if>
+			<if test="paizhaoyaoqiu != null">
+				#{paizhaoyaoqiu,jdbcType=VARCHAR},
+			</if>
+			<if test="kaishishijian != null">
+				#{kaishishijian,jdbcType=TIME},
+			</if>
+			<if test="jieshushijian != null">
+				#{jieshushijian,jdbcType=TIME},
+			</if>
+			<if test="zhuangtai != null">
+				#{zhuangtai,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.web.model.ChaQinAnPai">
+		update chaqinanpai
+		<set>
+			<if test="jiaoshiid != null">
+				jiaoShiID = #{jiaoshiid,jdbcType=INTEGER},
+			</if>
+			<if test="riqi != null">
+				riQi = #{riqi,jdbcType=DATE},
+			</if>
+			<if test="paizhaoyaoqiu != null">
+				paiZhaoYaoQiu = #{paizhaoyaoqiu,jdbcType=VARCHAR},
+			</if>
+			<if test="kaishishijian != null">
+				kaiShiShiJian = #{kaishishijian,jdbcType=TIME},
+			</if>
+			<if test="jieshushijian != null">
+				jieShuShiJian = #{jieshushijian,jdbcType=TIME},
+			</if>
+			<if test="zhuangtai != null">
+				zhuangTai = #{zhuangtai,jdbcType=INTEGER},
+			</if>
+		</set>
+		where ID = #{anpaiid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.web.model.ChaQinAnPai">
+		update chaqinanpai
+		set jiaoShiID = #{jiaoshiid,jdbcType=INTEGER},
+		riQi = #{riqi,jdbcType=DATE},
+		paiZhaoYaoQiu = #{paizhaoyaoqiu,jdbcType=VARCHAR},
+		kaiShiShiJian = #{kaishishijian,jdbcType=TIME},
+		jieShuShiJian = #{jieshushijian,jdbcType=TIME},
+		zhuangTai = #{zhuangtai,jdbcType=INTEGER}
+		where ID = #{anpaiid,jdbcType=INTEGER}
+	</update>
+	<select id="selectByYongHuIdAndRiQi" resultMap="BaseResultMap" 
+		parameterType="java.util.HashMap">
+		select * from (
+		select ID, jiaoShiID, riQi, paiZhaoYaoQiu, kaiShiShiJian,
+		jieShuShiJian, zhuangTai ,count(apid) jieguo from (
+		select
+		ID, jiaoShiID, riQi, paiZhaoYaoQiu, kaiShiShiJian, jieShuShiJian,
+		zhuangTai ,zb.apid
+		from chaqinanpai cq LEFT JOIN (SELECT anPaiID as apid from chaqinjieguo
+		where suSheID = #{susheId,jdbcType=INTEGER}
+		and anPaiID in (
+		select id from chaqinanpai where jiaoShiID =
+		#{fudaoyuanId,jdbcType=INTEGER}
+
+
+		<if test="searchStatus == 1">
+    		<![CDATA[ 
+    		 and riQi = #{date}
+    		 ]]>
+		</if>
+
+		<if test="searchStatus == 2">
+    		<![CDATA[ 
+    		 	and riQi <= #{date}
+    		  ]]>
+		</if>
+
+		)
+		) zb
+		on cq.ID = zb.apid
+		where ( jiaoShiID = #{fudaoyuanId,jdbcType=INTEGER}
+		<if test="searchStatus == 1">
+    		<![CDATA[ 
+    		 and riQi = #{date}
+    		 ]]>
+		</if>
+
+		<if test="searchStatus == 2">
+    		<![CDATA[ 
+    		 	and riQi <= #{date}
+    		  ]]>
+		</if>
+
+		)
+		) tem GROUP BY ID, jiaoShiID, riQi, paiZhaoYaoQiu, kaiShiShiJian,
+		jieShuShiJian, zhuangTai order by riQi desc
+		) tab where 1=1 ORDER BY riQi DESC
+
+		<!-- <if test="searchStatus == 1"> <![CDATA[ and tab.jieguo <= 0 or riQi 
+			= #{date} ]]> </if> -->
+
+		<if test="pageSize > 0">
+			LIMIT #{pageNum},#{pageSize}
+		</if>
+
+	</select>
+
+	<select id="selectChaQinTotal" parameterType="map" resultType="java.lang.Integer">
+		select count(ID) from chaqinanpai where jiaoShiID=#{fudaoyuanid}
+		<if test="kaishiriqi != null">
+			and riQi between #{kaishiriqi} and #{jieshuriqi}
+		</if>
+	</select>
+
+	<select id="getByYongHuIdAndRiQi" parameterType="map" resultMap="BaseResultMap">
+		select * from chaqinanpai
+		where jiaoShiID=#{fudaoyuanid} and riQi between #{kaishiriqi} and
+		#{jieshuriqi}
+		ORDER BY riQi DESC
+		<if test="stop>0">limit ${start},${stop}</if>
+	</select>
+
+	<select id="getChaQinByWeiShangChuan" parameterType="map" resultMap="BaseResultMap">
+		select * from chaqinanpai
+		where jiaoShiID=#{fudaoyuanid} and riQi between #{kaishiriqi} and
+		#{jieshuriqi}
+		and ID not in (SELECT anPaiID from chaqinjieguo where
+		xueShengID=#{xueshengid})
+		ORDER BY riQi DESC
+		<if test="stop>0">limit ${start},${stop}</if>
+	</select>
+
+	<select id="getChaQinByWeiShenHe" parameterType="map" resultMap="BaseResultMap">
+		select * from chaqinanpai
+		where jiaoShiID=#{fudaoyuanid} and riQi between #{kaishiriqi} and
+		#{jieshuriqi}
+		and ID in (SELECT anPaiID from chaqinjieguo where
+		xueShengID=#{xueshengid} and zhuangTai=-1)
+		ORDER BY riQi DESC
+		<if test="stop>0">limit ${start},${stop}</if>
+	</select>
+
+	<select id="getChaQinByQueQin" parameterType="map" resultMap="BaseResultMap">
+		select * from chaqinanpai
+		where jiaoShiID=#{fudaoyuanid} and riQi between #{kaishiriqi} and
+		#{jieshuriqi}
+		and ( ID in (SELECT anPaiID from chaqinjieguo where
+		xueShengID=#{xueshengid} and (zhuangTai=-1 or zhuangTai=0)) or
+		ID not in (SELECT anPaiID from chaqinjieguo where
+		xueShengID=#{xueshengid}))
+		ORDER BY riQi DESC
+		<if test="stop>0">limit ${start},${stop}</if>
+	</select>
+	
+	<select id="getChaQinByBuQueQin" parameterType="map" resultMap="BaseResultMap">
+		select * from chaqinanpai
+		where jiaoShiID=#{fudaoyuanid} and riQi between #{kaishiriqi} and
+		#{jieshuriqi}
+		and ID in (SELECT anPaiID from chaqinjieguo where
+		xueShengID=#{xueshengid} and zhuangTai=1)
+		ORDER BY riQi DESC
+		<if test="stop>0">limit ${start},${stop}</if>
+	</select>
+
+</mapper>

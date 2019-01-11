@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.XueXiaoMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.XueXiao" >
+    <id column="ID" property="xuexiaoid" jdbcType="INTEGER" />
+    <result column="shengFenID" property="shengfenid" jdbcType="INTEGER" />
+    <result column="xueXiaoMingCheng" property="xuexiaomingcheng" jdbcType="VARCHAR" />
+    <result column="daiMa" property="daima" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, shengFenID, xueXiaoMingCheng, daiMa
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from xuexiao
+    where ID = #{xuexiaoid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from xuexiao
+    where ID = #{xuexiaoid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.XueXiao" >
+    insert into xuexiao (ID, shengFenID, xueXiaoMingCheng, daiMa
+      )
+    values (#{xuexiaoid,jdbcType=INTEGER}, #{shengfenid,jdbcType=INTEGER}, #{xuexiaomingcheng,jdbcType=VARCHAR}, #{daiMa,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.XueXiao" >
+    insert into xuexiao
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="xuexiaoid != null" >
+        ID,
+      </if>
+      <if test="shengfenid != null" >
+        shengFenID,
+      </if>
+      <if test="xuexiaomingcheng != null" >
+        xueXiaoMingCheng,
+      </if>
+      <if test="daima != null" >
+        daiMa,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="xuexiaoid != null" >
+        #{xuexiaoid,jdbcType=INTEGER},
+      </if>
+      <if test="shengfenid != null" >
+        #{shengfenid,jdbcType=INTEGER},
+      </if>
+      <if test="xuexiaomingcheng != null" >
+        #{xuexiaomingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="daiMa != null" >
+        #{daiMa,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.XueXiao" >
+    update xuexiao
+    <set >
+      <if test="shengfenid != null" >
+        shengFenID = #{shengfenid,jdbcType=INTEGER},
+      </if>
+      <if test="xuexiaomingcheng != null" >
+        xueXiaoMingCheng = #{xuexiaomingcheng,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{xuexiaoid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.XueXiao" >
+    update xuexiao
+    set shengFenID = #{shengfenid,jdbcType=INTEGER},
+      xueXiaoMingCheng = #{xuexiaomingcheng,jdbcType=VARCHAR}
+    where ID = #{xuexiaoid,jdbcType=INTEGER}
+  </update>
+</mapper>

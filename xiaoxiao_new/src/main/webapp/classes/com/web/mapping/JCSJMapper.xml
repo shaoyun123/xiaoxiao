@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.JCSJMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.JCSJ" >
+    <result column="jieCi" property="jieci" jdbcType="INTEGER" />
+    <result column="shiJian" property="shijian" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap type="java.lang.String" id="shijian">
+  	<result column="shiJian" property="shijian" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+  	jieCi,shiJian
+  </sql>
+  <select id="getAll" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from jiecishijian
+  </select>
+  <select id="getshiJianByjieCi" resultMap="shijian" parameterType="java.lang.Integer">
+  	select shiJian
+    from jiecishijian
+    where jieCi = #{jieci,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.web.model.JCSJ" >
+    insert into jiecishijian (jieCi, shiJian)
+    values (#{jieci,jdbcType=INTEGER}, #{shijian,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.JCSJ" >
+    insert into jiecishijian
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="jieci != null" >
+        jieCi,
+      </if>
+      <if test="shijian != null" >
+        shiJian,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="jieci != null" >
+        #{jieci,jdbcType=INTEGER},
+      </if>
+      <if test="shijian != null" >
+        #{shijian,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

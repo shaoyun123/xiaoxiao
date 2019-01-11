@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.App_FenZuMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.App_FenZu">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="keChengID" property="shiJianKeChengId"
+			jdbcType="INTEGER" />
+		<result column="zuMingCheng" property="zuMingCheng" jdbcType="VARCHAR" />
+		<result column="rongLiang" property="rongLiang" jdbcType="INTEGER" />
+		<result column="yiJiaRu" property="yiJiaRu" jdbcType="INTEGER" />
+		<result column="zuZhangID" property="zuZhangId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,keChengID,zuMingCheng,rongliang,yiJiaRu,zuZhangID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_fenzu
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="getFenZu" resultType="map" parameterType="java.lang.Integer">
+		select
+		fz.ID as fenzuid,fz.keChengID as kechengid,fz.zuMingCheng as
+		dazuming,fz.rongliang as rongliang,fz.yiJiaRu as yijiaru,fz.zuZhangID
+		as zuzhangid
+		from app_fenzu as fz
+		where fz.keChengID = #{shijiankechengid,jdbcType=INTEGER}
+	</select>
+	<select id="getDaZu" resultType="java.util.Map" parameterType="java.lang.Integer">
+		select *
+		from app_fenzu
+		where keChengID = #{kechengid,jdbcType=INTEGER}
+	</select>
+	<select id="selectFenZu" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_fenzu
+		where keChengID = #{0,jdbcType=INTEGER} and zuZhangID =
+		#{1,jdbcType=INTEGER}
+	</select>
+	<select id="getXueXiZu" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select *
+		from app_xuexizu
+		where fenZuID = #{fenzuid,jdbcType=INTEGER}
+	</select>
+	<insert id="insertByQunID" parameterType="com.web.model.App_LiaoTianJiLu">
+		insert into app_liaotianjilu (qunID, xueShengID, jiaoShiID,
+		liaoTianNeiRong,
+		shiJian)
+		values (#{qunid,jdbcType=INTEGER},
+		#{xueshengid,jdbcType=INTEGER}, #{jiaoshiid,jdbcType=INTEGER},
+		#{liaotianneirong,jdbcType=VARCHAR},
+		#{shijian,jdbcType=TIMESTAMP})
+	</insert>
+	<update id="update" parameterType="com.web.model.App_FenZu">
+		update app_fenzu
+		<set>
+			<if test="shiJianKeChengId != null">
+				keChengID = #{shiJianKeChengId,jdbcType=INTEGER},
+			</if>
+			<if test="zuMingCheng != null">
+				zuMingCheng = #{zuMingCheng,jdbcType=VARCHAR},
+			</if>
+			<if test="rongLiang != null">
+				rongLiang = #{rongLiang,jdbcType=INTEGER} ,
+			</if>
+			<if test="yiJiaRu != null">
+				yiJiaRu =
+				#{yiJiaRu,jdbcType=INTEGER},
+			</if>
+			<if test="zuZhangId != null">
+				zuZhangID = #{zuZhangId,jdbcType=INTEGER}
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	<delete id="delete"  parameterType="java.lang.Integer">
+		delete from app_fenzu where ID = #{id,jdbcType = INTEGER}
+	</delete>
+	<insert id="insertdazu"  parameterType="com.web.model.App_FenZu">
+		insert into app_fenzu
+		(keChengID,zuMingCheng,rongliang,yiJiaRu,zuZhangID)
+		values (
+		#{shiJianKeChengId,jdbcType=INTEGER},
+		#{zuMingCheng,jdbcType=VARCHAR},
+		#{rongLiang,jdbcType=INTEGER},
+		0,
+		#{zuZhangId,jdbcType=INTEGER})
+	</insert>
+</mapper>

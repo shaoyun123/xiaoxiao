@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.KeChengWenDangMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.KeChengWenDang">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="keChengID" property="shijiankeid" jdbcType="INTEGER" />
+		<result column="kaiShiShiJian" property="kaishishijian"
+			jdbcType="VARCHAR" />
+		<result column="jieShuShiJian" property="jieshushijian"
+			jdbcType="VARCHAR" />
+		<result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, keChengID,kaiShiShiJian, jieShuShiJian,zhuangTai
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from kechengwendang
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="getAllByKeChengID" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from kechengwendang
+		where keChengID =
+		#{shijiankeid,jdbcType=INTEGER}
+	</select>
+
+	<insert id="insert" parameterType="com.web.model.KeChengWenDang">
+
+		insert into kechengwendang
+		(ID, keChengID,kaiShiShiJian,
+		jieShuShiJian,zhuangTai)
+		values (
+		#{id,jdbcType=INTEGER},
+		#{shijiankeid,jdbcType=INTEGER},
+		#{kaiShiShiJian,jdbcType=VARCHAR},
+		#{jieShuShiJian,jdbcType=VARCHAR},
+		#{zhuangTai,jdbcType=INTEGER}
+	</insert>
+
+	<update id="updateByPrimaryKey" parameterType="com.web.model.KeChengWenDang">
+		update
+		kechengwendang
+		set
+		kaiShiShiJian = #{kaiShiShiJian,jdbcType=VARCHAR},
+		jieShuShiJian =
+		#{jieShuShiJian,jdbcType=VARCHAR},
+		zhuangTai =
+		#{zhuangTai,jdbcType=INTEGER}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from
+		kechengwendang
+		where ID = #{id}
+	</delete>
+
+	<insert id="insertshangchuan" parameterType="map">
+		<!-- <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer"> -->
+		<!-- select -->
+		<!-- LAST_INSERT_ID() -->
+		<!-- </selectKey> -->
+		insert into saomashangchuan
+		(ID,
+		xueShengID,keChengID,UUID,leiXing,insertShiJian)
+		values (
+		#{id,jdbcType=INTEGER},
+		#{xueShengID,jdbcType=INTEGER},
+		#{keChengID,jdbcType=INTEGER},
+		#{UUID,jdbcType=VARCHAR},
+		#{leiXing,jdbcType=INTEGER},
+		#{insertShiJian,jdbcType=VARCHAR}
+	</insert>
+
+	<update id="updatesaomashangchuan">
+		update saomashangchuan set
+		xueShengID=#{xueShengID},
+		keChengID=#{keChengID},
+		leiXing=#{leiXing}
+		where ID = #{id}
+	</update>
+
+
+	<delete id="deletesaomashangchuan" parameterType="java.lang.Integer">
+		delete
+		from
+		saomashangchuan
+		where xueShengID =
+		#{0,jdbcType=INTEGER} and UUID =
+		#{1,jdbcType=INTEGER}
+	</delete>
+
+	<select id="selectsaomaxinxi" resultType="map" parameterType="java.lang.String">
+		select
+		*
+		from saomashangchuan
+		where UUID =
+		#{uuid,jdbcType=VARCHAR}
+	</select>
+
+
+</mapper>

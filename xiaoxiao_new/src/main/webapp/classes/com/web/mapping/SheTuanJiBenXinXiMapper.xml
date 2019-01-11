@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.SheTuanJiBenXinXiMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.SheTuanJiBenXinXi" >
+    <id column="sheTuanID" property="shetuanid" jdbcType="INTEGER" />
+    <result column="xueXiaoID" property="xuexiaoid" jdbcType="INTEGER" />
+    <result column="mingCheng" property="mingcheng" jdbcType="VARCHAR" />
+    <result column="xingJi" property="xingji" jdbcType="INTEGER" />
+    <result column="sheTuanJieShaoURL" property="shetuanjieshaourl" jdbcType="VARCHAR" />
+    <result column="sheTuanJieShao" property="shetuanjieshao" jdbcType="VARCHAR" />
+    <result column="chuanJianRen" property="chuanjianren" jdbcType="INTEGER" />
+    <result column="chuangJianShiJian" property="chuangjianshijian" jdbcType="DATE" />
+    <result column="zhuangTai" property="zhuangtai" jdbcType="BIT" />
+    <result column="zhiDaoJiaoShi" property="zhidaojiaoshi" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sheTuanID, xueXiaoID, mingCheng, xingJi, sheTuanJieShaoURL, sheTuanJieShao, chuanJianRen, chuangJianShiJian, 
+    zhuangTai,zhiDaoJiaoShi
+  </sql>
+  <select id="selectSheTuanJiBenXinXiByXueXiaoID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanjibenxinxi
+    where xueXiaoID = #{xuexiaoid,jdbcType=INTEGER}
+    and zhuangTai = 1
+  </select>
+  <select id="selectSheTuanJiBenXinXiByXueXiaoIDAndXingJiAndMingCheng" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanjibenxinxi
+    where xueXiaoID = #{xuexiaoid,jdbcType=INTEGER}
+    <if test="xingji!=''">
+    	and xingJi=#{xingji}
+    </if>
+    <if test="mingcheng!=''">
+    	and mingCheng=#{mingcheng}
+    </if>
+    and zhuangTai = 1
+  </select>
+  <select id="selectSheTuanJiBenXinXiByXueXiaoIDAndMingCheng" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanjibenxinxi
+    where xueXiaoID = #{0,jdbcType=INTEGER}
+    and mingCheng=#{1}
+    and zhuangTai = 1
+  </select>
+  <select id="selectSheTuanJiBenXinXiByXueXiaoIDAndSheTuanID" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanjibenxinxi
+    where xueXiaoID = #{xuexiaoid,jdbcType=INTEGER}
+    and sheTuanID = #{shetuanid,jdbcType=INTEGER}
+    and zhuangTai = 1
+  </select>
+  <select id="selectSheTuanJiBenXinXiBySheTuanID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanjibenxinxi
+    where sheTuanID = #{shetuanid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shetuanjibenxinxi
+    where sheTuanID = #{shetuanid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSheTuanJiBenXinXi"  useGeneratedKeys="true" keyProperty="shetuanid" parameterType="com.web.model.SheTuanJiBenXinXi" >
+    insert into shetuanjibenxinxi (xueXiaoID, mingCheng, 
+      xingJi, sheTuanJieShaoURL, sheTuanJieShao, 
+      chuanJianRen, chuangJianShiJian, zhuangTai,zhiDaoJiaoShi)
+    values (#{xuexiaoid,jdbcType=INTEGER}, #{mingcheng,jdbcType=VARCHAR}, 
+      #{xingji,jdbcType=INTEGER}, #{shetuanjieshaourl,jdbcType=VARCHAR}, #{shetuanjieshao,jdbcType=VARCHAR}, 
+      #{chuanjianren,jdbcType=INTEGER},#{chuangjianshijian,jdbcType=DATE}, #{zhuangtai,jdbcType=BIT},#{zhidaojiaoshi,jdbcType=INTEGER})
+  </insert>
+  <update id="updateSheTuanJiBenXinXi" parameterType="com.web.model.SheTuanJiBenXinXi" >
+    update shetuanjibenxinxi
+    set xueXiaoID = #{xuexiaoid,jdbcType=INTEGER},
+      mingCheng = #{mingcheng,jdbcType=VARCHAR},
+      xingJi = #{xingji,jdbcType=INTEGER},
+      sheTuanJieShaoURL = #{shetuanjieshaourl,jdbcType=VARCHAR},
+      sheTuanJieShao = #{shetuanjieshao,jdbcType=VARCHAR},
+      chuanJianRen = #{chuanjianren,jdbcType=INTEGER},
+      zhuangTai = #{zhuangtai,jdbcType=BIT},
+      zhiDaoJiaoShi = #{zhidaojiaoshi,jdbcType=INTEGER}
+    where sheTuanID = #{shetuanid,jdbcType=INTEGER}
+  </update>
+</mapper>

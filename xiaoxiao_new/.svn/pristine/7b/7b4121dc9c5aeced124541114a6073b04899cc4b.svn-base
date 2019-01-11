@@ -1,0 +1,22 @@
+package com.web.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.web.model.App_XueXiZu;
+
+public interface App_XueXiZuService {
+	List<App_XueXiZu> getXueXiZu(Integer fenZuId);
+	List<Map<String, Object>> getXueXZ(Integer fenzuid);
+	App_XueXiZu selectByPrimaryKey(Integer id);
+	Map<String, Object> selectByPrimaryKey1(Integer id);
+	List<App_XueXiZu> getXueXiZuByKeCheng(Integer kechengid);
+	List<App_XueXiZu> selectXueXiZu(Integer kechengid,Integer xueshengid);
+	List<App_XueXiZu> selectXueXiZuByXsID(App_XueXiZu xueXiZu);
+	List<Map<String, Object>> selectBykaoPingIdAndXueshengId(Map<String, Object> map);
+	List<Map<String, Object>> selectXiaoZu(Integer fenZuId);
+	int update(App_XueXiZu record);
+	int insert(App_XueXiZu record);
+	int delete(Integer id);
+	
+}

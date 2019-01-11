@@ -1,0 +1,41 @@
+package com.web.model;
+
+public class KeChengWenDang {
+	private Integer id;
+	private Integer shijiankeid;
+	private Integer kaishishijian;
+	private Integer jieshushijian;
+	private Integer zuzhangid;
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public Integer getShijiankeid() {
+		return shijiankeid;
+	}
+	public void setShijiankeid(Integer shijiankeid) {
+		this.shijiankeid = shijiankeid;
+	}
+	public Integer getKaishishijian() {
+		return kaishishijian;
+	}
+	public void setKaishishijian(Integer kaishishijian) {
+		this.kaishishijian = kaishishijian;
+	}
+	public Integer getJieshushijian() {
+		return jieshushijian;
+	}
+	public void setJieshushijian(Integer jieshushijian) {
+		this.jieshushijian = jieshushijian;
+	}
+	public Integer getZuzhangid() {
+		return zuzhangid;
+	}
+	public void setZuzhangid(Integer zuzhangid) {
+		this.zuzhangid = zuzhangid;
+	}
+	
+
+}

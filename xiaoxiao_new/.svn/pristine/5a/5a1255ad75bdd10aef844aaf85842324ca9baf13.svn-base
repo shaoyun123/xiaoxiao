@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.QingjiaMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.Qingjia" >
+    <id column="ID" property="qingjiaid" jdbcType="INTEGER" />
+    <result column="xueShengID" property="xueshengid" jdbcType="INTEGER" />
+    <result column="qingJiaLeiBie" property="qingjialeibie" jdbcType="INTEGER" />
+    <result column="qingJiaShiYou" property="qingjiashiyou" jdbcType="VARCHAR" />
+    <result column="qingJiaKaiShiShiJian" property="qingjiakaishishijian" jdbcType="TIMESTAMP" />
+    <result column="qingJiaJieShuShiJian" property="qingjiajieshushijian" jdbcType="TIMESTAMP" />
+    <result column="tiJiaoCiShu" property="tijiaocishu" jdbcType="INTEGER" />
+    <result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+    <result column="piZhunRen" property="pizhunren" jdbcType="INTEGER" />
+    <result column="shenQingShiJian" property="shenqingshijian" jdbcType="TIMESTAMP" />
+    <result column="bingJiaZhengming" property="bingjiazhengming" jdbcType="VARCHAR" />
+    <result column="tongZhiShiJian" property="tongzhishijian" jdbcType="DATE" />
+    <result column="tongZhiNeiRong" property="tongzhineirong" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap type="java.lang.Integer" id="zhuangtai">
+  	<result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap type="java.lang.Integer" id="tijiaocishu">
+  	<result column="tiJiaoCiShu" property="tijiaocishu" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, xueShengID, qingJiaLeiBie, qingJiaShiYou, qingJiaKaiShiShiJian, qingJiaJieShuShiJian, 
+    tiJiaoCiShu, zhuangTai, piZhunRen, shenQingShiJian, bingJiaZhengming, tongZhiShiJian, 
+    tongZhiNeiRong
+  </sql>
+  <select id="selectZhuangTaiByXueShengIDAndQingJiaId" resultMap="zhuangtai" parameterType="map" >
+    select zhuangTai
+    from qingjia
+    where ID = #{qingjiaid,jdbcType=INTEGER}
+    and xueShengID = #{xueshengid,jdbcType=INTEGER}
+  </select>
+  <select id="selectFuDaoYuanDaiChuLiByBanJiID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				${banjiids}
+			)
+	)
+	and (zhuangTai=1 or zhuangTai = 4)
+	order by qingJiaKaiShiShiJian DESC limit ${start},${stop}
+  </select>
+  <select id="getByZhuangTaiAndShijianAndXueShengid" parameterType="map"  resultMap="BaseResultMap">
+  	select 
+  		<include refid="Base_Column_List" /> 
+  	from qingjia 
+  	 where xueShengID=#{xueshengid} and zhuangTai=#{zhuangtai} 
+    	and qingJiaKaiShiShiJian &lt; #{kaishishijian} and qingJiaJieShuShiJian &gt; #{jieshushijian} 
+  </select>
+  <select id="selectShuJiDaiChuLiByYuanXiID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				select ID
+				from banji
+				where yuanXiID = #{yuanxiid}
+			)
+	)
+	and zhuangTai=6
+	order by qingJiaKaiShiShiJian DESC limit ${start},${stop}
+  </select>
+  <select id="selectGuanLiYuanDaiChuLiByXueXiaoID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.xuexiao_xuehao LIKE #{xuexiaoid}
+			)
+	and zhuangTai=7
+	order by qingJiaKaiShiShiJian DESC limit ${start},${stop}
+  </select>
+  <select id="selectGuanLiYuanYiChuLiByXueXiaoIDAndPiZhunRenID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.xuexiao_xuehao LIKE #{xuexiaoid}
+			)
+	and (zhuangTai=2 or zhuangTai = 3)
+	and piZhunRen = #{pizhunren}
+	order by qingJiaKaiShiShiJian DESC limit ${start},${stop}
+  </select>
+  <select id="selectAllByGuanLiYuanXueXiaoID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.xuexiao_xuehao LIKE #{xuexiaoid}
+			<if test="xuehao != null and xuehao != '' ">
+			and xuesheng.xueHao=#{xuehao} </if>
+			)
+	order by qingJiaKaiShiShiJian DESC limit ${start},${stop}
+  </select>
+  <select id="selectShujiYiChuLiByYuanXiIDAndShenPiRenID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				select ID
+				from banji
+				where yuanXiID = #{yuanxiid}
+			)
+	)
+	and (zhuangTai=2 or zhuangTai = 3 or zhuangTai = 7)
+	and piZhunRen = #{pizhunren}
+	order by qingJiaKaiShiShiJian DESC limit ${start},${stop}
+  </select>
+  <select id="selectAllByShuJiYuanXiID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				select ID
+				from banji
+				where yuanXiID = #{yuanxiid}
+			)
+			<if test="xuehao != null  and xuehao != '' ">
+			and xuesheng.xueHao=#{xuehao} </if>
+	)
+	order by qingJiaKaiShiShiJian DESC limit ${start},${stop}
+  </select>
+  <select id="selectFuDaoYuanYiChuLiByBanJiID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				${banjiids}
+			)
+	)
+	and (zhuangTai=2 or zhuangTai = 3 or zhuangTai = 5 or zhuangTai = 6)
+	and piZhunRen = #{pizhunren}
+	order by qingJiaKaiShiShiJian DESC limit ${start},${stop}
+  </select>
+  <select id="selectFuDaoYuanYiShangJiaoByBanJiID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				${banjiids}
+			)
+	)
+	and zhuangTai = 6
+	and piZhunRen = #{pizhunren}
+	order by ID DESC limit ${start},${stop}
+  </select>
+  <select id="selectFuDaoYuanDaiXiaoJiaByBanJiID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				${banjiids}
+			)
+	)
+	and zhuangTai = 4
+	order by ID DESC limit ${start},${stop}
+  </select>
+  <select id="selectAllByFuDaoYuanBanJiIDs" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				${banjiids}
+			) 
+			<if test="xuehao != null  and xuehao != '' ">
+			and xuesheng.xueHao=#{xuehao} </if>
+	)
+	order by qingJiaKaiShiShiJian DESC limit ${start},${stop}
+  </select>
+  <select id="selectTiJiaoCiShuByXueShengIDAndQingJiaId" resultMap="tijiaocishu" parameterType="map" >
+    select tiJiaoCiShu
+    from qingjia
+    where ID = #{qingjiaid,jdbcType=INTEGER}
+    and xueShengID = #{xueshengid,jdbcType=INTEGER}
+  </select>
+  <select id="getAllByXueShengID" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID = #{id,jdbcType=INTEGER} order by qingJiaKaiShiShiJian DESC limit #{start},#{stop}
+  </select>
+  <select id="getAllByXueShengIDAndZhuangtai" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID = #{id,jdbcType=INTEGER} and zhuangTai= #{zhuangtai,jdbcType=INTEGER} order by qingJiaKaiShiShiJian DESC limit #{start},#{stop}
+  </select>
+  <select id="getQingJiaByXueShengID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where xueShengID = #{xueshengid,jdbcType=INTEGER} order by qingJiaKaiShiShiJian DESC 
+  </select>
+  <select id="getCountByXueShengID" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectCountFuDaoYuanDaiChuLiByBanJiIDs" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID IN (
+		select ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				${_parameter}
+			)
+	)
+	and (zhuangTai=1 or zhuangTai = 4)
+  </select>
+  <select id="selectCountAllByFuDaoYuanBanJiIDs" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID IN (
+		select ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				${_parameter}
+			)
+	)
+  </select>
+  <select id="selectCountShuJiDaiChuLiByYuanXiID" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID IN (
+		select ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				select ID
+				from banji
+				where yuanXiID = #{yuanxiid}
+			)
+	)
+	and zhuangTai=6 
+  </select>
+  <select id="selectCountAllByShuJiYuanXiID" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID IN (
+		select ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				select ID
+				from banji
+				where yuanXiID = #{yuanxiid}
+			)
+	)
+  </select>
+  <select id="selectCountGuanLiYuanDaiChuLiByXueXiaoID" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.xuexiao_xuehao LIKE #{_parameter}
+			)
+	and zhuangTai= 7 
+  </select>
+   <select id="selectCountAllGuanLiYuanByXueXiaoID" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.xuexiao_xuehao LIKE #{_parameter}
+			)
+  </select>
+  <select id="selectCountGuanLiYuanYiChuLiByXueXiaoIDAndGuanLiYuanID" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID IN (
+		select
+			ID
+		from xuesheng
+		where xuesheng.xuexiao_xuehao LIKE #{0}
+			)
+	and (zhuangTai= 2 or zhuangTai = 3)
+	and piZhunRen = #{1}
+  </select>
+  <select id="selectCountShuJiYiChuLiByYuanXiIDAndPiZhunRenID" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID IN (
+		select ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				select ID
+				from banji
+				where yuanXiID = #{yuanxiid}
+			)
+	)
+	and (zhuangTai=2 or zhuangTai = 3 or zhuangTai = 5 or zhuangTai = 7)
+	and piZhunRen = #{pizhunren}
+  </select>
+  <select id="selectCountFuDaoYuanYiChuLiByBanJiIDsAndPiZhunRenID" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID IN (
+		select ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				${banjiids}
+			)
+	)
+	and (zhuangTai=2 or zhuangTai = 3 or zhuangTai = 5 or zhuangTai = 6)
+	and piZhunRen = #{pizhunren}
+  </select>
+  <select id="selectCountFuDaoYuanYiShangJiaoByBanJiIDsAndPiZhunRenID" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID IN (
+		select ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				${banjiids}
+			)
+	)
+	and zhuangTai = 6
+	and piZhunRen = #{pizhunren}
+  </select>
+  <select id="selectCountFuDaoYuanDaiXiaoJiaByBanJiIDs" resultType="java.lang.Integer">
+    select count(*)
+    from qingjia
+    where xueShengID IN (
+		select ID
+		from xuesheng
+		where xuesheng.banJiID IN (
+				${banjiids}
+			)
+	)
+	and zhuangTai = 4
+  </select>
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from qingjia
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from qingjia
+    where ID = #{qingjiaid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertByXueShengID" parameterType="map" >
+    insert into qingjia (xueShengID, qingJiaLeiBie, 
+      qingJiaShiYou, qingJiaKaiShiShiJian, 
+      qingJiaJieShuShiJian, tiJiaoCiShu, zhuangTai, 
+      shenQingShiJian)
+    values (#{xueshengID,jdbcType=INTEGER}, #{leibie,jdbcType=INTEGER}, 
+      #{shiyou,jdbcType=VARCHAR}, #{kaishishijian,jdbcType=TIMESTAMP}, 
+      #{jieshushijian,jdbcType=TIMESTAMP},'1','1', 
+      #{shenqingshijian,jdbcType=TIMESTAMP})
+  </insert>  
+  <insert id="insertByXueShengIDWithFile" parameterType="map" >
+    insert into qingjia (xueShengID, qingJiaLeiBie, 
+      qingJiaShiYou, qingJiaKaiShiShiJian, 
+      qingJiaJieShuShiJian, tiJiaoCiShu, zhuangTai, 
+      shenQingShiJian,bingJiaZhengming)
+    values (#{xueshengID,jdbcType=INTEGER}, #{leibie,jdbcType=INTEGER}, 
+      #{shiyou,jdbcType=VARCHAR}, #{kaishishijian,jdbcType=TIMESTAMP}, 
+      #{jieshushijian,jdbcType=TIMESTAMP},'1','1', 
+      #{shenqingshijian,jdbcType=TIMESTAMP}, #{bingjiazhengming,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateById" parameterType="map" >
+    update qingjia
+    set qingJiaLeiBie = #{leibie,jdbcType=INTEGER},
+      
+        qingJiaShiYou = #{shiyou,jdbcType=VARCHAR},
+     
+        qingJiaKaiShiShiJian = #{kaishishijian,jdbcType=TIMESTAMP},
+      
+        qingJiaJieShuShiJian = #{jieshushijian,jdbcType=TIMESTAMP},
+     
+        tiJiaoCiShu = tiJiaoCiShu+1,
+      
+        zhuangTai = '1',
+      
+        shenQingShiJian = #{shenqingshijian,jdbcType=TIMESTAMP},
+      
+        bingJiaZhengming = #{bingjiazhengming,jdbcType=VARCHAR}
+        
+    where ID = #{qingjiaid,jdbcType=INTEGER}
+  </update>
+  <update id="xiuGaiById" parameterType="map" >
+    update qingjia
+    set qingJiaLeiBie = #{leibie,jdbcType=INTEGER},
+      
+        qingJiaShiYou = #{shiyou,jdbcType=VARCHAR},
+     
+        qingJiaKaiShiShiJian = #{kaishishijian,jdbcType=TIMESTAMP},
+      
+        qingJiaJieShuShiJian = #{jieshushijian,jdbcType=TIMESTAMP},
+       
+        shenQingShiJian = #{shenqingshijian,jdbcType=TIMESTAMP},
+      
+        bingJiaZhengming = #{bingjiazhengming,jdbcType=VARCHAR}
+        
+    where ID = #{qingjiaid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByQingJia" parameterType="com.web.model.Qingjia" >
+    update qingjia 
+    set qingJiaLeiBie = #{qingjialeibie,jdbcType=INTEGER},
+      
+        qingJiaShiYou = #{qingjiashiyou,jdbcType=VARCHAR},
+     
+        qingJiaKaiShiShiJian = #{qingjiakaishishijian,jdbcType=TIMESTAMP},
+      
+        qingJiaJieShuShiJian = #{qingjiajieshushijian,jdbcType=TIMESTAMP},
+        
+        tiJiaoCiShu = #{tijiaocishu,jdbcType=INTEGER},
+        
+        zhuangTai = #{zhuangtai,jdbcType=INTEGER},
+        
+        piZhunRen = #{pizhunren,jdbcType=INTEGER},
+        
+        shenQingShiJian = #{shenqingshijian,jdbcType=TIMESTAMP}, 
+        
+        bingJiaZhengming = #{bingjiazhengming,jdbcType=VARCHAR}, 
+        
+        tongZhiShiJian = #{tongzhishijian,jdbcType=TIMESTAMP}, 
+    
+    	tongZhiNeiRong = #{tongzhineirong,jdbcType=VARCHAR}
+       
+    where ID = #{qingjiaid,jdbcType=INTEGER}
+  </update>
+  <update id="updateStatusByQingjiaId" parameterType="java.lang.Integer" >
+    update qingjia
+    set zhuangTai = '4'
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

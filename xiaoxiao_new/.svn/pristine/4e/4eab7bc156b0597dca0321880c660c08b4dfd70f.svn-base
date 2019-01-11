@@ -1,0 +1,153 @@
+package com.web.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.alibaba.druid.sql.visitor.functions.Insert;
+import com.web.model.BeiZhu;
+import com.web.model.JiaoLiu;
+import com.web.model.KeCheng;
+import com.web.model.LoginInfo;
+
+public interface KeChengMapper {
+	List<KeCheng> getAllBybanJiIDsandmianXiuIDsandxueNianxueQi(Map<String, String> map);
+	
+	int updateBJandXXandMXByPrimaryKey(KeCheng keCheng);
+	
+    int deleteByPrimaryKey(Integer id);//辅导员 删除课
+
+    int insert(KeCheng record);
+
+    int insertSelective(KeCheng record);//辅导员加课——新加
+    
+    int updatebanJiIDsandcanYuRenByPrimaryKey(KeCheng record);//辅导员加课——选择
+
+    KeCheng selectByPrimaryKey(Integer id);
+    
+    List<KeCheng> selectByKeChengId(Integer kechengid);
+
+    int updateByPrimaryKey(KeCheng record);//辅导员修改课程
+    
+    int updateByPrimaryKey2(KeCheng record);//教师修改课程、不改参与人
+    
+    int updateByPrimaryKey3(KeCheng record);//学生修改课程、不改参与人及状态
+    
+    int updatecanYuRenByPrimaryKey(KeCheng record);//学生选择加课、删除课
+    
+    int updateshangKeRiQiByPrimaryKey(KeCheng record);//调停课
+    
+    int updateByKeDaiBiao(KeCheng record);//设定课代表
+    
+    int insert_addkecheng_zizhu(KeCheng record);//学生自主加课
+    
+    List<KeCheng> getAllBybanJiID(String banjiid1,String banjiid2);//get符合banjiid的课程,一个班级两种位置1*2
+    
+    List<KeCheng> getAllBybanJiIDs(String banjiids);//get符合banjiids的课程,多个班级
+    
+    List<KeCheng> getAllByxueShengID(String xueshengid1,String xueshengid2);//get参与人有xueshengid的课程
+    
+    List<KeCheng> getAllByxueShengIDandshangKeRiQi(Map<String, String> map);
+    
+    //List<KeCheng> getAllByxueShengIDandXueNianXueQi(Map<String, String> map);
+    
+    //List<KeCheng> getAllBykaiFangYuanXiandxueNianxueQi(Map<String, String> map);
+    
+    List<KeCheng> getAllByTianJiaRen(String tianjiaren);//根据添加人get辅导员用户下学生的课表
+    
+    List<KeCheng> getAllByrenKeLaoShiID(String jiaoshi);//根据任课教师ID get所有课
+    
+    List<KeCheng> getAllBycanYuRenandxueNianxueQi(Map<String, String> map);//根据参与人和学年学期、并且课程id为空、get所有课程
+    
+    List<KeCheng> getAllBytianJiaRenandxueNianxueQi(Map<String, String> map);//添加人为本校学生、学期为当前学期
+    
+    List<KeCheng> getAllByxiaoQuandshangKeJiaoShiandzhouCi(Map<String, String> map);//根据校区、教室、周次查找课程
+    
+    List<KeCheng> getAllBybanJiIDsAndxuanXiuIDsAndmianXiuIDs(Map<String, String>map);//查询具体到某个人的课程
+    
+    List<KeCheng> getAllBybanJiIDsAndxuanXiuIDsAndmianXiuIDsAndshangKeRiQi(Map<String, String>map);//get某一天某个学生的所有课程
+    
+    List<JiaoLiu> selectJiaoLiuList(Map<String, Object> map);
+    
+    List<JiaoLiu> selectPingBiList(Map<String, Object> map);
+    
+    List<LoginInfo> selectZuYongHuList(Map<String, Object> map);
+    
+    void deletePingBiXinXiById(Map<String, Object> map);
+	
+	int insertPingBiXinXi(Map<String, Object> map);
+
+	List<KeCheng> getKeChengBycanYuRenAndRiQi(Map<String, String> paramMap);
+
+	int updatedanShuangZhouShuoMingByPrimaryKey(KeCheng keCheng2);
+
+	List<KeCheng> selectAllByRiQiAndBanji(Map<String, String> paramMap);
+
+	List<KeCheng> getAllByxueShengIDandRiQiandBanJi(Map<String, String> map);
+
+	int insert_danshaungzhou(KeCheng keCheng);
+
+	int updateByDanShuangZhou(KeCheng keCheng);
+
+	List<KeCheng> getAllByShangKeJiaoShiAndXuenianAndXueqi(Map<String, String> map);
+
+	int updateKeChengBeiZhuID(KeCheng kecheng);
+
+	List<KeCheng> getAllBybanJiIDsAndXuenianAndXueqi(Map<String, Object> map);
+
+	List<Map<String, Object>> getByOneBanJiID(String banjiid);
+
+	List<Map<String, Object>> getByBanJiIDAndXueShengID(int banjiid2, String xueshengid);
+
+	List<Map<String, Object>> getByAllBanJiID(String parse);
+
+	List<String> getByAllBanJiIDByID(String string);
+
+	List<String> getAllMianXiuIDByID(String kechengid);
+
+	List<String> getAllXuanXiuIDByID(String kechengid);
+
+	List<Map<String, Object>> getByJiaoShiIDAndZhouCiAndXueQiID(Map<String, String> map2);
+
+	int insert_shangkebanji(Map<String, String> map);
+
+	int insert_shangkexuanxiuren(Map<String, String> map);
+
+	int insert_shangkeshijian(Map<String, String> map);
+
+	int delete_shangkexuanxiuren(Map<String, String> map);
+
+	List<Map<String, Object>> getShangKeShiJianByID(String id);
+
+	int delete_allshangkebanjiByID(String id);
+
+	int delete_allshangkexuanxiurenByID(String id);
+
+	int update_shangkeshijian(Map<String, String> paramMap);
+
+	int delete_allshangkeshijianByID(String id);
+
+	int delete_shangkebanji(Map<String, String> map);
+
+	int delete_shangkeshijian(Map<String, String> map);
+
+	List<Map<String, Object>> selectAllByRiQiAndBanjiAndXueQiID(Map<String, String> paramMap);
+
+	int insert_shangkemianxiuren(Map<String, String> map);
+
+	int delete_shangkemianxiuren(Map<String, String> map);
+
+	List<Map<String, Object>> getAllKeChengByBanJiIDAndXueShengID(Map<String, String> map);
+
+	List<Map<String, Object>> getKeChengByRenKeLaoShiID(Map<String, String> paramMap);
+	
+	List<Map<String, Object>> selectShiJianKe(Integer kechengid);
+	
+	Map<String, Object> getshijianke(Integer id);
+	
+    int insertshijianke(Map<String, Object> map);
+    
+    int updateshijianke(Map<String, Object> map);
+	
+	int delshijianke(Integer id);
+    
+}

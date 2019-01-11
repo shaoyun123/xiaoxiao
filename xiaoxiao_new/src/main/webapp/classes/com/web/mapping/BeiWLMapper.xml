@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.BeiWLMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.BeiWL" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="neiRong" property="neirong" jdbcType="VARCHAR" />
+    <result column="ShiJian" property="shijian" jdbcType="VARCHAR" />
+    <result column="userID" property="userid" jdbcType="VARCHAR" />
+    <result column="diDian" property="didian" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, neiRong, ShiJian, userID, diDian
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from beiwanglu
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getAllByuserID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from beiwanglu
+    where userID = #{userid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from beiwanglu
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="map" >
+    insert into beiwanglu (ID, neiRong, ShiJian, diDian,
+      userID)
+    values (#{id,jdbcType=INTEGER}, #{neirong,jdbcType=VARCHAR}, #{shijian,jdbcType=VARCHAR}, #{didian,jdbcType=VARCHAR}, 
+      #{userid,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.BeiWL" >
+    insert into beiwanglu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="neirong != null" >
+        neiRong,
+      </if>
+      <if test="shijian != null" >
+        ShiJian,
+      </if>
+      <if test="userid != null" >
+        userID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="neirong != null" >
+        #{neirong,jdbcType=VARCHAR},
+      </if>
+      <if test="shijian != null" >
+        #{shijian,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.BeiWL" >
+    update beiwanglu
+    <set >
+      <if test="neirong != null" >
+        neiRong = #{neirong,jdbcType=VARCHAR},
+      </if>
+      <if test="shijian != null" >
+        ShiJian = #{shijian,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userid != null" >
+        userID = #{userid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.BeiWL" >
+    update beiwanglu
+    set neiRong = #{neirong,jdbcType=VARCHAR},
+      ShiJian = #{shijian,jdbcType=VARCHAR},
+      diDian = #{didian,jdbcType=VARCHAR},
+      userID = #{userid,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

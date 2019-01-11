@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.NaXinJiBenXinXiMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.NaXinJiBenXinXi" >
+    <id column="naXingJiBenXinXiID" property="naxingjibenxinxiid" jdbcType="INTEGER" />
+    <result column="sheTuanXinXiID" property="shetuanxinxiid" jdbcType="INTEGER" />
+    <result column="xueShengZuZhiID" property="xueshengzuzhiid" jdbcType="INTEGER" />
+    <result column="zhuangTai" property="zhuangtai" jdbcType="BIT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    naXingJiBenXinXiID, sheTuanXinXiID, xueShengZuZhiID, zhuangTai
+  </sql>
+  <select id="selectNaXinJiBenXinXiBySheTuanXinXiID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from naxinjibenxinxi
+    where sheTuanXinXiID = #{shetuanxinxiid,jdbcType=INTEGER}
+  </select>
+  <select id="selectNaXinJiBenXinXiByXueShengZuZhiXinXiID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from naxinjibenxinxi
+    where xueShengZuZhiID = #{xueshengzuzhixinxiid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from naxinjibenxinxi
+    where naXingJiBenXinXiID = #{naxingjibenxinxiid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertNaXinJiBenXinXi" parameterType="com.web.model.NaXinJiBenXinXi" >
+    insert into naxinjibenxinxi (sheTuanXinXiID, 
+      xueShengZuZhiID, zhuangTai)
+    values (#{shetuanxinxiid,jdbcType=INTEGER}, 
+      #{xueshengzuzhiid,jdbcType=INTEGER}, #{zhuangtai,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.NaXinJiBenXinXi" >
+    insert into naxinjibenxinxi
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="naxingjibenxinxiid != null" >
+        naXingJiBenXinXiID,
+      </if>
+      <if test="shetuanxinxiid != null" >
+        sheTuanXinXiID,
+      </if>
+      <if test="xueshengzuzhiid != null" >
+        xueShengZuZhiID,
+      </if>
+      <if test="zhuangtai != null" >
+        zhuangTai,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="naxingjibenxinxiid != null" >
+        #{naxingjibenxinxiid,jdbcType=INTEGER},
+      </if>
+      <if test="shetuanxinxiid != null" >
+        #{shetuanxinxiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengzuzhiid != null" >
+        #{xueshengzuzhiid,jdbcType=INTEGER},
+      </if>
+      <if test="zhuangtai != null" >
+        #{zhuangtai,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.NaXinJiBenXinXi" >
+    update naxinjibenxinxi
+    <set >
+      <if test="shetuanxinxiid != null" >
+        sheTuanXinXiID = #{shetuanxinxiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengzuzhiid != null" >
+        xueShengZuZhiID = #{xueshengzuzhiid,jdbcType=INTEGER},
+      </if>
+      <if test="zhuangtai != null" >
+        zhuangTai = #{zhuangtai,jdbcType=BIT},
+      </if>
+    </set>
+    where naXingJiBenXinXiID = #{naxingjibenxinxiid,jdbcType=INTEGER}
+  </update>
+  <update id="updateNaXinJiBenXinXi" parameterType="com.web.model.NaXinJiBenXinXi" >
+    update naxinjibenxinxi
+    set sheTuanXinXiID = #{shetuanxinxiid,jdbcType=INTEGER},
+      xueShengZuZhiID = #{xueshengzuzhiid,jdbcType=INTEGER},
+      zhuangTai = #{zhuangtai,jdbcType=BIT}
+    where naXingJiBenXinXiID = #{naxingjibenxinxiid,jdbcType=INTEGER}
+  </update>
+</mapper>

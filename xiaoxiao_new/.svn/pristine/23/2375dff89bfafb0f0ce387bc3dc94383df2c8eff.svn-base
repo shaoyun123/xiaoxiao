@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.XueQiDeYuMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.XueQiDeYu" >
+    <id column="xueQiDeYuID" property="xueqideyuid" jdbcType="INTEGER" />
+    <result column="xueQiID" property="xueqiid" jdbcType="INTEGER" />
+    <result column="fangAnID" property="fanganid" jdbcType="INTEGER" />
+    <result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+    <result column="shiYongBanJiIDs" property="shiyongbanjiids" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="FangAnID" type="java.lang.Integer" >
+    <result column="fangAnID" property="fanganid" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="xueQiDeYuID" type="java.lang.Integer" >
+    <result column="xueQiDeYuID" property="xueqideyuid" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="zhuangTai" type="java.lang.Integer" >
+    <result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    xueQiDeYuID, xueQiID, fangAnID, zhuangTai, shiYongBanJiIDs
+  </sql>
+  <select id="getFangAnIdByXueQiDeYuID" resultMap="FangAnID" parameterType="java.lang.Integer" >
+    select fangAnID 
+    from xueqideyu
+    where xueQiDeYuID = #{xueQiDeYuId,jdbcType=INTEGER}
+  </select>
+  <select id="selectXueQiDeYuIDByXueQiID" resultMap="xueQiDeYuID" parameterType="java.lang.Integer" >
+    select xueQiDeYuID 
+    from xueqideyu
+    where xueQiID = #{xueQiId,jdbcType=INTEGER}
+  </select>
+  <select id="selectXueQiDeYuByXueQiIDAndBanJiID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from xueqideyu
+    where xueQiID = #{0,jdbcType=INTEGER}
+    and (shiYongBanJiIDs LIKE #{1} or shiYongBanJiIDs LIKE #{2})
+  </select>
+  <select id="selectXueQiDeYuByXueQiIDAndShiYongBanJiIDs" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from xueqideyu
+    where xueQiID = #{0,jdbcType=INTEGER}
+    and shiYongBanJiIDs =#{1}
+  </select>
+  <select id="selectXueQiDeYuByXueQiID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from xueqideyu
+    where xueQiID = #{xueQiId,jdbcType=INTEGER}
+  </select>
+  <select id="selectXueQiDeYuByXueQiDeYuID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from xueqideyu
+    where xueQiDeYuID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectXueQiDeYuByXueQiDeYu" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from xueqideyu
+    where xueQiID = #{xueqiid,jdbcType=INTEGER} and fangAnID =  #{fanganid,jdbcType=INTEGER} 
+    and  shiYongBanJiIDs = #{shiyongbanjiids,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from xueqideyu
+    where xueQiDeYuID = #{xueqideyuid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.XueQiDeYu" >
+    insert into xueqideyu ( xueQiID, fangAnID, 
+      zhuangTai, shiYongBanJiIDs)
+    values ( #{xueqiid,jdbcType=INTEGER}, #{fanganid,jdbcType=INTEGER}, 
+      #{zhuangtai,jdbcType=INTEGER}, #{shiyongbanjiids,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.XueQiDeYu" >
+    insert into xueqideyu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="xueqideyuid != null" >
+        xueQiDeYuID,
+      </if>
+      <if test="xueqiid != null" >
+        xueQiID,
+      </if>
+      <if test="fanganid != null" >
+        fangAnID,
+      </if>
+      <if test="zhuangtai != null" >
+        zhuangTai,
+      </if>
+      <if test="shiYongBanJiIDs != null" >
+        shiyongbanjiids,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="xueqideyuid != null" >
+        #{xueqideyuid,jdbcType=INTEGER},
+      </if>
+      <if test="xueqiid != null" >
+        #{xueqiid,jdbcType=INTEGER},
+      </if>
+      <if test="fanganid != null" >
+        #{fanganid,jdbcType=INTEGER},
+      </if>
+      <if test="zhuangtai != null" >
+        #{zhuangtai,jdbcType=INTEGER},
+      </if>
+      <if test="shiYongBanJiIDs != null" >
+        #{shiyongbanjiids,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateXueQiDeYuByXueQiDeYu" parameterType="com.web.model.XueQiDeYu" >
+    update xueqideyu
+    <set >
+      <if test="fanganid != null" >
+        fangAnID = #{fanganid,jdbcType=INTEGER},
+      </if>
+      <if test="zhuangtai != null" >
+        zhuangTai = #{zhuangtai,jdbcType=INTEGER},
+      </if>
+      <if test="shiyongbanjiids != null" >
+        shiYongBanJiIDs = #{shiyongbanjiids,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where xueQiDeYuID = #{xueqideyuid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.XueQiDeYu" >
+    update xueqideyu
+    set xueQiID = #{xueqiid,jdbcType=INTEGER},
+      fangAnID = #{fanganid,jdbcType=INTEGER},
+      zhuangTai = #{zhuangtai,jdbcType=INTEGER},
+      shiYongBanJiIDs = #{shiyongbanjiids,jdbcType=VARCHAR}
+    where xueQiDeYuID = #{xueqideyuid,jdbcType=INTEGER}
+  </update>
+</mapper>

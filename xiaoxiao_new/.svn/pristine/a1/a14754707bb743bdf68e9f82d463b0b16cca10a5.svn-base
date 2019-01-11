@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.SuSheLouMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.SuSheLou" >
+    <id column="ID" property="suSheLouId" jdbcType="INTEGER" />
+    <result column="mingCheng" property="mingCheng" jdbcType="VARCHAR" />
+    <result column="zhuangTai" property="zhuangTai" jdbcType="INTEGER" />
+    <result column="xiaoQuID" property="xiaoQuId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ID, mingCheng, zhuangTai, xiaoQuID
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from sushelou
+    where ID = #{suSheLouId,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectBySuSheLouMingAndXiaoQuId" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from sushelou
+    where mingCheng = #{0,jdbcType=VARCHAR} and xiaoQuID =#{1,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getAllByXiaoQuId" resultMap="BaseResultMap" parameterType="com.web.model.SuSheLou" >
+    select 
+    <include refid="Base_Column_List" />
+    from sushelou
+    where xiaoQuID = #{xiaoQuId,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from sushelou
+    where ID = #{suSheLouId,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" parameterType="com.web.model.SuSheLou" >
+    insert into sushelou (ID, mingCheng, zhuangTai, 
+      xiaoQuID)
+    values (#{suSheLouId,jdbcType=INTEGER}, #{mingCheng,jdbcType=VARCHAR}, #{zhuangTai,jdbcType=INTEGER}, 
+      #{xiaoQuId,jdbcType=INTEGER})
+  </insert>
+  
+  
+  
+  <update id="updateByPrimaryKey" parameterType="com.web.model.SuSheLou" >
+    update sushelou
+    set mingCheng = #{mingCheng,jdbcType=VARCHAR},
+      zhuangTai = #{zhuangTai,jdbcType=INTEGER},
+      xiaoQuID = #{xiaoQuId,jdbcType=INTEGER}
+    where ID = #{suSheLouId,jdbcType=INTEGER}
+  </update>
+</mapper>

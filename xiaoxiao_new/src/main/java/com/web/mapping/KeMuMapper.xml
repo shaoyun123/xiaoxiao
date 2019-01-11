@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.KeMuMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.KeMu" >
+    <id column="ID" property="kemuid" jdbcType="INTEGER" />
+    <result column="mingCheng" property="mingcheng" jdbcType="VARCHAR" />
+    <result column="daiMa" property="daima" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID,daiMa, mingCheng
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from kemu
+    where ID = #{kemuid,jdbcType=INTEGER}
+  </select>
+  <select id="selectAllKeMu" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from kemu
+  </select>
+  <select id="getOne" resultType="java.lang.Integer" parameterType="map">
+    select 
+    count(ID)
+    from xuexiaokemu 
+     where keMuID = #{kemuid,jdbcType=INTEGER} 
+      and xueXiaoID = #{xuexiaoid,jdbcType=INTEGER}
+  </select>
+  <select id="getKeMu" resultType="java.lang.Integer" parameterType="com.web.model.KeMu" >
+    select 
+    count(ID)
+    from kemu 
+     where mingCheng = #{mingcheng,jdbcType=VARCHAR} 
+      and daiMa = #{daima,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectKeMuByXueXiaoId" resultType="map" parameterType="java.lang.Integer" >
+    select 
+    km.ID as ID,km.mingCheng as mingCheng,km.daiMa as daiMa,xxkm.zhuangTai as zhuangTai,xxkm.ID as xxkmid
+    from kemu km left join  xuexiaokemu xxkm on xxkm.keMuID = km.ID where 
+    xxkm.xueXiaoID = #{xuexiaoid,jdbcType=INTEGER}
+  </select>
+  
+   <select id="selectXueXiaoKeMu" resultType="map" parameterType="java.lang.Integer" >
+    select 
+    xxkm.ID as xxkmid,xxkm.keMuID as kemuid,xxkm.zhuangTai as zhuangTai,xxkm.xueXiaoId as xuexiaoid
+    from xuexiaokemu xxkm
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  
+  
+  <insert id="insertXueXiaoKeMu" parameterType="map" >
+    insert into xuexiaokemu (ID, keMuID, xueXiaoID,zhuangTai)
+    values (#{id,jdbcType=INTEGER},#{kemuid,jdbcType=INTEGER}, #{xuexiaoid,jdbcType=INTEGER},#{zhuangtai,jdbcType=INTEGER})
+  </insert>
+  
+  <update id="updateXueXiaoKeMu" parameterType="java.lang.Integer" >
+    update xuexiaokemu
+    <set >
+        zhuangTai = #{1,jdbcType=INTEGER}
+    </set>
+    where ID = #{0,jdbcType=INTEGER}
+  </update>
+  
+  <delete id="deleteXueXiaoKeMu" parameterType="java.lang.Integer" >
+    delete from xuexiaokemu
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+ 
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from kemu
+    where ID = #{kemuid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.KeMu" >
+    insert into kemu (ID, daiMa, mingCheng)
+    values (#{kemuid,jdbcType=INTEGER},#{daima,jdbcType=VARCHAR}, #{mingcheng,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.KeMu" keyProperty="kemuid">
+  <selectKey keyProperty="kemuid" order="AFTER" resultType="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+    insert into kemu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="kemuid != null" >
+        ID,
+      </if>
+      <if test="daima != null" >
+        daiMa,
+      </if>
+      <if test="mingcheng != null" >
+        mingCheng,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="kemuid != null" >
+        #{kemuid,jdbcType=INTEGER},
+      </if>
+      <if test="daima != null" >
+        #{daima,jdbcType=VARCHAR},
+      </if>
+      <if test="mingcheng != null" >
+        #{mingcheng,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.ZhuanYe" >
+    update kemu
+    <set >
+      <if test="mingcheng != null" >
+        mingCheng = #{mingcheng,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{kemuid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.ZhuanYe" >
+    update kemu
+    set mingCheng = #{mingcheng,jdbcType=VARCHAR}
+    where ID = #{kemuid,jdbcType=INTEGER}
+  </update>
+</mapper>

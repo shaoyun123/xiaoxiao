@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.XueQiMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.XueQi">
+		<id column="ID" property="xueqiid" jdbcType="INTEGER" />
+		<result column="xueXiaoID" property="xuexiaoid" jdbcType="INTEGER" />
+		<result column="nianFenID" property="nianfenid" jdbcType="INTEGER" />
+		<result column="xueQi" property="xueqi" jdbcType="INTEGER" />
+		<result column="kaiShiRiQi" property="kaishiriqi" jdbcType="DATE" />
+		<result column="jieShuRiQi" property="jieshuriqi" jdbcType="DATE" />
+		<result column="mingCheng" property="mingcheng" jdbcType="VARCHAR"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,xueXiaoID, nianFenID, xueQi, kaiShiRiQi, jieShuRiQi,mingCheng
+	</sql>
+	<select id="getByxueXiaoIDandriQi" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xueqi
+		where (kaiShiRiQi&lt;#{riqi,jdbcType=DATE} or kaiShiRiQi=#{riqi,jdbcType=DATE})AND
+		(jieShuRiQi&gt;#{riqi,jdbcType=DATE} or jieShuRiQi=#{riqi,jdbcType=DATE})
+		AND xueXiaoID=#{xueXiaoID,jdbcType=INTEGER}
+	</select>
+	<select id="getMapXueQiByxueXiaoIDandriQi" resultType="map" parameterType="map">
+		select
+		xq.ID,xq.nianFenID,xq.xueQi,xq.kaiShiRiQi,xq.jieShuRiQi,xq.MingCheng,CONCAT(nf.ruxuenianfen,'~',nf.ruxuenianfen+1) AS ruXueNianFen 
+		from xueqi xq  left join nianfen nf on xq.nianFenID=nf.ID 
+		where
+		<if test="riqi!=null and riqi!=''">
+			 (xq.kaiShiRiQi&lt;#{riqi,jdbcType=DATE} or xq.kaiShiRiQi=#{riqi,jdbcType=DATE})AND
+			(xq.jieShuRiQi&gt;#{riqi,jdbcType=DATE} or xq.jieShuRiQi=#{riqi,jdbcType=DATE})
+			AND 
+		</if>
+		xq.xueXiaoID=#{xueXiaoID,jdbcType=INTEGER}
+	</select>
+	<select id="getNewerXueQi" resultType="map" parameterType="map">
+		select
+		xq.ID,xq.nianFenID,xq.xueQi,xq.kaiShiRiQi,xq.jieShuRiQi,xq.MingCheng,CONCAT(nf.ruxuenianfen,'~',nf.ruxuenianfen+1) AS ruXueNianFen 
+		from xueqi xq  left join nianfen nf on xq.nianFenID=nf.ID 
+		where
+		<if test="riqi!=null and riqi!=''">
+		xq.jieShuRiQi&lt;#{riqi,jdbcType=DATE} 
+			AND 
+		</if>
+		xq.xueXiaoID=#{xueXiaoID,jdbcType=INTEGER} ORDER BY nianFenID desc, xueQi desc
+	</select>
+	<select id="getNewerXueQiByXueQi" resultMap="BaseResultMap" parameterType="map">
+		select
+		xq.*
+		from xueqi xq  left join nianfen nf on xq.nianFenID=nf.ID 
+		where
+		<if test="riqi!=null and riqi!=''">
+		xq.jieShuRiQi&lt;#{riqi,jdbcType=DATE} 
+			AND 
+		</if>
+		xq.xueXiaoID=#{xueXiaoID,jdbcType=INTEGER} ORDER BY nianFenID desc, xueQi desc
+	</select>
+	<select id="getMapXueQiByXueXiaoIDAndXueNianAndXueQi" resultType="map" parameterType="map">
+		select
+		xq.ID,xq.nianFenID,xq.xueQi,xq.kaiShiRiQi,xq.jieShuRiQi,xq.MingCheng,CONCAT(nf.ruxuenianfen,'~',nf.ruxuenianfen+1) AS ruXueNianFen
+		from xueqi xq left join nianfen nf on xq.nianFenID=nf.ID 
+		where 
+		xueQi=#{xueqi,jdbcType=INTEGER} AND nf.ruXueNianFen=#{nianfen,jdbcType=INTEGER}
+		AND xueXiaoID=#{xuexiaoid,jdbcType=INTEGER}
+	</select>
+	<select id="getByXueXiaoIDAndXueNianAndXueQi" resultMap="BaseResultMap">
+		select
+		xq.* 
+		from xueqi xq left join nianfen nf on xq.nianFenID=nf.ID 
+		where 
+		xueQi=#{xueqi,jdbcType=INTEGER} AND nf.ruXueNianFen=#{nianfen,jdbcType=INTEGER}
+		AND xueXiaoID=#{xuexiaoid,jdbcType=INTEGER}
+	</select>
+	<select id="getXueQiByXueXiaoID" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xueqi
+		where xueXiaoID=#{xuexiaoid,jdbcType=INTEGER}
+		order by nianFenID DESC ,xueQi DESC
+	</select>
+	<select id="getXueNian" resultType="java.lang.String">
+		select distinct CONCAT(nf.ruxuenianfen,'~',nf.ruxuenianfen+1)  
+		from xueqi xq left join nianfen nf on xq.nianFenID=nf.ID 
+		where xq.xueXiaoID=#{xuexiaoid,jdbcType=INTEGER}
+		 order by nf.ruXueNianFen desc
+	</select>
+	<select id="getMapXueQiByXueXiaoID" resultType="map" parameterType="map">
+		select
+		xq.ID,xq.nianFenID,xq.xueQi,xq.kaiShiRiQi,xq.jieShuRiQi,xq.MingCheng,CONCAT(nf.ruxuenianfen,'~',nf.ruxuenianfen+1) AS ruXueNianFen 
+		from xueqi xq  left join nianfen nf on xq.nianFenID=nf.ID 
+		where  xq.xueXiaoID=#{xueXiaoID,jdbcType=INTEGER}
+		order by nianFenID DESC
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xueqi
+		where ID=#{xueqiid,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from xueqi
+		where  ID = #{xueqiid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.web.model.XueQi">
+		insert into xueqi ( ID, xueXiaoID, nianFenID, xueQi, kaiShiRiQi, jieShuRiQi,mingCheng)
+		values (#{xueqiid,jdbcType=INTEGER}, #{xuexiaoid,jdbcType=INTEGER},
+		#{nianfenid,jdbcType=INTEGER}, #{xueqi,jdbcType=INTEGER}, 
+		#{kaishiriqi,jdbcType=DATE}, #{jieshuriqi,jdbcType=DATE}, #{mingcheng,jdbcType=VARCHAR})
+	</insert>
+	
+	<update id="updateByPrimaryKey" parameterType="com.web.model.XueQi">
+		update xueqi
+		set 
+			kaiShiRiQi = #{kaishiriqi,jdbcType=DATE},
+			jieShuRiQi = #{jieshuriqi,jdbcType=DATE}
+		where  ID = #{xueqiid,jdbcType=INTEGER}
+	</update>
+	
+	<select id="getXuenianByXuexiaoID" parameterType="java.lang.Integer" resultType="java.lang.String">
+		select distinct CONCAT(nf.ruxuenianfen,'~',nf.ruxuenianfen+1)  
+		from xueqi xq left join nianfen nf on xq.nianFenID=nf.ID 
+		where xq.xueXiaoID=#{xuexiaoid,jdbcType=INTEGER}
+		 order by nf.ruXueNianFen desc
+	</select>
+	<select id="getXueqiByXuexiaoID" parameterType="java.lang.Integer" resultType="java.lang.String">
+		select distinct xueQi 
+		from xueqi
+		where xueXiaoID=#{xuexiaoid,jdbcType=INTEGER}
+		 order by xueQi 
+	</select>
+	
+	<select id="getByXueQiID" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xueqi
+		where  ID=#{xueqiid,jdbcType=INTEGER}
+	</select>
+	<select id="getByXueXiaoIDAndXueQiID" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xueqi
+		where  ID=#{1,jdbcType=INTEGER} and xueXiaoID=#{0,jdbcType=INTEGER}
+	</select>
+	
+	<select id="findByXueXiaoID" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xueqi
+		where xueXiaoID=#{xuexiaoid,jdbcType=INTEGER}
+		 order by nianFenID desc ,xueQi desc
+	</select>
+</mapper>

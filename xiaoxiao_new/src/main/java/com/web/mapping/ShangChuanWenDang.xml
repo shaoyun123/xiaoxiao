@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.ShangChuanWenDangMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.ShangChuanWenDang">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="wenDangMing" property="wendangming"
+			jdbcType="VARCHAR" />
+		<result column="benDiLuJing" property="bendilujing"
+			jdbcType="VARCHAR" />
+			<result column="zuWenDangID" property="zuwendangid"
+			jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, wenDangMing,benDiLuJing,zuWenDangID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from shangchuanwenjian
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<insert id="insertshangchuanwendang" parameterType="com.web.model.ShangChuanWenDang">
+		<!-- <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer"> -->
+		<!-- select -->
+		<!-- LAST_INSERT_ID() -->
+		<!-- </selectKey> -->
+		insert into shangchuanwenjian
+		(ID,
+		wenDangMing,benDiLuJing,zuWenDangID)
+		values (
+		#{id,jdbcType=INTEGER},
+		#{wendangming,jdbcType=VARCHAR},
+		#{bendilujing,jdbcType=VARCHAR},
+		#{zuwendangid,jdbcType=INTEGER})
+	</insert>
+	<delete id="delshangchuanwendang" parameterType="java.lang.Integer">
+		delete from
+		shangchuanwenjian where
+		ID = #{shangchuanid,jdbcType=INTEGER}
+	</delete>
+	
+	</mapper>

@@ -1,0 +1,49 @@
+package com.web.service.Impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.web.dao.App_FenZuMapper;
+import com.web.model.App_FenZu;
+import com.web.model.App_XueXiZu;
+import com.web.service.App_FenZuService;
+@Service
+public class App_FenZuServiceImpl implements App_FenZuService{
+	@Autowired 
+	private App_FenZuMapper app_FenZuMapper;
+	@Override
+	public App_FenZu selectByPrimaryKey(Integer id) {
+		return app_FenZuMapper.selectByPrimaryKey(id);
+	}
+	@Override
+	public List<Map<String, Object>> getFenZu(Integer shijiankechengid){
+		return app_FenZuMapper.getFenZu(shijiankechengid);
+	}
+	@Override
+	public List<App_XueXiZu> getXueXiZu(Integer fenzuid){
+		return app_FenZuMapper.getXueXiZu(fenzuid);
+	}
+	@Override
+	public List<App_FenZu> selectFenZu(Integer kechengid,Integer xueshengid){
+		return app_FenZuMapper.selectFenZu(kechengid, xueshengid);
+	}
+	@Override
+	public List<Map<String, Object>> getDaZu(Integer kechengid){
+		return app_FenZuMapper.getDaZu(kechengid);
+	}
+	@Override
+	public int update(App_FenZu record) {
+		return app_FenZuMapper.update(record);
+	}
+	@Override
+	public int delete(Integer id) {
+		return app_FenZuMapper.delete(id);
+	}
+	@Override
+	public int insertdazu(App_FenZu record) {
+		return app_FenZuMapper.insertdazu(record);
+	}
+}

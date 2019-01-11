@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.ZhuanYeMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.ZhuanYe" >
+    <id column="ID" property="zhuanyeid" jdbcType="INTEGER" />
+    <result column="zhuanYeMingCheng" property="zhuanyemingcheng" jdbcType="VARCHAR" />
+    <result column="daiMa" property="daima" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID,daiMa, zhuanYeMingCheng
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from zhuanye
+    where ID = #{zhuanyeid,jdbcType=INTEGER}
+  </select>
+  <select id="getZhuanYe" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zhuanye
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from zhuanye
+    where daiMa = #{daima,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.ZhuanYe" >
+    insert into zhuanye (ID, daiMa, zhuanYeMingCheng)
+    values (#{zhuanyeid,jdbcType=INTEGER},#{daima,jdbcType=VARCHAR}, #{zhuanyemingcheng,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.ZhuanYe" >
+    insert into zhuanye
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="zhuanyeid != null" >
+        ID,
+      </if>
+      <if test="daima != null" >
+        daiMa,
+      </if>
+      <if test="zhuanyemingcheng != null" >
+        zhuanYeMingCheng,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="zhuanyeid != null" >
+        #{zhuanyeid,jdbcType=INTEGER},
+      </if>
+      <if test="daima != null" >
+        #{daima,jdbcType=VARCHAR},
+      </if>
+      <if test="zhuanyemingcheng != null" >
+        #{zhuanyemingcheng,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.ZhuanYe" >
+    update zhuanye
+    <set >
+      <if test="zhuanyemingcheng != null" >
+        zhuanYeMingCheng = #{zhuanyemingcheng,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where daiMa = #{daima,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.ZhuanYe" >
+    update zhuanye
+    set zhuanYeMingCheng = #{zhuanyemingcheng,jdbcType=VARCHAR}
+    where ID = #{zhuanyeid,jdbcType=VARCHAR}
+  </update>
+  <select id="getXueKeMenLei" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zhuanye 
+    where zhuanYeMingCheng like #{mingcheng,jdbcType=VARCHAR}
+  </select>
+  <select id="getXueKe" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zhuanye
+    where ID like #{0,jdbcType=INTEGER} and zhuanYeMingCheng not like #{1,jdbcType=VARCHAR} and zhuanYeMingCheng  like #{2,jdbcType=VARCHAR}  
+  </select>
+  <select id="selectZhuanYeByXueKe" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zhuanye
+    where ID like #{0,jdbcType=VARCHAR} and zhuanYeMingCheng not like #{1,jdbcType=VARCHAR} and zhuanYeMingCheng not like #{2,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectYuanXiZhuanYeByPrimaryKey" resultType="map" parameterType="java.lang.Integer" >
+    select 
+    yxzy.ID as yxzyid,yxzy.zhuanYeID as zhuanyeid,yxzy.yuanXiID as yuanxiid,yxzy.zhuangTai as zhuangtai
+    from yuanxizhuanye yxzy
+    where yxzy.ID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByZhuanYeId" resultType="map" >
+    select 
+    yxzy.ID as yxzyid,yxzy.zhuanYeID as zhuanyeid,yxzy.yuanXiID as yuanxiid,yxzy.zhuangTai as zhuangtai
+    from yuanxizhuanye as yxzy
+    where yxzy.zhuanYeID = #{0,jdbcType=INTEGER} and yxzy.yuanXiID = #{1,jdbcType=INTEGER}
+  </select>
+<!--   <select id="getZhuanYe" resultMap="BaseResultMap"> -->
+<!--     select  -->
+<!--     <include refid="Base_Column_List" /> -->
+<!--     from zhuanye -->
+<!--   </select> -->
+  <delete id="deleteYuanXiZhuanYeByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from yuanxizhuanye
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertYuanXiZhuanYe" parameterType="map" >
+    insert into yuanxizhuanye (ID, zhuanYeID,YuanXiID,zhuangTai)
+    values (#{id,jdbcType=INTEGER},#{zhuanyeid,jdbcType=INTEGER}, #{yuanxiid,jdbcType=INTEGER},#{zhuangtai,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertYuanXiZhuanYeSelective" parameterType="map" >
+    insert into yuanxizhuanye
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="zhuanyeid != null" >
+        zhuanYeID,
+      </if>
+      <if test="yuanxiid != null" >
+        yuanXiID,
+      </if>
+       <if test="zhuangtai != null" >
+        zhuangTai,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{ID,jdbcType=INTEGER},
+      </if>
+      <if test="zhuanyeid != null" >
+        #{zhuanYeID,jdbcType=INTEGER},
+      </if>
+      <if test="yuanxiid != null" >
+        #{yuanXiID,jdbcType=INTEGER},
+      </if>
+       <if test="zhuangtai != null" >
+        #{zhuangTai,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateYuanXiZhuanYeByPrimaryKeySelective" parameterType="map" >
+    update yuanxizhuanye
+    <set >
+      <if test="zhuangtai != null" >
+        zhuangTai = #{zhuangtai,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateYuanXiZhuanYeByPrimaryKey" parameterType="map" >
+    update yuanxizhuanye
+    set zhuangTai = #{zhuangtai,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+   <select id="getAllByYuanXiID" resultType="map" parameterType="java.lang.Integer" >
+    select 
+    yxzy.ID as yxzyid,yxzy.zhuanYeID as zhuanyeid,yxzy.yuanXiID as yuanxiid,yxzy.zhuangTai as zhuangtai
+    from yuanxizhuanye yxzy
+    where yuanXiID = #{yuanxiid,jdbcType=INTEGER} and zhuangTai = 1
+  </select>
+   <select id="findByXueXiaoID" resultMap="BaseResultMap" parameterType="java.lang.String">
+  		select z.* from zhuanye z LEFT JOIN yuanxizhuanye yz on z.id=yz.zhuanyeid 
+  		     LEFT JOIN yuanxi y on yz.yuanxiid=y.id where y.xuexiaoid=#{xuexiaoid ,jdbcType=INTEGER}
+  </select>
+</mapper>

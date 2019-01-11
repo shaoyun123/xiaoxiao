@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.YiJianHuiFuMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.YiJianHuiFu" >
+    <id column="huiFuID" property="huifuid" jdbcType="INTEGER" />
+    <result column="yiJianID" property="yijianid" jdbcType="INTEGER" />
+    <result column="huiFuNeiRong" property="huifuneirong" jdbcType="VARCHAR" />
+    <result column="shiJian" property="shijian" jdbcType="TIMESTAMP" />
+    <result column="jiaoShiID" property="jiaoshiid" jdbcType="INTEGER" />
+    <result column="xueShengID" property="xueshengid" jdbcType="INTEGER" />
+    <result column="beiHuiFuJiaoShiID" property="beihuifujiaoshiid" jdbcType="INTEGER" />
+    <result column="beiHuiFuXueShengID" property="beihuifuxueshengid" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    huiFuID, yiJianID, huiFuNeiRong, shiJian, jiaoShiID, xueShengID, beiHuiFuJiaoShiID, 
+    beiHuiFuXueShengID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yijianhuifu
+    where huiFuID = #{huifuid,jdbcType=INTEGER}
+  </select>
+  <select id="getAllByyiJianID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yijianhuifu
+    where yiJianID = #{yijianid,jdbcType=INTEGER}
+    order by shiJian
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from yijianhuifu
+    where huiFuID = #{huifuid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.YiJianHuiFu" >
+    insert into yijianhuifu (huiFuID, yiJianID, huiFuNeiRong, shiJian, xueShengID)
+    values (#{huifuid,jdbcType=INTEGER}, #{yijianid,jdbcType=INTEGER}, #{huifuneirong,jdbcType=VARCHAR}, 
+      #{shijian,jdbcType=TIMESTAMP}, #{xueshengid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insert2" parameterType="com.web.model.YiJianHuiFu" >
+    insert into yijianhuifu (huiFuID, yiJianID, huiFuNeiRong, shiJian, xueShengID, beiHuiFuJiaoShiID)
+    values (#{huifuid,jdbcType=INTEGER}, #{yijianid,jdbcType=INTEGER}, #{huifuneirong,jdbcType=VARCHAR}, 
+      #{shijian,jdbcType=TIMESTAMP}, #{xueshengid,jdbcType=INTEGER}, #{beihuifujiaoshiid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insert3" parameterType="com.web.model.YiJianHuiFu" >
+    insert into yijianhuifu (huiFuID, yiJianID, huiFuNeiRong, shiJian, xueShengID, beiHuiFuXueShengID)
+    values (#{huifuid,jdbcType=INTEGER}, #{yijianid,jdbcType=INTEGER}, #{huifuneirong,jdbcType=VARCHAR}, 
+      #{shijian,jdbcType=TIMESTAMP}, #{xueshengid,jdbcType=INTEGER}, #{beihuifuxueshengid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insert4" parameterType="com.web.model.YiJianHuiFu" >
+    insert into yijianhuifu (huiFuID, yiJianID, huiFuNeiRong, shiJian, jiaoShiID)
+    values (#{huifuid,jdbcType=INTEGER}, #{yijianid,jdbcType=INTEGER}, #{huifuneirong,jdbcType=VARCHAR}, 
+      #{shijian,jdbcType=TIMESTAMP}, #{jiaoshiid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insert5" parameterType="com.web.model.YiJianHuiFu" >
+    insert into yijianhuifu (huiFuID, yiJianID, huiFuNeiRong, shiJian, jiaoShiID, beiHuiFuJiaoShiID)
+    values (#{huifuid,jdbcType=INTEGER}, #{yijianid,jdbcType=INTEGER}, #{huifuneirong,jdbcType=VARCHAR}, 
+      #{shijian,jdbcType=TIMESTAMP}, #{jiaoshiid,jdbcType=INTEGER}, #{beihuifujiaoshiid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insert6" parameterType="com.web.model.YiJianHuiFu" >
+    insert into yijianhuifu (huiFuID, yiJianID, huiFuNeiRong, shiJian, jiaoShiID, beiHuiFuXueShengID)
+    values (#{huifuid,jdbcType=INTEGER}, #{yijianid,jdbcType=INTEGER}, #{huifuneirong,jdbcType=VARCHAR}, 
+      #{shijian,jdbcType=TIMESTAMP}, #{jiaoshiid,jdbcType=INTEGER}, #{beihuifuxueshengid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.YiJianHuiFu" >
+    insert into yijianhuifu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="huifuid != null" >
+        huiFuID,
+      </if>
+      <if test="yijianid != null" >
+        yiJianID,
+      </if>
+      <if test="huifuneirong != null" >
+        huiFuNeiRong,
+      </if>
+      <if test="shijian != null" >
+        shiJian,
+      </if>
+      <if test="jiaoshiid != null" >
+        jiaoShiID,
+      </if>
+      <if test="xueshengid != null" >
+        xueShengID,
+      </if>
+      <if test="beihuifujiaoshiid != null" >
+        beiHuiFuJiaoShiID,
+      </if>
+      <if test="beihuifuxueshengid != null" >
+        beiHuiFuXueShengID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="huifuid != null" >
+        #{huifuid,jdbcType=INTEGER},
+      </if>
+      <if test="yijianid != null" >
+        #{yijianid,jdbcType=INTEGER},
+      </if>
+      <if test="huifuneirong != null" >
+        #{huifuneirong,jdbcType=VARCHAR},
+      </if>
+      <if test="shijian != null" >
+        #{shijian,jdbcType=TIMESTAMP},
+      </if>
+      <if test="jiaoshiid != null" >
+        #{jiaoshiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengid != null" >
+        #{xueshengid,jdbcType=INTEGER},
+      </if>
+      <if test="beihuifujiaoshiid != null" >
+        #{beihuifujiaoshiid,jdbcType=INTEGER},
+      </if>
+      <if test="beihuifuxueshengid != null" >
+        #{beihuifuxueshengid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.YiJianHuiFu" >
+    update yijianhuifu
+    <set >
+      <if test="yijianid != null" >
+        yiJianID = #{yijianid,jdbcType=INTEGER},
+      </if>
+      <if test="huifuneirong != null" >
+        huiFuNeiRong = #{huifuneirong,jdbcType=VARCHAR},
+      </if>
+      <if test="shijian != null" >
+        shiJian = #{shijian,jdbcType=TIMESTAMP},
+      </if>
+      <if test="jiaoshiid != null" >
+        jiaoShiID = #{jiaoshiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengid != null" >
+        xueShengID = #{xueshengid,jdbcType=INTEGER},
+      </if>
+      <if test="beihuifujiaoshiid != null" >
+        beiHuiFuJiaoShiID = #{beihuifujiaoshiid,jdbcType=INTEGER},
+      </if>
+      <if test="beihuifuxueshengid != null" >
+        beiHuiFuXueShengID = #{beihuifuxueshengid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where huiFuID = #{huifuid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.YiJianHuiFu" >
+    update yijianhuifu
+    set yiJianID = #{yijianid,jdbcType=INTEGER},
+      huiFuNeiRong = #{huifuneirong,jdbcType=VARCHAR},
+      shiJian = #{shijian,jdbcType=TIMESTAMP},
+      jiaoShiID = #{jiaoshiid,jdbcType=INTEGER},
+      xueShengID = #{xueshengid,jdbcType=INTEGER},
+      beiHuiFuJiaoShiID = #{beihuifujiaoshiid,jdbcType=INTEGER},
+      beiHuiFuXueShengID = #{beihuifuxueshengid,jdbcType=INTEGER}
+    where huiFuID = #{huifuid,jdbcType=INTEGER}
+  </update>
+</mapper>

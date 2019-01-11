@@ -1,0 +1,1672 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.KeChengMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.KeCheng">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="xueXiaokeChengID" property="kechengid"
+			jdbcType="INTEGER" />
+		<result column="keChengMingCheng" property="kechengmingcheng"
+			jdbcType="VARCHAR" />
+		<result column="tianJiaRenID" property="tianjiarenid" jdbcType="VARCHAR" />
+		<!-- <result column="kaiFangYuanXi" property="kaifangyuanxi" jdbcType="VARCHAR" 
+			/> -->
+		<result column="renKeJiaoShi" property="renkejiaoshi" jdbcType="VARCHAR" />
+		<result column="renKeLaoShiID" property="renkelaoshiid"
+			jdbcType="VARCHAR" />
+		<result column="xueQiID" property="xueqiid" jdbcType="INTEGER" />
+		<!-- <result column="kaiShiZhou" property="kaishizhou" jdbcType="INTEGER" 
+			/> -->
+		<!-- <result column="jieShuZhou" property="jieshuzhou" jdbcType="INTEGER" 
+			/> -->
+		<!-- <result column="danShuangZhou" property="danshuangzhou" jdbcType="INTEGER" 
+			/> -->
+		<!-- <result column="danShuangZhouShuoMing" property="danshuangzhoushuoming" 
+			jdbcType="VARCHAR" /> -->
+		<!-- <result column="zhouCi" property="zhouci" jdbcType="INTEGER" /> -->
+		<!-- <result column="kaiShiJieCi" property="kaishijieci" jdbcType="INTEGER" 
+			/> -->
+		<!-- <result column="jieShuJieCi" property="jieshujieci" jdbcType="INTEGER" 
+			/> -->
+		<!-- <result column="canYuRen" property="canyuren" jdbcType="VARCHAR" /> -->
+		<!-- <result column="banJiIDs" property="banjiids" jdbcType="VARCHAR" /> -->
+		<!-- <result column="xiaoQu" property="xiaoqu" jdbcType="VARCHAR" /> -->
+		<!-- <result column="shangKeJiaoShi" property="shangkejiaoshi" jdbcType="VARCHAR" 
+			/> -->
+		<!-- <result column="xueNian" property="xuenian" jdbcType="VARCHAR" /> -->
+		<!-- <result column="xueQi" property="xueqi" jdbcType="INTEGER" /> -->
+		<!-- <result column="shangKeRiQi" property="shangkeriqi" jdbcType="VARCHAR" 
+			/> -->
+		<!-- <result column="xuanXiuIDs" property="xuanxiuids" jdbcType="VARCHAR" 
+			/> -->
+		<!-- <result column="mianXiuIDs" property="mianxiuids" jdbcType="VARCHAR" 
+			/> -->
+		<result column="keDaiBiao" property="keDaiBiao" jdbcType="VARCHAR" />
+		<result column="leiXing" property="leixing" jdbcType="INTEGER" />
+		<!-- <result column="beiZhuIDs" property="beizhuid" jdbcType="VARCHAR" 
+			/> -->
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, xueXiaoKeChengID,keChengMingCheng, tianJiaRenID,
+		renKeJiaoShi,renKeLaoShiID,xueQiID, keDaiBiao,leiXing
+	</sql>
+	<!-- <sql id="Base_Column_List" > -->
+	<!-- ID, kechengid,keChengMingCheng, tianJiaRenID, kaiFangYuanXi, renKeJiaoShi, -->
+	<!-- kaiShiZhou, jieShuZhou, danShuangZhou, danShuangZhouShuoMing, zhouCi, 
+		kaiShiJieCi, jieShuJieCi, canYuRen, -->
+	<!-- banJiIDs, xiaoQu, shangKeJiaoShi, xueNian, xueQi, shangKeRiQi, xuanXiuIDs, 
+		mianXiuIDs,keDaiBiao,beiZhuIDs -->
+	<!-- </sql> -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from jiaoshikecheng
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectByKeChengId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from jiaoshikecheng
+		where xueXiaoKeChengID =
+		#{kechengid,jdbcType=INTEGER}
+	</select>
+	<select id="getAllByxiaoQuandshangKeJiaoShiandzhouCi" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from jiaoshikecheng
+		where xiaoQu = #{xiaoqu,jdbcType=VARCHAR}
+		and
+		shangKeJiaoShi = #{shangkejiaoshi,jdbcType=VARCHAR}
+		and zhouCi =
+		#{zhouci,jdbcType=INTEGER}
+		and xuenian = #{xuenian,jdbcType=VARCHAR}
+		and xueqi = #{xueqi,jdbcType=INTEGER}
+	</select>
+	<select id="getKeChengBycanYuRenAndRiQi" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng where
+		<if test="renkelaoshiid !=null">
+			renKeLaoShiID like #{renkelaoshiid} and
+		</if>
+		shangKeRiQi like #{shangkeriqi}
+	</select>
+	<!-- <select id="getAllBykaiFangYuanXiandxueNianxueQi" resultMap="BaseResultMap" 
+		parameterType="map" > select <include refid="Base_Column_List" /> from kecheng 
+		where (kaiFangYuanXi like #{yuanxiid,jdbcType=INTEGER}",%" or kaiFangYuanXi 
+		like "%,"#{yuanxiid,jdbcType=INTEGER}",%") and xueNian = #{xuenian,jdbcType=VARCHAR} 
+		and xueQi = #{xueqi,jdbcType=VARCHAR} </select> -->
+	<select id="getAllBybanJiID" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where banJiIDs like #{0,jdbcType=VARCHAR} or banJiIDs like
+		#{1,jdbcType=VARCHAR}
+	</select>
+	<select id="getAllBybanJiIDs" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where ${_parameter}
+	</select>
+	<select id="getAllBybanJiIDsAndxuanXiuIDsAndmianXiuIDs"
+		resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where (banJiIDs like #{banjiid1} or banJiIDs like
+		#{banjiid2} or xuanXiuIDs
+		like #{xueshengid1} or xuanXiuIDs like
+		#{xueshengid2})
+		and (mianXiuIDs not like #{xueshengid1} and mianXiuIDs
+		not like
+		#{xueshengid2} or mianXiuIDs is null)
+	</select>
+
+	<select id="getAllByxueShengID" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where canYuRen like #{0,jdbcType=VARCHAR} or canYuRen like
+		#{1,jdbcType=VARCHAR}
+	</select>
+
+	<!-- <select id="getAllByxueShengIDandXueNianXueQi" resultMap="BaseResultMap" 
+		parameterType="map" > select <include refid="Base_Column_List" /> from kecheng 
+		where (canYuRen like #{canyuren,jdbcType=VARCHAR}";%" or canYuRen like "%;"#{canyuren,jdbcType=VARCHAR}";%") 
+		and xueNian = #{xuenian,jdbcType=VARCHAR} and xueQi = #{xueqi,jdbcType=VARCHAR} 
+		</select> -->
+	<select id="getAllByTianJiaRen" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where tianJiaRenID = #{tianjiarenid,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getAllByrenKeLaoShiID" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from jiaoshikecheng
+		where renKeLaoShiID = #{jiaoshi,jdbcType=VARCHAR} 
+	</select>
+	<select id="getAllByxueShengIDandshangKeRiQi" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		<!--where (canYuRen like #{canyuren1,jdbcType=VARCHAR} or canYuRen like 
+			#{canyuren2,jdbcType=VARCHAR}) -->
+		where (banJiIDs like #{banjiid1} or banJiIDs like #{banjiid2} or
+		xuanXiuIDs like #{xueshengid1} or xuanXiuIDs like #{xueshengid2})
+		and
+		(mianXiuIDs not like #{xueshengid1} and mianXiuIDs not like
+		#{xueshengid2} or mianXiuIDs is null)
+		and (shangKeRiQi like
+		#{shangkeriqi1,jdbcType=VARCHAR} or shangKeRiQi
+		like
+		#{shangkeriqi2,jdbcType=VARCHAR})
+	</select>
+	<select id="getAllBybanJiIDsAndXuenianAndXueqi" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		LENGTH(banJiIDs)!=0 and banJiIDs IS NOT NULL and ${parse}
+		and xueNian
+		=${xuenian,jdbcType=VARCHAR } and
+		xueQi=${xueqi,jdbcType=INTEGER}
+	</select>
+
+	<select id="getAllBybanJiIDsAndxuanXiuIDsAndmianXiuIDsAndshangKeRiQi"
+		resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where (banJiIDs like #{banjiid1} or banJiIDs like
+		#{banjiid2} or xuanXiuIDs
+		like #{xueshengid1} or xuanXiuIDs like
+		#{xueshengid2})
+		and (mianXiuIDs not like #{xueshengid1} and mianXiuIDs
+		not like
+		#{xueshengid2} or mianXiuIDs is null)
+		and (shangKeRiQi like
+		#{shangkeriqi1} or shangKeRiQi like
+		#{shangkeriqi2})
+	</select>
+
+	<select id="getAllBycanYuRenandxueNianxueQi" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where (canYuRen like #{canyuren1,jdbcType=VARCHAR} or
+		canYuRen like
+		#{canyuren2,jdbcType=VARCHAR}
+		or canYuRen like
+		#{canyuren3,jdbcType=VARCHAR} or canYuRen like
+		#{canyuren4,jdbcType=VARCHAR}
+		or kaiFangYuanXi like
+		#{yuanxiid1,jdbcType=VARCHAR} or kaiFangYuanXi
+		like
+		#{yuanxiid2,jdbcType=VARCHAR})
+		and xueNian =
+		#{xuenian,jdbcType=VARCHAR}
+		and xueQi = #{xueqi,jdbcType=VARCHAR}
+	</select>
+	<select id="getAllBytianJiaRenandxueNianxueQi" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where tianJiaRenID in(
+		select xueShengID
+		from xuesheng
+		where
+		xuesheng.xuexiao_xuehao like #{xuexiaoid,jdbcType=VARCHAR}
+		)
+		and xueNian
+		= #{xuenian,jdbcType=VARCHAR}
+		and xueQi = #{xueqi,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		jiaoshikecheng
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="insertSelective" parameterType="com.web.model.KeCheng" keyProperty="id">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into jiaoshikecheng
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="kechengid != null">
+				xueXiaoKeChengID,
+			</if>
+			<if test="kechengmingcheng != null">
+				keChengMingCheng,
+			</if>
+			<if test="tianjiarenid != null">
+				tianJiaRenID,
+			</if>
+			<if test="kaifangyuanxi != null">
+				kaiFangYuanXi,
+			</if>
+			<if test="renkejiaoshi != null">
+				renKeJiaoShi,
+			</if>
+			<if test="kaishizhou != null">
+				kaiShiZhou,
+			</if>
+			<if test="jieshuzhou != null">
+				jieShuZhou,
+			</if>
+			<if test="danshuangzhou != null">
+				danShuangZhou,
+			</if>
+			<if test="danshuangzhoushuoming != null">
+				danShuangZhouShuoMing,
+			</if>
+			<if test="zhouci != null">
+				zhouCi,
+			</if>
+			<if test="kaishijieci != null">
+				kaiShiJieCi,
+			</if>
+			<if test="jieshujieci != null">
+				jieShuJieCi,
+			</if>
+			<if test="canyuren != null">
+				canYuRen,
+			</if>
+			<if test="banjiids != null">
+				banJiIDs,
+			</if>
+			<if test="xiaoqu != null">
+				xiaoQu,
+			</if>
+			<if test="shangkejiaoshi != null">
+				shangKeJiaoShi,
+			</if>
+			<if test="xuenian != null">
+				xueNian,
+			</if>
+			<if test="xueqi != null">
+				xueQi,
+			</if>
+			<if test="shangkeriqi != null">
+				shangKeRiQi,
+			</if>
+			<if test="xuanxiuids != null">
+				xuanXiuIDs,
+			</if>
+			<if test="renkelaoshiid != null">
+				renKeLaoShiID,
+			</if>
+			<if test="xueqiid != null">
+				xueQiID,
+			</if>
+			<if test="leixing != null">
+				leiXing,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="kechengid != null">
+				#{kechengid,jdbcType=INTEGER},
+			</if>
+			<if test="kechengmingcheng != null">
+				#{kechengmingcheng,jdbcType=VARCHAR},
+			</if>
+			<if test="tianjiarenid != null">
+				#{tianjiarenid,jdbcType=VARCHAR},
+			</if>
+			<if test="kaifangyuanxi != null">
+				#{kaifangyuanxi,jdbcType=VARCHAR},
+			</if>
+			<if test="renkejiaoshi != null">
+				#{renkejiaoshi,jdbcType=VARCHAR},
+			</if>
+			<if test="kaishizhou != null">
+				#{kaishizhou,jdbcType=INTEGER},
+			</if>
+			<if test="jieshuzhou != null">
+				#{jieshuzhou,jdbcType=INTEGER},
+			</if>
+			<if test="danshuangzhou != null">
+				#{danshuangzhou,jdbcType=INTEGER},
+			</if>
+			<if test="danshuangzhoushuoming != null">
+				#{danshuangzhoushuoming,jdbcType=VARCHAR},
+			</if>
+			<if test="zhouci != null">
+				#{zhouci,jdbcType=INTEGER},
+			</if>
+			<if test="kaishijieci != null">
+				#{kaishijieci,jdbcType=INTEGER},
+			</if>
+			<if test="jieshujieci != null">
+				#{jieshujieci,jdbcType=INTEGER},
+			</if>
+			<if test="canyuren != null">
+				#{canyuren,jdbcType=VARCHAR},
+			</if>
+			<if test="banjiids != null">
+				#{banjiids,jdbcType=VARCHAR},
+			</if>
+			<if test="xiaoqu != null">
+				#{xiaoqu,jdbcType=VARCHAR},
+			</if>
+			<if test="shangkejiaoshi != null">
+				#{shangkejiaoshi,jdbcType=VARCHAR},
+			</if>
+			<if test="xuenian != null">
+				#{xuenian,jdbcType=VARCHAR},
+			</if>
+			<if test="xueqi != null">
+				#{xueqi,jdbcType=INTEGER},
+			</if>
+			<if test="shangkeriqi != null">
+				#{shangkeriqi,jdbcType=VARCHAR},
+			</if>
+			<if test="xuanxiuids != null">
+				#{xuanxiuids,jdbcType=VARCHAR},
+			</if>
+			<if test="renkelaoshiid != null">
+				#{renkelaoshiid,jdbcType=VARCHAR},
+			</if>
+			<if test="xueqiid != null">
+				#{xueqiid,jdbcType=INTEGER},
+			</if>
+			<if test="leixing != null">
+				#{leixing,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="insert_addkecheng_zizhu" parameterType="com.web.model.KeCheng">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into jiaoshikecheng
+		(ID, keChengMingCheng, tianJiaRenID,
+		renKeJiaoShi,
+		kaiShiZhou, jieShuZhou, danShuangZhou,
+		danShuangZhouShuoMing, zhouCi,
+		kaiShiJieCi, jieShuJieCi,
+		banJiIDs,
+		xiaoQu, shangKeJiaoShi, xueNian,
+		xueQi, shangKeRiQi,xuanXiuIDs)
+		values (
+		#{id,jdbcType=INTEGER},
+		#{kechengmingcheng,jdbcType=VARCHAR},
+		#{tianjiarenid,jdbcType=VARCHAR},
+		#{renkejiaoshi,jdbcType=VARCHAR},
+		#{kaishizhou,jdbcType=INTEGER},
+		#{jieshuzhou,jdbcType=INTEGER},
+		#{danshuangzhou,jdbcType=INTEGER},
+		#{danshuangzhoushuoming,jdbcType=VARCHAR},
+		#{zhouci,jdbcType=INTEGER},
+		#{kaishijieci,jdbcType=INTEGER},
+		#{jieshujieci,jdbcType=INTEGER},
+		#{banjiids,jdbcType=VARCHAR},
+		#{xiaoqu,jdbcType=VARCHAR},
+		#{shangkejiaoshi,jdbcType=VARCHAR},
+		#{xuenian,jdbcType=VARCHAR},
+		#{xueqi,jdbcType=INTEGER},
+		#{shangkeriqi,jdbcType=VARCHAR},
+		#{xuanxiuids,jdbcType=VARCHAR})
+
+	</insert>
+
+	<insert id="insert_danshaungzhou" parameterType="com.web.model.KeCheng" keyProperty="id" >
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into jiaoshikecheng
+		(ID,xueXiaoKeChengID, keChengMingCheng,xueQiID,renKeLaoShiID,renKeJiaoShi, tianJiaRenID,
+		keDaiBiao,leiXing)
+		values (
+		#{id,jdbcType=INTEGER},
+		#{kechengid,jdbcType=INTEGER},
+		#{kechengmingcheng,jdbcType=VARCHAR},
+		#{xueqiid,jdbcType=INTEGER},
+		#{renkelaoshiid,jdbcType=VARCHAR},
+		#{renkejiaoshi,jdbcType=VARCHAR},
+		#{tianjiarenid,jdbcType=VARCHAR},
+		#{keDaiBiao,jdbcType=VARCHAR},
+		#{leixing,jdbcType=INTEGER})
+
+	</insert>
+
+	<update id="updateByPrimaryKey" parameterType="com.web.model.KeCheng">
+		update
+		jiaoshikecheng
+		set
+		keChengID = #{kechengid,jdbcType=INTEGER},
+		keChengMingCheng =
+		#{kechengmingcheng,jdbcType=VARCHAR},
+		tianJiaRenID =
+		#{tianjiarenid,jdbcType=VARCHAR},
+		kaiFangYuanXi =
+		#{kaifangyuanxi,jdbcType=VARCHAR},
+		renKeJiaoShi =
+		#{renkejiaoshi,jdbcType=VARCHAR},
+		kaiShiZhou =
+		#{kaishizhou,jdbcType=INTEGER},
+		jieShuZhou =
+		#{jieshuzhou,jdbcType=INTEGER},
+		danShuangZhou =
+		#{danshuangzhou,jdbcType=INTEGER},
+		danShuangZhouShuoMing =
+		#{danshuangzhoushuoming,jdbcType=VARCHAR},
+		zhouCi =
+		#{zhouci,jdbcType=INTEGER},
+		kaiShiJieCi =
+		#{kaishijieci,jdbcType=INTEGER},
+		jieShuJieCi =
+		#{jieshujieci,jdbcType=INTEGER},
+		banJiIDs =
+		#{banjiids,jdbcType=VARCHAR},
+		xiaoQu = #{xiaoqu,jdbcType=VARCHAR},
+		shangKeJiaoShi = #{shangkejiaoshi,jdbcType=VARCHAR},
+		xueNian =
+		#{xuenian,jdbcType=VARCHAR},
+		xueQi = #{xueqi,jdbcType=INTEGER},
+		shangKeRiQi = #{shangkeriqi,jdbcType=VARCHAR},
+		xuanXiuIDs =
+		#{xuanxiuids,jdbcType=VARCHAR}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateshangKeRiQiByPrimaryKey" parameterType="com.web.model.KeCheng">
+		update
+		jiaoshikecheng
+		set shangKeRiQi = #{shangkeriqi,jdbcType=VARCHAR}
+		where
+		ID =
+		#{id,jdbcType=INTEGER}
+	</update>
+	<update id="updatedanShuangZhouShuoMingByPrimaryKey"
+		parameterType="com.web.model.KeCheng">
+		update kecheng
+		set danShuangZhouShuoMing =
+		#{danshuangzhoushuoming,jdbcType=VARCHAR}
+		where ID =
+		#{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateByPrimaryKey2" parameterType="com.web.model.KeCheng">
+		update
+		jiaoshikecheng
+		set
+		keChengID = #{kechengid,jdbcType=INTEGER},
+		keChengMingCheng =
+		#{kechengmingcheng,jdbcType=VARCHAR},
+		tianJiaRenID =
+		#{tianjiarenid,jdbcType=VARCHAR},
+		kaiFangYuanXi =
+		#{kaifangyuanxi,jdbcType=VARCHAR},
+		renKeJiaoShi =
+		#{renkejiaoshi,jdbcType=VARCHAR},
+		kaiShiZhou =
+		#{kaishizhou,jdbcType=INTEGER},
+		jieShuZhou =
+		#{jieshuzhou,jdbcType=INTEGER},
+		danShuangZhou =
+		#{danshuangzhou,jdbcType=INTEGER},
+		danShuangZhouShuoMing =
+		#{danshuangzhoushuoming,jdbcType=VARCHAR},
+		zhouCi =
+		#{zhouci,jdbcType=INTEGER},
+		kaiShiJieCi =
+		#{kaishijieci,jdbcType=INTEGER},
+		jieShuJieCi =
+		#{jieshujieci,jdbcType=INTEGER},
+		xiaoQu = #{xiaoqu,jdbcType=VARCHAR},
+		shangKeJiaoShi = #{shangkejiaoshi,jdbcType=VARCHAR},
+		xueNian =
+		#{xuenian,jdbcType=VARCHAR},
+		xueQi = #{xueqi,jdbcType=INTEGER},
+		shangKeRiQi = #{shangkeriqi,jdbcType=VARCHAR}
+		where ID =
+		#{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateByPrimaryKey3" parameterType="com.web.model.KeCheng">
+		update kecheng
+		set
+		keChengMingCheng = #{kechengmingcheng,jdbcType=VARCHAR},
+		tianJiaRenID = #{tianjiarenid,jdbcType=VARCHAR},
+		renKeJiaoShi =
+		#{renkejiaoshi,jdbcType=VARCHAR},
+		kaiShiZhou =
+		#{kaishizhou,jdbcType=INTEGER},
+		jieShuZhou =
+		#{jieshuzhou,jdbcType=INTEGER},
+		danShuangZhou =
+		#{danshuangzhou,jdbcType=INTEGER},
+		danShuangZhouShuoMing =
+		#{danshuangzhoushuoming,jdbcType=VARCHAR},
+		zhouCi =
+		#{zhouci,jdbcType=INTEGER},
+		kaiShiJieCi =
+		#{kaishijieci,jdbcType=INTEGER},
+		jieShuJieCi =
+		#{jieshujieci,jdbcType=INTEGER},
+		xiaoQu = #{xiaoqu,jdbcType=VARCHAR},
+		shangKeJiaoShi = #{shangkejiaoshi,jdbcType=VARCHAR},
+		xueNian =
+		#{xuenian,jdbcType=VARCHAR},
+		xueQi = #{xueqi,jdbcType=INTEGER},
+		shangKeRiQi = #{shangkeriqi,jdbcType=VARCHAR}
+		where ID =
+		#{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByDanShuangZhou" parameterType="com.web.model.KeCheng">
+		update kecheng
+		set
+		keChengMingCheng = #{kechengmingcheng,jdbcType=VARCHAR},
+		tianJiaRenID = #{tianjiarenid,jdbcType=VARCHAR},
+		renKeJiaoShi =
+		#{renkejiaoshi,jdbcType=VARCHAR},
+		danShuangZhouShuoMing =
+		#{danshuangzhoushuoming,jdbcType=VARCHAR},
+		xueNian =
+		#{xuenian,jdbcType=VARCHAR},
+		xueQi = #{xueqi,jdbcType=INTEGER}
+		where ID
+		= #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updatecanYuRenByPrimaryKey" parameterType="com.web.model.KeCheng">
+		update
+		kecheng
+		set
+		canYuRen = #{canyuren,jdbcType=VARCHAR}
+		where ID =
+		#{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateKeChengBeiZhuID" parameterType="com.web.model.KeCheng">
+		update kecheng
+		set
+		beiZhuIDs = #{beizhuid,jdbcType=VARCHAR}
+		where ID =
+		#{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updatebanJiIDsandcanYuRenByPrimaryKey"
+		parameterType="com.web.model.KeCheng">
+		update kecheng
+		set
+		banJiIDs =
+		#{banjiids,jdbcType=VARCHAR},
+		canYuRen = #{canyuren,jdbcType=VARCHAR}
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	<select id="getAllBybanJiIDsandmianXiuIDsandxueNianxueQi"
+		resultMap="BaseResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where (banJiIDs like #{banjiid1} or banJiIDs like
+		#{banjiid2} or xuanXiuIDs
+		like #{xueshengid1} or xuanXiuIDs like
+		#{xueshengid2} )
+		and (mianXiuIDs not like #{xueshengid1} or mianXiuIDs
+		not like
+		#{xueshengid2} or mianXiuIDs is null)
+		and xueNian =
+		#{xuenian,jdbcType=VARCHAR}
+		and xueQi = #{xueqi,jdbcType=VARCHAR}
+	</select>
+	<select id="selectAllByRiQiAndBanji" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where
+		(banJiIDs like #{banjiid1} or banJiIDs like
+		#{banjiid2}) and (
+		danShuangZhouShuoMing REGEXP #{ciriqi} or
+		danShuangZhouShuoMing REGEXP #{lianxuriqi} or danShuangZhouShuoMing
+		REGEXP #{lianxuzhouci}
+		or
+		danShuangZhouShuoMing REGEXP #{danshuangriqi}
+		or danShuangZhouShuoMing REGEXP
+		#{danshaungzhouci}
+		and
+		danShuangZhouShuoMing not REGEXP #{tiaokeriqi} )
+
+	</select>
+	<select id="getAllByShangKeJiaoShiAndXuenianAndXueqi" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where xuenian= #{xuenian} and xueqi= #{xueqi}
+		and
+		(danShuangZhouShuoMing like '3%,${shangkejiaoshi}zqjx%' or
+		danShuangZhouShuoMing like '1%,${shangkejiaoshi}zxqj%' or
+		danShuangZhouShuoMing like '2%,${shangkejiaoshi}zxqj%')
+
+	</select>
+	<select id="getAllByxueShengIDandRiQiandBanJi" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from kecheng
+		where
+		(banJiIDs like #{banjiid1} or banJiIDs like
+		#{banjiid2} or xuanXiuIDs like
+		#{xueshengid1} or xuanXiuIDs like
+		#{xueshengid2})
+		and (mianXiuIDs not like #{xueshengid1} and mianXiuIDs
+		not like
+		#{xueshengid2} or mianXiuIDs is null) and
+		(
+		danShuangZhouShuoMing REGEXP #{ciriqi} or
+		danShuangZhouShuoMing REGEXP
+		#{lianxuriqi} or danShuangZhouShuoMing REGEXP #{lianxuzhouci}
+		or
+		danShuangZhouShuoMing REGEXP #{danshuangriqi} or danShuangZhouShuoMing
+		REGEXP
+		#{danshaungzhouci}
+
+
+		and danShuangZhouShuoMing not REGEXP
+		#{tiaokeriqi})
+
+	</select>
+	<update id="updateBJandXXandMXByPrimaryKey" parameterType="com.web.model.KeCheng">
+		update kecheng
+		set
+		ID = #{id,jdbcType=INTEGER}
+		<if test="mianxiuids != null">
+    		<![CDATA[ 
+    		 ,mianXiuIDs = #{mianxiuids,jdbcType=VARCHAR}
+    		 ]]>
+		</if>
+		<if test="xuanxiuids != null">
+    		<![CDATA[ 
+    		 ,xuanXiuIDs = #{xuanxiuids,jdbcType=VARCHAR}
+    		 ]]>
+		</if>
+		<if test="banjiids != null">
+    		<![CDATA[ 
+    		 ,banJiIDs = #{banjiids,jdbcType=VARCHAR}
+    		 ]]>
+		</if>
+		<if test="danshuangzhoushuoming != null">
+    		<![CDATA[ 
+    		 ,danShuangZhouShuoMing = #{danshuangzhoushuoming,jdbcType=VARCHAR}
+    		 ]]>
+		</if>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateByKeDaiBiao" parameterType="com.web.model.KeCheng">
+		update
+		jiaoshikecheng
+		set
+		keDaiBiao=#{keDaiBiao,jdbcType=VARCHAR}
+		where
+		xueXiaoKeChengID =
+		#{kechengid,jdbcType=INTEGER}
+	</update>
+
+
+<!-- 	<select id="selectJiaoLiuList" resultType="com.web.model.JiaoLiu" -->
+<!-- 		parameterType="java.util.HashMap"> -->
+<!-- 		select * from ( -->
+
+<!-- 		select DISTINCT CONCAT('g${xuexiao}', '_', ID) -->
+<!-- 		as id, -->
+<!-- 		kechengmingcheng as mingcheng,(select COUNT(1) from -->
+<!-- 		rongyunshezhi -->
+<!-- 		where rongId = CONCAT('g${xuexiao}', '_', ID) and -->
+<!-- 		leixing = '1' -->
+<!-- 		) as rongCount -->
+<!-- 		from (select ID, mianxiuids, -->
+<!-- 		kechengmingcheng -->
+<!-- 		from jiaoshikecheng -->
+<!-- 		where 1=1 -->
+<!-- 		<if test=" status == 'xuesheng'  "> -->
+<!--     		<![CDATA[  -->
+<!--     		 	and (banjiids like '${banJiID},%' or banjiids like '%,${banJiID},%'  or xuanxiuids like '${id},%' or xuanxiuids like '%,${id},%') -->
+<!--              and renkelaoshiid is not null -->
+<!--              and renkelaoshiid != '' -->
+<!--     		 ]]> -->
+<!-- 		</if> -->
+
+<!-- 		<if test=" status == 'laoshi'  "> -->
+<!--     		<![CDATA[  -->
+<!--     		 	and renkelaoshiid like '${id},%' or  renkelaoshiid like '%,${id},%' -->
+<!--     		 ]]> -->
+<!-- 		</if> -->
+<!-- 		) temp -->
+
+<!-- 		where 1=1 -->
+<!-- 		<if test=" status == 'xuesheng'  "> -->
+<!--     		<![CDATA[  -->
+<!--    and (mianxiuids not like '${id},%' or mianxiuids not like '%,${id},%') -->
+<!--    or mianxiuids is null -->
+<!--    or mianxiuids = '' -->
+<!-- 		]]> -->
+<!-- 		</if> -->
+<!-- 		) tem where 1=1 -->
+<!-- 		<if test=" zuId != null and  zuId != ''  "> -->
+<!--     		<![CDATA[  -->
+<!--   and id = '${zuId}' -->
+<!-- 		]]> -->
+<!-- 		</if> -->
+<!-- 	</select> -->
+	<select id="selectJiaoLiuList" resultType="com.web.model.JiaoLiu"
+		parameterType="java.util.HashMap">
+		select * from (
+
+		select DISTINCT CONCAT('g${xuexiao}', '_', ID)
+		as id,
+		xueqiid as xueqiid,
+		kechengmingcheng as mingcheng,(select COUNT(1) from
+		rongyunshezhi
+		where rongId = CONCAT('g${xuexiao}', '_', ID) and
+		leixing = '1'
+		) as rongCount
+		from (select ID,xueQiID,
+		kechengmingcheng
+		from jiaoshikecheng
+		where 1=1 
+		<if test=" status == 'xuesheng'  ">
+    		<![CDATA[ 
+          AND ID IN (
+		SELECT keChengID FROM shangkebanji WHERE banJiID=${banJiID} AND keChengID NOT IN (SELECT keChengID FROM shangkemianxiuren WHERE xueShengID=${id}) 
+			UNION 
+		SELECT keChengID FROM shangkexuanxiuren WHERE xueShengID=${id} AND keChengID NOT IN (SELECT keChengID FROM shangkemianxiuren WHERE xueShengID=${id})
+   			 )
+             and renkelaoshiid is not null
+             and renkelaoshiid != ''
+    		 ]]>
+		</if>
+		<if test=" status == 'laoshi'  ">
+    		<![CDATA[ 
+    		 	and renkelaoshiid =${id}
+    		 ]]>
+		</if>
+		) temp
+		where 1=1
+		) tem where 1=1
+		<if test=" zuId != null and  zuId != ''  ">
+    		<![CDATA[ 
+  		and id = '${zuId}'
+		]]>
+		</if>
+		order by xueqiid desc
+	</select>
+
+	<select id="selectPingBiList" resultType="com.web.model.JiaoLiu"
+		parameterType="java.util.HashMap">
+		SELECT rongId,pingBiZhangHu,id,leiXing from
+		rongyunshezhi where 1=1 and
+		rongZhangHao = CONCAT('${xuexiao}', '_',
+		'${yongHuMing}')
+	</select>
+
+
+
+	<select id="selectZuYongHuList" resultType="com.web.model.LoginInfo"
+		parameterType="java.util.HashMap">
+		select *
+		from (
+
+		SELECT 
+		yonghu.ID as yhid,
+		yongHuXingMing as xingMing,
+		yongHuMing as
+		yongHuMing,
+		CONCAT(yuanxi.xueXiaoID, '_', yongHuMing) as xuexiao_xuehao
+		from yonghu
+		LEFT JOIN yuanxi yuanxi
+		on yonghu.yuanXiID = yuanxi.ID
+		where yonghu.ID in
+		(select DISTINCT renKeLaoShiID
+		FROM (SELECT
+		SUBSTRING_INDEX(SUBSTRING_INDEX(renKeLaoShiID,
+		',',
+		seq),
+		',',
+		-1)
+		renKeLaoShiID
+		FROM (SELECT @rownum := @rownum + 1 AS seq
+		FROM (SELECT
+		@rownum := 0) r, (
+     SELECT jk.ID as ID,jk.renKeLaoShiID as renkelaoshiid,y.ID as yongHuID FROM jiaoshikecheng jk RIGHT JOIN yonghu y ON jk.renKeLaoShiID=y.ID
+		 
+	) qq ) b
+		CROSS JOIN (
+     SELECT jk.ID as ID,jk.renKeLaoShiID as renkelaoshiid,y.ID as yongHuID FROM jiaoshikecheng jk RIGHT JOIN yonghu y ON jk.renKeLaoShiID=y.ID
+		 
+	) qq 
+		WHERE seq BETWEEN 1 and
+		renkelaoshiid is not null
+		and CONCAT('g${xuexiao}', '_', ID) =
+		'${zuId}'
+		and renkelaoshiid != ''
+		AND (SELECT 1 + LENGTH(renKeLaoShiID)
+		-
+		LENGTH(REPLACE(renKeLaoShiID, ',', '')))
+
+		) laoshi
+		where
+		laoshi.renKeLaoShiID != ''
+		and laoshi.renKeLaoShiID is not NULL
+
+		)
+
+		UNION
+		ALL
+
+		select 
+		xuesheng.ID as xsid,
+		xingMing as xingMing,
+		yongHuMing as yongHuMing,
+		xuexiao_xuehao as xuexiao_xuehao
+		from xuesheng
+		where xuexiao_xuehao like
+		'${xuexiao}%' and ID in
+		(
+		SELECT DISTINCT ID FROM xuesheng WHERE banjiid IN (
+		select DISTINCT banJiID
+		FROM (SELECT
+		SUBSTRING_INDEX(SUBSTRING_INDEX(banJiID,
+		',',
+		seq),
+		',',
+		-1) banJiID
+		FROM
+		(SELECT @rownum := @rownum + 1 AS seq
+		FROM (SELECT @rownum := 0) r,
+		(
+     	SELECT jk.ID as ID,jk.renKeLaoShiID as renkelaoshiid,skb.banJiID as banJiID FROM jiaoshikecheng jk RIGHT JOIN shangkebanji skb ON jk.ID=skb.keChengID
+			
+		) qq) b
+		CROSS JOIN (
+    	 SELECT jk.ID as ID,jk.renKeLaoShiID as renkelaoshiid,skb.banJiID as banJiID FROM jiaoshikecheng jk RIGHT JOIN shangkebanji skb ON jk.ID=skb.keChengID
+			
+		) qq
+		WHERE seq BETWEEN 1 and renkelaoshiid is
+		not null
+		and CONCAT('g${xuexiao}', '_', ID) = '${zuId}'
+		and
+		renkelaoshiid != ''
+		AND (SELECT 1 + LENGTH(banJiID) -
+		LENGTH(REPLACE(banJiID, ',', '')))
+
+		) banji
+		where banji.banJiID != ''
+		and banji.banJiID is not NULL
+		)
+		UNION ALL
+
+		select DISTINCT xuanXiuID
+		FROM
+		(SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(xuanXiuID,
+		',',
+		seq),
+		',',
+		-1)
+		xuanXiuID
+		FROM (SELECT @rownum := @rownum + 1 AS seq
+		FROM (SELECT
+		@rownum := 0) r, (
+    		 SELECT jk.ID as ID,jk.renKeLaoShiID as renkelaoshiid,skr.xueShengID as xuanXiuID FROM jiaoshikecheng jk RIGHT JOIN shangkexuanxiuren skr ON jk.ID=skr.keChengID
+			
+		) qq) b
+		CROSS JOIN (
+    		 SELECT jk.ID as ID,jk.renKeLaoShiID as renkelaoshiid,skr.xueShengID as xuanXiuID FROM jiaoshikecheng jk RIGHT JOIN shangkexuanxiuren skr ON jk.ID=skr.keChengID
+			
+		) qq
+		WHERE seq BETWEEN 1 and
+		renkelaoshiid is not null
+		and CONCAT('g${xuexiao}', '_', ID) =
+		'${zuId}'
+		and renkelaoshiid != ''
+		AND (SELECT 1 + LENGTH(xuanXiuID) -
+		LENGTH(REPLACE(xuanXiuID, ',', '')))
+
+		) xuanxiu
+		where xuanxiu.xuanXiuID
+		!= ''
+		and xuanxiu.xuanXiuID is not NULL)
+
+		and ID not in
+		(
+
+		select
+		DISTINCT mianXiuID
+		FROM (SELECT
+		SUBSTRING_INDEX(SUBSTRING_INDEX(mianXiuID,
+		',',
+		seq),
+		',',
+		-1) mianXiuID
+		FROM (SELECT @rownum := @rownum + 1 AS seq
+		FROM (SELECT @rownum := 0)
+		r, (
+  		   SELECT jk.ID as ID,jk.renKeLaoShiID as renkelaoshiid,skr.xueShengID as mianXiuID FROM jiaoshikecheng jk RIGHT JOIN shangkemianxiuren skr ON jk.ID=skr.keChengID
+			
+		) qq) b
+		CROSS JOIN (
+   		  SELECT jk.ID as ID,jk.renKeLaoShiID as renkelaoshiid,skr.xueShengID as mianXiuID FROM jiaoshikecheng jk RIGHT JOIN shangkemianxiuren skr ON jk.ID=skr.keChengID
+			
+		) qq
+		WHERE seq BETWEEN 1 and renkelaoshiid
+		is not null
+		and CONCAT('g${xuexiao}', '_', ID) = '${zuId}'
+		and
+		renkelaoshiid != ''
+		AND (SELECT 1 + LENGTH(mianXiuID) -
+		LENGTH(REPLACE(mianXiuID, ',', '')))
+
+		) mianxiu
+		where mianxiu.mianXiuID
+		!= ''
+		and mianxiu.mianXiuID is not NULL
+
+		)) temp
+		LEFT JOIN (select *
+		from
+		rongyunshezhi
+		where leixing = '2'
+		and rongId = '${zuId}'
+		and rongZhangHao
+		=
+		CONCAT('${xuexiao}', '_', '${yongHuMing}')) t
+		on temp.xuexiao_xuehao =
+		pingBiZhanghu
+		where yongHuMing != '${yongHuMing}'
+		<if test="pageSize > 0">
+			LIMIT #{pageNum},#{pageSize}
+		</if>
+	</select>
+
+
+	<delete id="deletePingBiXinXiById" parameterType="java.util.HashMap">
+		delete from
+		rongyunshezhi where 1=1 and id = #{id}
+	</delete>
+
+	<insert id="insertPingBiXinXi" parameterType="java.util.HashMap">
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+
+			SELECT LAST_INSERT_ID()
+
+		</selectKey>
+		INSERT INTO rongyunshezhi
+		(jiaoLiuId,rongId,leiXing,rongZhangHao,pingBiZhangHu) VALUES
+		(#{jiaoLiuId},#{rongId},#{leiXing},#{rongZhangHao},#{pingBiZhangHu})
+	</insert>
+
+	<select id="getKeChengByRenKeLaoShiID" parameterType="map" resultType="map">
+		SELECT
+		a1.ID AS
+		ID,
+		a1.xueXiaoKeChengID AS keChengID,
+		a1.keChengMingCheng AS
+		keChengMingCheng,
+		a1.renKeLaoShiID AS renKeLaoShiID,
+		a1.renKeJiaoShi AS
+		renKeJiaoShi,
+		a1.shangKeShiJianID AS shangKeShiJianID,
+		a1.tianJiaRenID
+		as tianJiaRenID,
+		a1.keDaiBiao as keDaiBiao,
+		a1.leiXing as leiXing,
+		a1.jiaoShiID as jiaoShiID,
+		a1.kaiShiJieCiID as kaiShiJieCi,
+		a1.jieShuJieCiID as jieShuJieCi,
+		a1.shiJianLeiXing as shiJianLeiXing,
+		a1.kaiShiZhou as kaiShiZhou,
+		a1.jieShuZhou as jieShuZhou,
+		a1.zhouCi as
+		zhouCi,
+		a1.xueQiID as xueQiID
+		FROM
+		(
+		SELECT
+		jk.*, sks.ID AS
+		shangKeShiJianID,sks.leiXing as
+		shiJianLeiXing,sks.jiaoShiID as
+		jiaoShiID,
+		sks.kaiShiJieCiID as
+		kaiShiJieCiID,sks.jieShuJieCiID as
+		jieShuJieCiID,sks.kaiShiZhou as
+		kaiShiZhou,sks.jieShuZhou as
+		jieShuZhou,sks.zhouCi as zhouCi
+		FROM
+		jiaoshikecheng jk
+		LEFT JOIN yonghu y ON y.ID
+		= jk.renKeLaoShiID
+		LEFT JOIN shangkeshijian sks on jk.ID=sks.keChengID
+		WHERE jk.tianJiaRenID != #{renkelaoshiid,jdbcType=INTEGER}
+		AND jk.renKeLaoShiID = #{renkelaoshiid,jdbcType=INTEGER}
+		
+		UNION
+		
+		SELECT
+		jk.*, sks.ID AS
+		shangKeShiJianID,sks.leiXing as
+		shiJianLeiXing,sks.jiaoShiID as
+		jiaoShiID,
+		sks.kaiShiJieCiID as
+		kaiShiJieCiID,sks.jieShuJieCiID as
+		jieShuJieCiID,sks.kaiShiZhou as
+		kaiShiZhou,sks.jieShuZhou as
+		jieShuZhou,sks.zhouCi as zhouCi
+		FROM
+		jiaoshikecheng jk
+		LEFT JOIN yonghu y ON y.ID
+		= jk.tianJiaRenID
+		LEFT JOIN shangkeshijian sks on jk.ID=sks.keChengID
+		WHERE jk.tianJiaRenID = #{renkelaoshiid,jdbcType=INTEGER}
+		
+		)a1  WHERE a1.xueQiID = #{xueqiid,jdbcType=INTEGER}
+		<if test="zhouci != null and zhouci != '' "> 
+			AND a1.zhouCi= #{zhouci,jdbcType=INTEGER} 
+		</if>
+		<if test="zhou != null and zhou !='' ">
+			AND a1.kaiShiZhou>= #{zhou,jdbcType=INTEGER}
+		</if>
+		 
+	</select>
+
+	<select id="getByBanJiIDAndXueShengID" resultType="map">
+		SELECT
+		a1.ID AS
+		ID,
+		a1.xueXiaoKeChengID AS keChengID,
+		a1.keChengMingCheng AS
+		keChengMingCheng,
+		a1.renKeLaoShiID AS renKeLaoShiID,
+		a1.renKeJiaoShi AS
+		renKeJiaoShi,
+		a1.shangKeShiJianID AS shangKeShiJianID,
+		a1.tianJiaRenID
+		as tianJiaRenID,
+		a1.keDaiBiao as keDaiBiao,
+		a1.leiXing as leiXing,
+		a1.jiaoShiID as jiaoShiID,
+		a1.kaiShiJieCiID as kaiShiJieCi,
+		a1.jieShuJieCiID as jieShuJieCi,
+		a1.shiJianLeiXing as shiJianLeiXing,
+		a1.kaiShiZhou as kaiShiZhou,
+		a1.jieShuZhou as jieShuZhou,
+		a1.zhouCi as
+		zhouCi,
+		a1.xueQiID as xueQiID
+		FROM
+		(
+		SELECT
+		jk.*, sks.ID AS
+		shangKeShiJianID,sks.leiXing as
+		shiJianLeiXing,sks.jiaoShiID as
+		jiaoShiID,
+		sks.kaiShiJieCiID as
+		kaiShiJieCiID,sks.jieShuJieCiID as
+		jieShuJieCiID,sks.kaiShiZhou as
+		kaiShiZhou,sks.jieShuZhou as
+		jieShuZhou,sks.zhouCi as zhouCi
+		FROM
+		jiaoshikecheng jk
+		LEFT JOIN
+		xuexiaokemu xk ON jk.xueXiaoKeChengID =
+		xk.ID
+		LEFT JOIN yonghu y ON y.ID
+		= jk.renKeLaoShiID
+		LEFT JOIN
+		shangkexuanxiuren skx ON skx.keChengID =
+		jk.ID
+		LEFT JOIN shangkeshijian
+		sks ON sks.keChengID = jk.ID
+		WHERE
+		skx.xueShengID = #{1,jdbcType=INTEGER}
+		AND jk.tianJiaRenID != #{1,jdbcType=INTEGER}
+		AND jk.leiXing = 2
+		AND jk.ID NOT
+		IN (
+		SELECT
+		skm.keChengID
+		FROM
+		shangkemianxiuren skm
+		WHERE
+		skm.xueShengID =
+		#{1,jdbcType=INTEGER}
+		)
+		UNION
+		SELECT
+		jk.*, sks.ID AS
+		shangKeShiJianID,sks.leiXing as
+		shiJianLeiXing,sks.jiaoShiID as
+		jiaoShiID,
+		sks.kaiShiJieCiID as kaiShiJieCiID,sks.jieShuJieCiID as
+		jieShuJieCiID,sks.kaiShiZhou as
+		kaiShiZhou,sks.jieShuZhou as
+		jieShuZhou,sks.zhouCi as zhouCi
+		FROM
+		jiaoshikecheng jk
+		LEFT JOIN
+		xuexiaokemu xk ON jk.xueXiaoKeChengID = xk.ID
+		LEFT JOIN yonghu y ON
+		y.ID = jk.renKeLaoShiID
+		LEFT JOIN shangkebanji skb ON skb.keChengID =
+		jk.ID
+		LEFT JOIN shangkeshijian sks ON sks.keChengID = jk.ID
+		WHERE
+		skb.banJiID = #{0,jdbcType=INTEGER}
+		AND jk.tianJiaRenID != #{1,jdbcType=INTEGER}
+		AND jk.leiXing = 1
+		AND jk.ID NOT
+		IN (
+		SELECT
+		skm.keChengID
+		FROM
+		shangkemianxiuren skm
+		WHERE
+		skm.xueShengID =
+		#{1,jdbcType=INTEGER}
+		)
+		UNION
+		SELECT
+		jk.*,
+		sks.ID AS shangKeShiJianID,sks.leiXing as
+		shiJianLeiXing,sks.jiaoShiID
+		as jiaoShiID,
+		sks.kaiShiJieCiID as kaiShiJieCiID,sks.jieShuJieCiID as
+		jieShuJieCiID,sks.kaiShiZhou as
+		kaiShiZhou,sks.jieShuZhou as
+		jieShuZhou,sks.zhouCi as zhouCi
+		FROM
+		jiaoshikecheng jk
+		LEFT JOIN
+		xuexiaokemu xk ON jk.xueXiaoKeChengID = xk.ID
+		LEFT JOIN yonghu y ON
+		y.ID = jk.renKeLaoShiID
+		LEFT JOIN shangkeshijian sks ON sks.keChengID =
+		jk.ID
+		WHERE
+		jk.tianJiaRenID = #{1,jdbcType=INTEGER}
+		AND jk.ID NOT IN (
+		SELECT
+		skm.keChengID
+		FROM
+		shangkemianxiuren skm
+		WHERE
+		skm.xueShengID = #{1,jdbcType=INTEGER}
+		)
+		) a1
+	</select>
+	<select id="getAllKeChengByBanJiIDAndXueShengID" resultType="map" >
+		SELECT
+		a1.ID AS
+		ID,
+		a1.xueXiaoKeChengID AS keChengID,
+		a1.keChengMingCheng AS
+		keChengMingCheng,
+		a1.renKeLaoShiID AS renKeLaoShiID,
+		a1.renKeJiaoShi AS
+		renKeJiaoShi,
+		a1.shangKeShiJianID AS shangKeShiJianID,
+		a1.tianJiaRenID
+		as tianJiaRenID,
+		a1.keDaiBiao as keDaiBiao,
+		a1.leiXing as leiXing,
+		a1.jiaoShiID as jiaoShiID,
+		a1.kaiShiJieCiID as kaiShiJieCi,
+		a1.jieShuJieCiID as jieShuJieCi,
+		a1.shiJianLeiXing as shiJianLeiXing,
+		a1.kaiShiZhou as kaiShiZhou,
+		a1.jieShuZhou as jieShuZhou,
+		a1.zhouCi as
+		zhouCi,
+		a1.xueQiID as xueQiID
+		FROM
+		(
+		SELECT
+		jk.*, sks.ID AS
+		shangKeShiJianID,sks.leiXing as
+		shiJianLeiXing,sks.jiaoShiID as
+		jiaoShiID,
+		sks.kaiShiJieCiID as
+		kaiShiJieCiID,sks.jieShuJieCiID as
+		jieShuJieCiID,sks.kaiShiZhou as
+		kaiShiZhou,sks.jieShuZhou as
+		jieShuZhou,sks.zhouCi as zhouCi
+		FROM
+		jiaoshikecheng jk
+		LEFT JOIN
+		xuexiaokemu xk ON jk.xueXiaoKeChengID =
+		xk.ID
+		LEFT JOIN yonghu y ON y.ID
+		= jk.renKeLaoShiID
+		LEFT JOIN
+		shangkexuanxiuren skx ON skx.keChengID =
+		jk.ID
+		LEFT JOIN shangkeshijian
+		sks ON sks.keChengID = jk.ID
+		WHERE
+		skx.xueShengID = #{xueshengid,jdbcType=INTEGER}
+		AND jk.tianJiaRenID != #{xueshengid,jdbcType=INTEGER}
+		AND jk.leiXing = 2
+		
+		UNION
+		SELECT
+		jk.*, sks.ID AS
+		shangKeShiJianID,sks.leiXing as
+		shiJianLeiXing,sks.jiaoShiID as
+		jiaoShiID,
+		sks.kaiShiJieCiID as kaiShiJieCiID,sks.jieShuJieCiID as
+		jieShuJieCiID,sks.kaiShiZhou as
+		kaiShiZhou,sks.jieShuZhou as
+		jieShuZhou,sks.zhouCi as zhouCi
+		FROM
+		jiaoshikecheng jk
+		LEFT JOIN
+		xuexiaokemu xk ON jk.xueXiaoKeChengID = xk.ID
+		LEFT JOIN yonghu y ON
+		y.ID = jk.renKeLaoShiID
+		LEFT JOIN shangkebanji skb ON skb.keChengID =
+		jk.ID
+		LEFT JOIN shangkeshijian sks ON sks.keChengID = jk.ID
+		WHERE
+		skb.banJiID = #{banjiid,jdbcType=INTEGER}
+		AND jk.tianJiaRenID != #{xueshengid,jdbcType=INTEGER}
+		AND jk.leiXing = 1
+		
+		UNION
+		SELECT
+		jk.*,
+		sks.ID AS shangKeShiJianID,sks.leiXing as
+		shiJianLeiXing,sks.jiaoShiID
+		as jiaoShiID,
+		sks.kaiShiJieCiID as kaiShiJieCiID,sks.jieShuJieCiID as
+		jieShuJieCiID,sks.kaiShiZhou as
+		kaiShiZhou,sks.jieShuZhou as
+		jieShuZhou,sks.zhouCi as zhouCi
+		FROM
+		jiaoshikecheng jk
+		LEFT JOIN
+		xuexiaokemu xk ON jk.xueXiaoKeChengID = xk.ID
+		LEFT JOIN yonghu y ON
+		y.ID = jk.renKeLaoShiID
+		LEFT JOIN shangkeshijian sks ON sks.keChengID =
+		jk.ID
+		WHERE
+		jk.tianJiaRenID = #{xueshengid,jdbcType=INTEGER}
+		) a1
+	</select>
+	<select id="getByOneBanJiID" resultType="map">
+		SELECT
+		a1.ID AS ID,
+		a1.xueXiaoKeChengID AS keChengID,
+		a1.keChengMingCheng AS
+		keChengMingCheng,
+		a1.renKeLaoShiID AS renKeLaoShiID,
+		a1.renKeJiaoShi AS
+		renKeJiaoShi,
+		a1.shangKeShiJianID AS shangKeShiJianID,
+		a1.tianJiaRenID
+		as tianJiaRenID,
+		a1.keDaiBiao as keDaiBiao,
+		a1.leiXing as leiXing,
+		a1.jiaoShiID as jiaoShiID,
+		a1.kaiShiJieCiID as kaiShiJieCi,
+		a1.jieShuJieCiID as jieShuJieCi,
+		a1.shiJianLeiXing as shiJianLeiXing,
+		a1.kaiShiZhou as kaiShiZhou,
+		a1.jieShuZhou as jieShuZhou,
+		a1.zhouCi as
+		zhouCi,
+		a1.xueQiID as xueQiID
+		FROM
+		(
+		SELECT
+		jk.*, sks.ID AS
+		shangKeShiJianID,sks.leiXing as
+		shiJianLeiXing,sks.jiaoShiID as
+		jiaoShiID,
+		sks.kaiShiJieCiID as
+		kaiShiJieCiID,sks.jieShuJieCiID as
+		jieShuJieCiID,sks.kaiShiZhou as
+		kaiShiZhou,sks.jieShuZhou as
+		jieShuZhou,sks.zhouCi as zhouCi
+		FROM
+		jiaoshikecheng jk
+		LEFT JOIN
+		xuexiaokemu xk ON jk.xueXiaoKeChengID =
+		xk.ID
+		LEFT JOIN yonghu y ON y.ID
+		= jk.renKeLaoShiID
+		LEFT JOIN
+		shangkebanji skb ON skb.keChengID = jk.ID
+		LEFT JOIN shangkeshijian sks
+		ON sks.keChengID = jk.ID
+		WHERE
+		skb.banJiID =
+		#{0,jdbcType=INTEGER}
+		AND
+		jk.leiXing = 1
+
+		) a1
+
+	</select>
+
+	<select id="getByAllBanJiID" resultType="map">
+		SELECT
+		DISTINCT a1.ID AS
+		ID,
+		a1.xueXiaoKeChengID AS keChengID,
+		a1.keChengMingCheng AS
+		keChengMingCheng,
+		a1.renKeLaoShiID AS renKeLaoShiID,
+		a1.renKeJiaoShi AS
+		renKeJiaoShi,
+		a1.shangKeShiJianID AS shangKeShiJianID,
+		a1.tianJiaRenID
+		AS tianJiaRenID,
+		a1.keDaiBiao AS keDaiBiao,
+		a1.leiXing AS leiXing,
+		a1.jiaoShiID AS jiaoShiID,
+		a1.kaiShiJieCiID AS kaiShiJieCi,
+		a1.jieShuJieCiID AS jieShuJieCi,
+		a1.shiJianLeiXing AS shiJianLeiXing,
+		a1.kaiShiZhou AS kaiShiZhou,
+		a1.jieShuZhou AS jieShuZhou,
+		a1.zhouCi AS
+		zhouCi,
+		a1.xueQiID as xueQiID
+		FROM
+		(
+		SELECT
+		jk.*, sks.ID AS
+		shangKeShiJianID,
+		sks.leiXing AS shiJianLeiXing,
+		sks.jiaoShiID AS
+		jiaoShiID,
+		sks.kaiShiJieCiID AS kaiShiJieCiID,
+		sks.jieShuJieCiID AS
+		jieShuJieCiID,
+		sks.kaiShiZhou AS kaiShiZhou,
+		sks.jieShuZhou AS
+		jieShuZhou,
+		sks.zhouCi AS zhouCi
+		FROM
+		jiaoshikecheng jk
+		LEFT JOIN
+		xuexiaokemu xk ON jk.xueXiaoKeChengID = xk.ID
+		LEFT JOIN yonghu y ON
+		y.ID = jk.renKeLaoShiID
+		LEFT JOIN shangkebanji skb ON skb.keChengID =
+		jk.ID
+		LEFT JOIN shangkeshijian sks ON sks.keChengID = jk.ID
+		WHERE
+		skb.banJiID IN (
+		${_parameter}
+		)
+		AND jk.leiXing = 1
+		) a1
+	</select>
+	<select id="getByAllBanJiIDByID" resultType="java.lang.String">
+		select skb.banjiid
+		from shangkebanji skb LEFT JOIN jiaoshikecheng jk
+		on
+		jk.ID=skb.keChengID
+		where jk.leixing=1 and jk.ID=${_parameter}
+	</select>
+
+	<select id="getAllXuanXiuIDByID" resultType="java.lang.String">
+		SELECT
+		skx.xueshengid from shangkexuanxiuren skx LEFT JOIN
+		jiaoshikecheng jk
+		on jk.ID=skx.keChengID where jk.ID=${_parameter}
+	</select>
+
+	<select id="getAllMianXiuIDByID" resultType="java.lang.String">
+		SELECT
+		skx.xueshengid from shangkemianxiuren skx LEFT JOIN
+		jiaoshikecheng jk
+		on jk.ID=skx.keChengID where jk.ID=${_parameter}
+	</select>
+
+	<select id="getByJiaoShiIDAndZhouCiAndXueQiID" resultType="map">
+		SELECT
+		DISTINCT a1.ID AS ID,
+		a1.xueXiaoKeChengID AS keChengID,
+		a1.keChengMingCheng AS keChengMingCheng,
+		a1.renKeLaoShiID AS
+		renKeLaoShiID,
+		a1.renKeJiaoShi AS renKeJiaoShi,
+		a1.shangKeShiJianID AS
+		shangKeShiJianID,
+		a1.tianJiaRenID AS tianJiaRenID,
+		a1.keDaiBiao AS
+		keDaiBiao,
+		a1.leiXing AS leiXing,
+		a1.jiaoShiID AS jiaoShiID,
+		a1.kaiShiJieCiID AS kaiShiJieCi,
+		a1.jieShuJieCiID AS jieShuJieCi,
+		a1.shiJianLeiXing AS shiJianLeiXing,
+		a1.kaiShiZhou AS kaiShiZhou,
+		a1.jieShuZhou AS jieShuZhou,
+		a1.zhouCi AS zhouCi,
+		a1.xueQiID as xueQiID
+		FROM
+		(
+		SELECT
+		jk.*, sks.ID AS shangKeShiJianID,
+		sks.leiXing AS
+		shiJianLeiXing,
+		sks.jiaoShiID AS jiaoShiID,
+		sks.kaiShiJieCiID AS
+		kaiShiJieCiID,
+		sks.jieShuJieCiID AS jieShuJieCiID,
+		sks.kaiShiZhou AS
+		kaiShiZhou,
+		sks.jieShuZhou AS jieShuZhou,
+		sks.zhouCi AS zhouCi
+		FROM
+		jiaoshikecheng jk
+		LEFT JOIN xuexiaokemu xk ON jk.xueXiaoKeChengID =
+		xk.ID
+		LEFT JOIN yonghu y ON y.ID = jk.renKeLaoShiID
+		LEFT JOIN
+		shangkeshijian sks ON sks.keChengID = jk.ID
+		WHERE
+		sks.jiaoShiID=#{shangkejiaoshi,jdbcType=INTEGER} AND
+		sks.zhouCi=#{zhouci,jdbcType=INTEGER} AND
+		jk.xueQiID=#{xueqiid,jdbcType=INTEGER} 
+		<if test="leixing != null and leixing != ''">
+			AND jk.leiXing=#{leixing,jdbcType=INTEGER}
+		</if>
+		) a1
+	</select>
+	
+	<insert id="insert_shangkebanji" parameterType="map">
+		insert into shangkebanji(keChengID,banJiID) values (#{kechengid,jdbcType=INTEGER},#{banjiid,jdbcType=INTEGER});
+	</insert>
+	<insert id="insert_shangkexuanxiuren" parameterType="map">
+		insert into shangkexuanxiuren(keChengID,xueShengID) values (#{kechengid,jdbcType=INTEGER},#{xueshengid,jdbcType=INTEGER});
+	</insert>
+	<insert id="insert_shangkemianxiuren" parameterType="map">
+		insert into shangkemianxiuren(keChengID,xueShengID) values (#{kechengid,jdbcType=INTEGER},#{xueshengid,jdbcType=INTEGER});
+	</insert>
+	<insert id="insert_shangkeshijian" parameterType="map">
+		insert into shangkeshijian(keChengID,jiaoShiID,kaiShiJieCiID,jieShuJieCiID,leiXing,kaiShiZhou,
+		<if test=" jieshuzhou!='' and jieshuzhou!=null ">
+			jieShuZhou,
+		</if>
+		zhouCi) 
+		   values (#{kechengid,jdbcType=INTEGER},#{jiaoshiid,jdbcType=INTEGER},#{kaishijieci,jdbcType=INTEGER},#{jieshujieci,jdbcType=INTEGER}
+		      ,#{leixing,jdbcType=INTEGER},#{kaishizhou,jdbcType=INTEGER},
+		      	<if test=" jieshuzhou!=''  and jieshuzhou!=null ">
+			 		#{jieshuzhou,jdbcType=INTEGER},
+				</if>
+		      #{zhouci,jdbcType=INTEGER});
+	</insert>
+	<delete id="delete_shangkexuanxiuren" parameterType="map">
+		delete from shangkexuanxiuren where keChengID=#{kechengid,jdbcType=INTEGER} 
+			<if test="xueshengid!=null and xueshengid!='' ">
+				and xueShengID=#{xueshengid,jdbcType=INTEGER}
+			</if>
+	</delete>
+	<delete id="delete_shangkemianxiuren" parameterType="map">
+		delete from shangkemianxiuren where keChengID=#{kechengid,jdbcType=INTEGER}
+		<if test="xueshengid!=null and xueshengid!='' ">
+			and xueShengID=#{xueshengid,jdbcType=INTEGER}
+		</if>
+	</delete>
+	<delete id="delete_shangkebanji" parameterType="map">
+		delete from shangkebanji where keChengID=#{kechengid,jdbcType=INTEGER} and banJiID=#{banjiid,jdbcType=INTEGER}
+	</delete>
+	<delete id="delete_allshangkebanjiByID">
+		delete from shangkebanji where keChengID=#{id,jdbcType=INTEGER}
+	</delete>
+	<delete id="delete_allshangkexuanxiurenByID">
+		delete from shangkexuanxiuren where keChengID=#{id,jdbcType=INTEGER}
+	</delete>
+	<delete id="delete_allshangkeshijianByID">
+		delete from shangkeshijian where keChengID=#{id,jdbcType=INTEGER}
+	</delete>
+	<delete id="delete_shangkeshijian" parameterType="map">
+	      delete from shangkeshijian where keChengID=#{kechengid,jdbcType=INTEGER} and kaiShiZhou=#{kaishizhou,jdbcType=INTEGER}
+	    	 <if test=" jieshuzhou!=''  and jieshuzhou!=null ">
+	     	and jieShuZhou=#{jieshuzhou,jdbcType=INTEGER}
+	    	</if>
+	    	 and zhouCi=#{zhouci,jdbcType=INTEGER} and kaiShiJieCiID=#{kaishijieci,jdbcType=INTEGER} and jieShuJieCiID=#{jieshujieci,jdbcType=INTEGER}
+	     	 and leiXing=#{leixing,jdbcType=INTEGER}
+	</delete>
+	<select id="getShangKeShiJianByID" resultType="map" parameterType="java.lang.String">
+		SELECT
+		DISTINCT a1.ID AS ID,
+		a1.jiaoShiID AS jiaoShiID,
+		a1.kaiShiJieCiID AS kaiShiJieCi,
+		a1.jieShuJieCiID AS jieShuJieCi,
+		a1.leiXing AS shiJianLeiXing,
+		a1.kaiShiZhou AS kaiShiZhou,
+		a1.jieShuZhou AS jieShuZhou,
+		a1.zhouCi AS zhouCi
+	FROM
+		 shangkeshijian a1 left join  jiaoshikecheng jk
+		on jk.ID=a1.keChengID 
+			WHERE
+				 jk.ID=#{id,jdbcType=INTEGER}
+	</select>
+	<update id="update_shangkeshijian" parameterType="map">
+		update shangkeshijian set 
+		  jiaoShiID=#{jiaoshiid,jdbcType=INTEGER},
+		  kaiShiJieCiID=#{kaishijieci,jdbcType=INTEGER},
+		  jieShuJieCiID=#{jieshujieci,jdbcType=INTEGER},
+		  leiXing=#{leixing,jdbcType=INTEGER},
+		  kaiShiZhou=#{kaishizhou,jdbcType=INTEGER},
+		  <if test="jieshuzhou != null and jieshuzhou != ''">
+		  	jieShuZhou=#{jieshuzhou,jdbcType=INTEGER},
+		  </if>
+		  zhouCi=#{zhouci,jdbcType=INTEGER} 
+		  where keChengID=#{kechengid,jdbcType=INTEGER} 
+		   and jiaoShiID=#{yuanjiaoshiid,jdbcType=INTEGER}
+		   and kaiShiJieCiID=#{yuankaishijieci,jdbcType=INTEGER}
+		   and jieShuJieCiID=#{yuanjieshujieci,jdbcType=INTEGER}
+		   and leiXing=#{yuanleixing,jdbcType=INTEGER}
+		   and kaiShiZhou=#{yuankaishizhou,jdbcType=INTEGER}
+		    <if test="yuanjieshuzhou != null and yuanjieshuzhou != ''">
+		  	and jieShuZhou=#{yuanjieshuzhou,jdbcType=INTEGER}
+		  </if>
+		  and zhouCi=#{yuanzhouci,jdbcType=INTEGER}
+	</update>
+	
+	<select id="selectAllByRiQiAndBanjiAndXueQiID" parameterType="map" resultType="map">
+		SELECT
+	DISTINCT a1.ID AS ID,
+	a1.xueXiaoKeChengID AS keChengID,
+	a1.keChengMingCheng AS keChengMingCheng,
+	a1.renKeLaoShiID AS renKeLaoShiID,
+	a1.renKeJiaoShi AS renKeJiaoShi,
+	a1.shangKeShiJianID AS shangKeShiJianID,
+	a1.tianJiaRenID AS tianJiaRenID,
+	a1.keDaiBiao AS keDaiBiao,
+	a1.leiXing AS leiXing,
+	a1.jiaoShiID AS jiaoShiID,
+	a1.kaiShiJieCiID AS kaiShiJieCi,
+	a1.jieShuJieCiID AS jieShuJieCi,
+	a1.shiJianLeiXing AS shiJianLeiXing,
+	a1.kaiShiZhou AS kaiShiZhou,
+	a1.jieShuZhou AS jieShuZhou,
+	a1.zhouCi AS zhouCi,
+	a1.xueQiID as xueQiID
+	FROM
+	(
+		SELECT
+			jk.*, sks.ID AS shangKeShiJianID,
+			sks.leiXing AS shiJianLeiXing,
+			sks.jiaoShiID AS jiaoShiID,
+			sks.kaiShiJieCiID AS kaiShiJieCiID,
+			sks.jieShuJieCiID AS jieShuJieCiID,
+			sks.kaiShiZhou AS kaiShiZhou,
+			sks.jieShuZhou AS jieShuZhou,
+			sks.zhouCi AS zhouCi
+		FROM
+			jiaoshikecheng jk
+		LEFT JOIN xuexiaokemu xk ON jk.xueXiaoKeChengID = xk.ID
+		LEFT JOIN yonghu y ON y.ID = jk.renKeLaoShiID
+		LEFT JOIN shangkebanji skb ON skb.keChengID = jk.ID
+		LEFT JOIN shangkeshijian sks ON sks.keChengID = jk.ID
+		WHERE
+			skb.banJiID IN (#{banjiid,jdbcType=VARCHAR})
+		AND jk.leiXing = 1
+		AND sks.zhouCi = #{zhouci,jdbcType=INTEGER}
+		AND sks.kaiShiZhou &lt;= #{zhou,jdbcType=INTEGER}
+		AND jk.xueQiID = #{xueqiid,jdbcType=INTEGER}
+	) a1
+	</select>
+	<select id="selectShiJianKe" parameterType="java.lang.Integer" resultType="map">
+		select * from app_shijiankecheng where keChengID = #{kechengid}
+	</select>
+	
+	<select id="getshijianke" parameterType="java.lang.Integer" resultType="map">
+		select * from app_shijiankecheng where ID = #{id}
+	</select>
+		<delete id="delshijianke" parameterType="java.lang.Integer">
+		delete from app_shijiankecheng where ID = #{id}
+	</delete>
+	
+	<insert id="insertshijianke" parameterType="map">
+		insert into app_shijiankecheng(keChengID,xiaoZuRongLiang) values (#{kechengid,jdbcType=INTEGER},#{xiaozurongliang,jdbcType=INTEGER});
+	</insert>
+	<update id="updateshijianke" parameterType="map">
+		update app_shijiankecheng set 
+		  xiaoZuRongLiang=#{xiaozurongliang,jdbcType=INTEGER}
+		  where ID = #{id,jdbcType=INTEGER}
+	</update>
+	<select id="getKeChengByLaoShiID" resultType="map"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from jiaoshikecheng
+		where renKeLaoShiID = #{renkelaoshiid,jdbcType=INTEGER} and xueQiID = #{xueqiid,jdbcType=INTEGER}
+	</select>
+</mapper>

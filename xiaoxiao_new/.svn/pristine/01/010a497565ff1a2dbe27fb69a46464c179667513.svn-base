@@ -1,0 +1,53 @@
+package com.web.service.Impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.web.dao.App_KeChengKaoPingMapper;
+import com.web.model.App_KeChengKaoPing;
+import com.web.service.App_KeChengKaoPingService;
+@Service
+public class App_KeChengKaoPingServiceImpl implements App_KeChengKaoPingService{
+	@Autowired
+	private App_KeChengKaoPingMapper app_KeChengKaoPingMapper;
+	
+	@Override
+	public List<Map<String, Object>> getKaoPing(Integer shiJianKeChengId){
+		return app_KeChengKaoPingMapper.getKaoPing(shiJianKeChengId);
+	}
+	@Override
+	public App_KeChengKaoPing selectByPrimaryKey(Integer id) {
+		return app_KeChengKaoPingMapper.selectByPrimaryKey(id);
+	}
+	@Override
+	public List<Map<String, Object>> selectByFenZu(Integer kaopingid,Integer xueshengid) {
+		return app_KeChengKaoPingMapper.selectByFenZu(kaopingid, xueshengid);
+	}
+	@Override
+	public List<Map<String, Object>> selectByXueXiZu(Integer kaopingid,Integer xueshengid) {
+		return app_KeChengKaoPingMapper.selectByXueXiZu(kaopingid, xueshengid);
+	}
+	@Override
+	public List<App_KeChengKaoPing> selectByKeChengIdAndXueShengID(Integer kechengid,Integer xueshengid){
+		return app_KeChengKaoPingMapper.selectByKeChengIdAndXueShengID(kechengid, xueshengid);
+	}
+	@Override
+	public int insert(App_KeChengKaoPing record) {
+		return app_KeChengKaoPingMapper.insert(record);
+	}
+	@Override
+	public int update(App_KeChengKaoPing record) {
+		return app_KeChengKaoPingMapper.update(record);
+	}
+	@Override
+	public int delete(Integer kaopingid) {
+		return app_KeChengKaoPingMapper.delete(kaopingid);
+	}
+	@Override
+	public List<Map<String, Object>> getKaoPing2(Integer shiJianKeChengId){
+		return app_KeChengKaoPingMapper.getKaoPing2(shiJianKeChengId);
+	}
+}

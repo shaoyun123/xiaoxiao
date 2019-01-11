@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.SheTuanJingFeiMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.SheTuanJingFei">
+		<id column="ID" property="jinfeiid" jdbcType="INTEGER" />
+		<result column="xueShengZuZhiXinXiID" property="xueshengzuzhixinxiid"
+			jdbcType="INTEGER" />
+		<result column="sheTuanXinXiID" property="shetuanxinxiid"
+			jdbcType="INTEGER" />
+		<result column="jinE" property="jine" jdbcType="INTEGER" />
+		<result column="yongTu" property="yongtu" jdbcType="VARCHAR" />
+		<result column="shenQingRen" property="shenqingren" jdbcType="INTEGER" />
+		<result column="shenQingShiJian" property="shenqingshijian"
+			jdbcType="DATE" />
+		<result column="shiFouPiZhun" property="shifoupizhun" jdbcType="INTEGER" />
+		<result column="piZhunRen" property="pizhunren" jdbcType="INTEGER" />
+		<result column="piZhunShiJian" property="pizhunshijian"
+			jdbcType="DATE" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, xueShengZuZhiXinXiID, sheTuanXinXiID, jinE, yongTu, shenQingRen,
+		shenQingShiJian,
+		shiFouPiZhun, piZhunRen, piZhunShiJian
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from shetuanjingfei
+		where ID = #{jinfeiid,jdbcType=INTEGER}
+	</select>
+	<select id="selectBySheTuanXinXiID" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from shetuanjingfei
+		where sheTuanXinXiID = #{shetuanxinxiid,jdbcType=INTEGER}
+		order by ID DESC
+	</select>
+	<select id="selectByXueXiaoID" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from shetuanjingfei
+		WHERE
+		(
+			(
+			sheTuanXinXiID IN (
+				SELECT
+					ID
+				FROM
+					shetuanxinxi
+				WHERE
+					shetuanxinxi.sheTuanID IN (
+						SELECT
+							ID
+						FROM
+							shetuanjibenxinxi
+						WHERE
+							shetuanjibenxinxi.xueXiaoID = #{xuexiaoid}
+					)
+				)
+			)
+		OR
+			(
+			xueShengZuZhiXinXiID IN (
+				SELECT
+					ID
+				FROM
+					xueshengzuzhixinxi
+				WHERE
+					xueShengZuZhiID IN (
+						SELECT
+							ID
+						FROM
+							xueshengzuzhijibenxinxi
+						WHERE
+							xueshengzuzhijibenxinxi.xueXiaoID = #{xuexiaoid}
+						)
+				)
+			)
+		)
+		order by ID DESC
+	</select>
+	<select id="selectSheTuanJinFeiByXueShengZuZhiXinXiID"
+		resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from shetuanjingfei
+		where xueShengZuZhiXinXiID = #{xueshengzuzhixinxiid,jdbcType=INTEGER}
+		order by ID DESC
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from shetuanjingfei
+		where ID = #{jinfeiid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insertSheTuanJingFei" parameterType="com.web.model.SheTuanJingFei">
+		insert into shetuanjingfei (xueShengZuZhiXinXiID, sheTuanXinXiID,
+		jinE, yongTu, shenQingRen,
+		shenQingShiJian, shiFouPiZhun)
+		values (#{xueshengzuzhixinxiid,jdbcType=INTEGER},
+		#{shetuanxinxiid,jdbcType=INTEGER},
+		#{jine,jdbcType=INTEGER}, #{yongtu,jdbcType=VARCHAR}, #{shenqingren,jdbcType=INTEGER},
+		#{shenqingshijian,jdbcType=DATE}, 0)
+	</insert>
+	<insert id="insert" parameterType="com.web.model.SheTuanJingFei">
+		insert into shetuanjingfei
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="xueshengzuzhixinxiid != null">
+				xueShengZuZhiXinXiID,
+			</if>
+			<if test="shetuanxinxiid != null">
+				sheTuanXinXiID,
+			</if>
+			<if test="jine != null">
+				jinE,
+			</if>
+			<if test="yongtu != null">
+				yongTu,
+			</if>
+			<if test="shenqingren != null">
+				shenQingRen,
+			</if>
+			<if test="shenqingshijian != null">
+				shenQingShiJian,
+			</if>
+			<if test="shifoupizhun != null">
+				shiFouPiZhun,
+			</if>
+			<if test="pizhunren != null">
+				piZhunRen,
+			</if>
+			<if test="pizhunshijian != null">
+				piZhunShiJian,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="xueshengzuzhixinxiid != null">
+				#{xueshengzuzhixinxiid,jdbcType=INTEGER},
+			</if>
+			<if test="shetuanxinxiid != null">
+				#{shetuanxinxiid,jdbcType=INTEGER},
+			</if>
+			<if test="jine != null">
+				#{jine,jdbcType=INTEGER},
+			</if>
+			<if test="yongtu != null">
+				#{yongtu,jdbcType=VARCHAR},
+			</if>
+			<if test="shenqingren != null">
+				#{shenqingren,jdbcType=INTEGER},
+			</if>
+			<if test="shenqingshijian != null">
+				#{shenqingshijian,jdbcType=DATE},
+			</if>
+			<if test="shifoupizhun != null">
+				#{shifoupizhun,jdbcType=INTEGER},
+			</if>
+			<if test="pizhunren != null">
+				#{pizhunren,jdbcType=INTEGER},
+			</if>
+			<if test="pizhunshijian != null">
+				#{pizhunshijian,jdbcType=DATE},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.web.model.SheTuanJingFei">
+		update shetuanjingfei
+		<set>
+			<if test="xueshengzuzhiid != null">
+				xueShengZuZhiID = #{xueshengzuzhiid,jdbcType=INTEGER},
+			</if>
+			<if test="shetuanid != null">
+				sheTuanID = #{shetuanid,jdbcType=INTEGER},
+			</if>
+			<if test="jine != null">
+				jinE = #{jine,jdbcType=INTEGER},
+			</if>
+			<if test="yongtu != null">
+				yongTu = #{yongtu,jdbcType=VARCHAR},
+			</if>
+			<if test="shenqingren != null">
+				shenQingRen = #{shenqingren,jdbcType=INTEGER},
+			</if>
+			<if test="shenqingshijian != null">
+				shenQingShiJian = #{shenqingshijian,jdbcType=DATE},
+			</if>
+			<if test="shifoupizhun != null">
+				shiFouPiZhun = #{shifoupizhun,jdbcType=BIT},
+			</if>
+			<if test="pizhunren != null">
+				piZhunRen = #{pizhunren,jdbcType=INTEGER},
+			</if>
+			<if test="pizhunshijian != null">
+				piZhunShiJian = #{pizhunshijian,jdbcType=DATE},
+			</if>
+		</set>
+		where ID = #{jinfeiid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.web.model.SheTuanJingFei">
+		update shetuanjingfei
+		set xueShengZuZhiXinXiID = #{xueshengzuzhixinxiid,jdbcType=INTEGER},
+		sheTuanXinXiID = #{shetuanxinxiid,jdbcType=INTEGER},
+		jinE = #{jine,jdbcType=INTEGER},
+		yongTu = #{yongtu,jdbcType=VARCHAR},
+		shenQingRen = #{shenqingren,jdbcType=INTEGER},
+		shenQingShiJian = #{shenqingshijian,jdbcType=DATE},
+		shiFouPiZhun = #{shifoupizhun,jdbcType=BIT},
+		piZhunRen = #{pizhunren,jdbcType=INTEGER},
+		piZhunShiJian = #{pizhunshijian,jdbcType=DATE}
+		where ID = #{jinfeiid,jdbcType=INTEGER}
+	</update>
+</mapper>

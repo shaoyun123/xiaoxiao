@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.HuoDongMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.HuoDong">
+		<id column="ID" property="huodongid" jdbcType="INTEGER" />
+		<result column="huoDongMingCheng" property="huodongmingcheng"
+			jdbcType="VARCHAR" />
+		<result column="riQi" property="riqi" jdbcType="DATE" />
+		<result column="kaiShiShiJian" property="kaishishijian"
+			jdbcType="VARCHAR" />
+		<result column="jieShuShiJian" property="jieshushijian"
+			jdbcType="VARCHAR" />
+		<result column="diDian" property="didian" jdbcType="VARCHAR" />
+		<result column="tianJiaRenID" property="tianjiarenid" jdbcType="INTEGER" />
+		<result column="tianJiaRenLeiXing" property="tianjiarenleixing" jdbcType="INTEGER" />
+		<result column="leiXing" property="leixing" jdbcType="INTEGER" />
+<!-- 		<result column="canYuRen" property="canyuren" jdbcType="VARCHAR" /> -->
+		<result column="shuoMing" property="shuoming" jdbcType="VARCHAR" />
+<!-- 		<result column="banJiIDs" property="banjiids" jdbcType="VARCHAR" /> -->
+<!-- 		<result column="juJueRenIDs" property="jujuerenids" jdbcType="VARCHAR" /> -->
+<!-- 		<result column="beiZhuIDs" property="beizhuids" jdbcType="VARCHAR" /> -->
+	</resultMap>
+	<resultMap type="java.lang.String" id="canyuren">
+		<result column="canYuRen" property="canyuren" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, huoDongMingCheng, riQi, kaiShiShiJian, jieShuShiJian, diDian,
+		tianJiaRenID, tianJiaRenLeiXing, leiXing,shuoMing
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from huodong
+		where ID = #{huodongid,jdbcType=INTEGER}
+	</select>
+	<select id="getAllBycanYuRen" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from huodong
+		where canYuRen like #{0,jdbcType=VARCHAR} or canYuRen like
+		#{1,jdbcType=VARCHAR}
+		order by kaiShiShiJian
+	</select>
+	<select id="getCountHistoryHuoDongBycanYuRen" resultType="java.lang.Integer"
+		parameterType="java.lang.String">
+		select count(*)
+		from huodong
+		where canYuRen like #{0,jdbcType=VARCHAR} or canYuRen like
+		#{1,jdbcType=VARCHAR}
+	</select>
+	<select id="getCountHistoryHuoDong" resultType="java.lang.Integer"
+		parameterType="map">
+		select count(*)
+		from huodong
+		where canYuRen like #{canyuren1,jdbcType=VARCHAR} or canYuRen like
+		#{canyuren2,jdbcType=VARCHAR} or
+		banJiIDs like #{banjiid1,jdbcType=VARCHAR} or banJiIDs like
+		#{banjiid2,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getHistoryHuoDongBycanYuRen" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from huodong
+		where canYuRen like #{canyuren1,jdbcType=VARCHAR} or canYuRen like
+		#{canyuren2,jdbcType=VARCHAR}
+		or banJiIDs like #{banjiid1,jdbcType=VARCHAR} or banJiIDs like
+		#{banjiid2,jdbcType=VARCHAR}
+		order by riQi desc ,kaiShiShiJian desc limit ${start},${stop}
+	</select>
+	<select id="getAllBycanYuRen2" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from huodong
+		where canYuRen like #{0,jdbcType=VARCHAR} or canYuRen like
+		#{1,jdbcType=VARCHAR} or canYuRen like #{2,jdbcType=VARCHAR} or
+		canYuRen like #{3,jdbcType=VARCHAR}
+		order by kaiShiShiJian
+	</select>
+	
+	<select id="getAllByTianJiaRen" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from huodong
+		where tianJiaRenID = #{tianjiarenid,jdbcType=VARCHAR}
+		order by kaiShiShiJian
+	</select>
+	
+	<select id="getALLBycanYuRenAndBanJiIds" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from huodong
+		where canYuRen like #{0,jdbcType=VARCHAR} or canYuRen like
+		#{1,jdbcType=VARCHAR} or banJiIDs like #{2,jdbcType=VARCHAR} or
+		banJiIDs like #{3,jdbcType=VARCHAR}
+		order by kaiShiShiJian
+	</select>
+	
+	<select id="getAllBycanYuRenAndRiQi" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from huodong
+		where canYuRen like #{canyuren,jdbcType=VARCHAR} and riQi
+		=#{riqi,jdbcType=DATE}
+		order by kaiShiShiJian
+	</select>
+	<select id="getAllBycanYuRenAndRiQiInAppMain" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from huodong
+		where ( canYuRen like #{canyuren1,jdbcType=VARCHAR} or canYuRen like
+		#{canyuren2,jdbcType=VARCHAR} or canYuRen like
+		#{canyuren3,jdbcType=VARCHAR}
+		or canYuRen like #{canyuren4,jdbcType=VARCHAR} or banJiIDs like
+		#{banjiid1,jdbcType=VARCHAR} or banJiIDs like
+		#{banjiid2,jdbcType=VARCHAR} )
+		and riQi =#{riqi,jdbcType=DATE}
+		order by kaiShiShiJian
+	</select>
+	<select id="getcanYuRenByhuoDongID" resultMap="canyuren"
+		parameterType="java.lang.Integer">
+		select canYuRen
+		from huodong
+		where ID = #{huodongid,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from huodong
+		where ID = #{huodongid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="map" keyProperty="huodongid">
+		<selectKey keyProperty="huodongid" order="AFTER" resultType="java.lang.String">
+			select LAST_INSERT_ID()
+		</selectKey>
+		insert into huodong (ID, huoDongMingCheng,
+		riQi, kaiShiShiJian,
+		jieShuShiJian, diDian,
+		tianJiaRenID, tianJiaRenLeiXing, shuoMing,leiXing
+		)
+		values (#{huodongid,jdbcType=INTEGER}, #{huodongmingcheng,jdbcType=VARCHAR},
+		#{riqi,jdbcType=DATE}, #{kaishishijian,jdbcType=VARCHAR},
+		#{jieshushijian,jdbcType=VARCHAR}, #{didian,jdbcType=VARCHAR},
+		#{tianjiarenid,jdbcType=INTEGER}, #{tianjiarenleixing,jdbcType=INTEGER},
+		#{shuoming,jdbcType=VARCHAR},
+		#{leixing,jdbcType=INTEGER})
+	</insert>
+	<insert id="insert2" parameterType="com.web.model.HuoDong"
+		keyProperty="huodongid">
+		<!-- <selectKey keyProperty="huodongid" order="AFTER" resultType="java.lang.String"> -->
+		<!-- select LAST_INSERT_ID() -->
+		<!-- </selectKey> -->
+		insert into huodong (ID, huoDongMingCheng,
+		riQi, kaiShiShiJian,
+		jieShuShiJian, diDian,
+		tianJiaRenID, tianJiaRenLeiXing, shuoMing,leiXing
+		)
+		values (#{huodongid,jdbcType=INTEGER}, #{huodongmingcheng,jdbcType=VARCHAR},
+		#{riqi,jdbcType=DATE}, #{kaishishijian,jdbcType=VARCHAR},
+		#{jieshushijian,jdbcType=VARCHAR}, #{didian,jdbcType=VARCHAR},
+		#{tianjiarenid,jdbcType=INTEGER}, #{tianjiarenleixing,jdbcType=INTEGER},
+		#{shuoming,jdbcType=VARCHAR},
+		#{leixing,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.web.model.HuoDong">
+		insert into huodong
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="huodongid != null">
+				ID,
+			</if>
+			<if test="huodongmingcheng != null">
+				huoDongMingCheng,
+			</if>
+			<if test="riqi != null">
+				riQi,
+			</if>
+			<if test="kaishishijian != null">
+				kaiShiShiJian,
+			</if>
+			<if test="jieshushijian != null">
+				jieShuShiJian,
+			</if>
+			<if test="didian != null">
+				diDian,
+			</if>
+			<if test="tianjiarenid != null">
+				tianJiaRenID,
+			</if>
+			<if test="tianjiarenleixing != null">
+				tianJiaRenLeiXing,
+			</if>
+			<if test="shuoming != null">
+				shuoMing,
+			</if>
+			<if test="leixing != null">
+				leiXing,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="huodongid != null">
+				#{huodongid,jdbcType=INTEGER},
+			</if>
+			<if test="huodongmingcheng != null">
+				#{huodongmingcheng,jdbcType=VARCHAR},
+			</if>
+			<if test="riqi != null">
+				#{riqi,jdbcType=DATE},
+			</if>
+			<if test="kaishishijian != null">
+				#{kaishishijian,jdbcType=VARCHAR},
+			</if>
+			<if test="jieshushijian != null">
+				#{jieshushijian,jdbcType=VARCHAR},
+			</if>
+			<if test="didian != null">
+				#{didian,jdbcType=VARCHAR},
+			</if>
+			<if test="tianjiarenid != null">
+				#{tianjiarenid,jdbcType=INTEGER},
+			</if>
+			<if test="tianjiarenleixing != null">
+				#{tianjiarenleixing,jdbcType=INTEGER},
+			</if>
+			<if test="shuoming != null">
+				#{shuoming,jdbcType=VARCHAR},
+			</if>
+			<if test="leixing != null">
+				#{leixing,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="map">
+		update huodong
+		set canYuRen = #{canyuren,jdbcType=VARCHAR}
+		where ID = #{huodongid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.web.model.HuoDong">
+		update huodong
+		set
+		huoDongMingCheng = #{huodongmingcheng,jdbcType=VARCHAR},
+		riQi = #{riqi,jdbcType=DATE},
+		kaiShiShiJian = #{kaishishijian,jdbcType=VARCHAR},
+		jieShuShiJian = #{jieshushijian,jdbcType=VARCHAR},
+		diDian = #{didian,jdbcType=VARCHAR},
+		tianJiaRenID = #{tianjiarenid,jdbcType=INTEGER},
+		tianJiaRenLeiXing = #{tianjiarenleixing,jdbcType=INTEGER},
+		shuoMing = #{shuoming,jdbcType=VARCHAR},
+		leiXing = #{leixing,jdbcType=INTEGER}
+		where ID = #{huodongid,jdbcType=INTEGER}
+	</update>
+	<update id="updateBeiZhuByID" parameterType="com.web.model.HuoDong">
+		update huodong
+		set
+		beiZhuIDs = #{beizhuids,jdbcType=VARCHAR}
+		where ID = #{huodongid,jdbcType=INTEGER}
+	</update>
+	
+	<select id="getAllByRiQiAndRenIDAndRenLeiXing" parameterType="map" resultMap="BaseResultMap">
+		SELECT
+				h.ID AS ID,
+				h.huoDongMingCheng AS huoDongMingCheng,
+				h.diDian AS diDian,
+				h.riQi AS riQi,
+				h.kaiShiShiJian AS kaiShiShiJian,
+				h.jieShuShiJian AS jieShuShiJian,
+				h.leiXing AS leiXing,
+				h.shuoMing AS shuoMing,
+				h.tianJiaRenID AS tianJiaRenID,
+				h.tianJiaRenLeiXing AS tianJiaRenLeiXing 
+			FROM
+				huodong h
+			RIGHT JOIN (
+				SELECT
+					hr.huoDongID AS huoDongID
+				FROM
+					huodongren hr
+				LEFT JOIN huodong hd ON hr.huoDongID = hd.ID
+				LEFT JOIN yonghu x ON hr.yaoQingRenID = x.ID
+				WHERE
+					hr.yaoQingRenID = #{renid,jdbcType=INTEGER}
+				AND hd.tianJiaRenID != #{renid,jdbcType=INTEGER}
+				AND hr.leiXing = #{renleixing,jdbcType=INTEGER}
+				<if test="riqi!=null and riqi!=''">
+					AND hd.riQi = #{riqi,jdbcType=VARCHAR}
+				</if>
+				AND hr.huoDongID NOT IN ( 
+					SELECT
+						hj.huoDongID
+					FROM
+						huodongjujueren hj
+					WHERE
+						hj.juJueRenID = #{renid,jdbcType=INTEGER}
+				)
+				UNION
+					SELECT
+						hd.ID AS huoDongID
+					FROM
+						huodong hd
+					LEFT JOIN yonghu x ON hd.tianJiaRenID = x.ID
+					WHERE
+						hd.tianJiaRenID = #{renid,jdbcType=INTEGER}
+					AND hd.tianJiaRenLeiXing = #{renleixing,jdbcType=INTEGER}
+					<if test="riqi!=null and riqi!=''">
+						AND hd.riQi = #{riqi,jdbcType=VARCHAR}
+					</if>
+					AND hd.ID NOT IN (
+						SELECT
+							hj.huoDongID
+						FROM
+							huodongjujueren hj
+						WHERE
+							hj.juJueRenID = #{renid,jdbcType=INTEGER}
+					)
+					<if test="banjiid!=null and banjiid!=''">
+					UNION
+						SELECT
+							hb.huoDongID AS huoDongID
+						FROM
+							huodongbanji hb
+						LEFT JOIN huodong hd ON hb.huoDongID = hd.ID
+						LEFT JOIN banji x ON hb.banJiID = x.ID
+						WHERE
+							hb.banJiID = #{banjiid,jdbcType=INTEGER}
+						AND hd.tianJiaRenID != #{renid,jdbcType=INTEGER}
+						AND hd.leiXing = 1 
+						<if test="riqi!=null and riqi!=''">
+							AND hd.riQi = #{riqi,jdbcType=VARCHAR}
+						</if>
+						AND hb.huoDongID NOT IN ( 
+							SELECT
+								hj.huoDongID
+							FROM
+								huodongjujueren hj
+							WHERE
+								hj.juJueRenID = #{renid,jdbcType=INTEGER}
+						)
+					</if>
+			) tem ON tem.huoDongID = h.ID 
+			 order by h.riQi desc , h.kaiShiShiJian desc
+	</select>
+	<select id="getAllByRenIDAndRenLeiXing" parameterType="map" resultMap="BaseResultMap">
+		SELECT
+				h.ID AS ID,
+				h.huoDongMingCheng AS huoDongMingCheng,
+				h.diDian AS diDian,
+				h.riQi AS riQi,
+				h.kaiShiShiJian AS kaiShiShiJian,
+				h.jieShuShiJian AS jieShuShiJian,
+				h.leiXing AS leiXing,
+				h.shuoMing AS shuoMing,
+				h.tianJiaRenID AS tianJiaRenID,
+				h.tianJiaRenLeiXing AS tianJiaRenLeiXing 
+			FROM
+				huodong h
+			RIGHT JOIN (
+				SELECT
+					hr.huoDongID AS huoDongID
+				FROM
+					huodongren hr
+				LEFT JOIN huodong hd ON hr.huoDongID = hd.ID
+				WHERE
+					hr.yaoQingRenID = #{renid,jdbcType=INTEGER}
+				AND hd.tianJiaRenID != #{renid,jdbcType=INTEGER}
+				AND hr.leiXing = #{renleixing,jdbcType=INTEGER}
+				<if test="riqi!=null and riqi!=''">
+					AND hd.riQi = #{riqi,jdbcType=VARCHAR}
+				</if>
+				UNION
+					SELECT
+						hd.ID AS huoDongID
+					FROM
+						huodong hd
+					LEFT JOIN yonghu x ON hd.tianJiaRenID = x.ID
+					WHERE
+						hd.tianJiaRenID = #{renid,jdbcType=INTEGER}
+					AND hd.tianJiaRenLeiXing = #{renleixing,jdbcType=INTEGER}
+					<if test="riqi!=null and riqi!=''">
+						AND hd.riQi = #{riqi,jdbcType=VARCHAR}
+					</if>
+				<if test="banjiid!=null and banjiid!=''">
+					UNION
+						SELECT
+							hb.huoDongID AS huoDongID
+						FROM
+							huodongbanji hb
+						LEFT JOIN huodong hd ON hb.huoDongID = hd.ID
+						LEFT JOIN banji x ON hb.banJiID = x.ID
+						WHERE
+							hb.banJiID = #{banjiid,jdbcType=INTEGER}
+						AND hd.tianJiaRenID != #{renid,jdbcType=INTEGER}
+						AND hd.leiXing = 1 
+						<if test="riqi!=null and riqi!=''">
+							AND hd.riQi = #{riqi,jdbcType=VARCHAR}
+						</if>
+					</if>
+			) tem ON tem.huoDongID = h.ID 
+			 order by h.riQi desc , h.kaiShiShiJian desc 
+			<if test="stop != null and stop != ''">
+				limit ${start},${stop}
+			</if>
+	</select>
+	<select id="getCountByRenIDAndRenLeiXing" parameterType="map" resultType="java.lang.Integer">
+		SELECT
+				count(*)
+			FROM
+				huodong h
+			RIGHT JOIN (
+				SELECT
+					hr.huoDongID AS huoDongID
+				FROM
+					huodongren hr
+				LEFT JOIN huodong hd ON hr.huoDongID = hd.ID
+				WHERE
+					hr.yaoQingRenID = #{renid,jdbcType=INTEGER}
+				AND hd.tianJiaRenID != #{renid,jdbcType=INTEGER}
+				AND hr.leiXing = #{renleixing,jdbcType=INTEGER}
+				<if test="riqi!=null and riqi!=''">
+					AND hd.riQi = #{riqi,jdbcType=VARCHAR}
+				</if>
+				UNION
+					SELECT
+						hd.ID AS huoDongID
+					FROM
+						huodong hd
+					LEFT JOIN yonghu x ON hd.tianJiaRenID = x.ID
+					WHERE
+						hd.tianJiaRenID = #{renid,jdbcType=INTEGER}
+					AND hd.tianJiaRenLeiXing = #{renleixing,jdbcType=INTEGER}
+					<if test="riqi!=null and riqi!=''">
+						AND hd.riQi = #{riqi,jdbcType=VARCHAR}
+					</if>
+				<if test="banjiid!=null and banjiid!=''">
+					UNION
+						SELECT
+							hb.huoDongID AS huoDongID
+						FROM
+							huodongbanji hb
+						LEFT JOIN huodong hd ON hb.huoDongID = hd.ID
+						LEFT JOIN banji x ON hb.banJiID = x.ID
+						WHERE
+							hb.banJiID = #{banjiid,jdbcType=INTEGER}
+						AND hd.tianJiaRenID != #{renid,jdbcType=INTEGER}
+						AND hd.leiXing = 1 
+						<if test="riqi!=null and riqi!=''">
+							AND hd.riQi = #{riqi,jdbcType=VARCHAR}
+						</if>
+					</if>
+			) tem ON tem.huoDongID = h.ID 
+	</select>
+	<select id=" getAllByRenAndLeiXing" resultMap="BaseResultMap" parameterType="map">
+		select 
+		h.ID AS ID,
+				h.huoDongMingCheng AS huoDongMingCheng,
+				h.diDian AS diDian,
+				h.riQi AS riQi,
+				h.kaiShiShiJian AS kaiShiShiJian,
+				h.jieShuShiJian AS jieShuShiJian,
+				h.leiXing AS leiXing,
+				h.shuoMing AS shuoMing,
+				h.tianJiaRenID AS tianJiaRenID,
+				h.tianJiaRenLeiXing AS tianJiaRenLeiXing 
+		 from huodong h lefy join huodongcanyuren hdcyr on h.ID=hdcyr.huodongid where huoDongID=#{huodongid,jdbcType=INTEGER}
+		 <if test="renid !=null and renid!='' ">
+		 	and canYuRenID=#{renid,jdbcType=INTEGER}
+		 </if>
+		 <if test="renleixing !=null and renleixing!='' ">
+		 	and leiXing=#{renleixing,jdbcType=INTEGER}
+		 </if>
+	</select>
+	<select id="getCanYuRenByhuoDongIDAndRenIDAndRenLeiXing" resultType="map" parameterType="map">
+		select ID,HuoDongID,canYuRenID ,leiXing from huodongcanyuren where huoDongID=#{huodongid,jdbcType=INTEGER}
+		 <if test="renid !=null and renid!='' ">
+		 	and canYuRenID=#{renid,jdbcType=INTEGER}
+		 </if>
+		 <if test="renleixing !=null and renleixing!='' ">
+		 	and leiXing=#{renleixing,jdbcType=INTEGER}
+		 </if>
+	</select>
+	<select id="getAllYaoQingRenByHuoDongIDAndRenIDAndRenLeiXing" resultType="map" parameterType="map">
+		select ID,HuoDongID,yaoQingRenID ,leiXing from huodongren where huoDongID=#{huodongid,jdbcType=INTEGER}
+		 <if test="renid !=null and renid!='' ">
+		 	and yaoQingRenID=#{renid,jdbcType=INTEGER}
+		 </if>
+		 <if test="renleixing !=null and renleixing!='' ">
+		 	and leiXing=#{renleixing,jdbcType=INTEGER}
+		 </if>
+	</select>
+	<select id="getJuJueRenByhuoDongIDAndRenIDAndRenLeiXing" resultType="map"  parameterType="map">
+		select ID,HuoDongID,juJueRenID ,leiXing,liYou from huodongjujueren where huoDongID=#{huodongid,jdbcType=INTEGER}
+		<if test="renid !=null and renid!='' ">
+		 	and juJueRenID=#{renid,jdbcType=INTEGER}
+		 </if>
+		 <if test="renleixing !=null and renleixing!='' ">
+		 	and leiXing=#{renleixing,jdbcType=INTEGER}
+		 </if>
+	</select>
+	<select id="getAllBanJiIDByHuoDongID" resultType="java.lang.String">
+		select banJiID from huodongbanji where huoDongID=#{huodongid,jdbcType=INTEGER}
+	</select>
+	<select id="getAllByTianJiaRenAndLeiXing" resultMap="BaseResultMap" parameterType="map">
+		select 
+		<include refid="Base_Column_List" />
+		from huodong where tianJiaRenID=#{renid,jdbcType=INTEGER} and tianJiaRenLeiXing=#{renleixing,jdbcType=INTEGER}
+	 </select>
+	 <insert id="insert_huodongren" parameterType="map">
+	 	insert into huodongren(huoDongID,yaoQingRenID,leiXing) 
+	 	 values (#{huodongid,jdbcType=INTEGER},#{renid,jdbcType=INTEGER},#{renleixing,jdbcType=INTEGER})
+	  </insert>
+	 <insert id="insert_huodongcanyuren" parameterType="map">
+	 	insert into huodongcanyuren (huoDongID,canYuRenID,leiXing) 
+	 	 values (#{huodongid,jdbcType=INTEGER},#{renid,jdbcType=INTEGER},#{renleixing,jdbcType=INTEGER})
+	  </insert>
+	 <insert id="insert_huodongbanji" parameterType="map">
+	 	insert into huodongbanji(huoDongID,banJiID) 
+	 	 values (#{huodongid,jdbcType=INTEGER},#{banjiid,jdbcType=INTEGER})
+	  </insert>
+	 <insert id="insert_huodongjujueren" parameterType="map">
+	 	insert into huodongjujueren(huoDongID,juJueRenID,leiXing
+	 		<if test="liyou != null and liyou != '' ">,liYou</if>
+	 	) 
+	 	 values (#{huodongid,jdbcType=INTEGER},#{renid,jdbcType=INTEGER},#{renleixing,jdbcType=INTEGER}
+	 	 	<if test="liyou != null and liyou != '' ">,#{liyou,jdbcType=VARCHAR}</if>
+	 	 )
+	  </insert>
+	  <delete id="delete_huodongren" parameterType="map">
+	  	delete from huodongren where huoDongID=#{huodongid,jdbcType=INTEGER}
+	  		 <if test="renid != null and renid != '' ">
+	  	    	and yaoQingRenID=#{renid,jdbcType=INTEGER}
+	  	    </if>
+	  	     <if test="renleixing !=null and renleixing!='' ">
+		 		and leiXing=#{renleixing,jdbcType=INTEGER}
+			 </if>
+	  </delete>
+	  <delete id="delete_huodongbanji" parameterType="map">
+	  	delete from huodongbanji where huoDongID=#{huodongid,jdbcType=INTEGER}
+	  		 <if test="banjiid != null and banjiid != '' ">
+	  	    	and banJiID=#{banjiid,jdbcType=INTEGER}
+	  	    </if>
+	  </delete>
+	  <delete id="delete_huodongcanyuren" parameterType="map">
+	  	delete from huodongcanyuren where huoDongID=#{huodongid,jdbcType=INTEGER}
+	  	    <if test="renid != null and renid != '' ">
+	  	    	and canYuRenID=#{renid,jdbcType=INTEGER}
+	  	    </if>
+	  	     <if test="renleixing !=null and renleixing!='' ">
+		 		and leiXing=#{renleixing,jdbcType=INTEGER}
+			 </if>
+	  </delete>
+	  <delete id="delete_huodongjujueren" parameterType="map">
+	  	delete from huodongjujueren where huoDongID=#{huodongid,jdbcType=INTEGER}
+	  	    <if test="renid != null and renid != '' ">
+	  	    	and juJueRenID=#{renid,jdbcType=INTEGER}
+	  	    </if>
+	  	     <if test="renleixing !=null and renleixing!='' ">
+		 	and leiXing=#{renleixing,jdbcType=INTEGER}
+		 </if>
+	  </delete>
+	
+</mapper>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.TongZhiMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.TongZhi" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="school_id" property="schoolId" jdbcType="INTEGER" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="target" property="target" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.web.model.TongZhi" extends="BaseResultMap" >
+    <result column="chaKanRenIDs" property="chakanrenids" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, school_id, url, update_time, type, target
+  </sql>
+  <sql id="Blob_Column_List" >
+    chaKanRenIDs
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tongzhi
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tongzhi
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.TongZhi" >
+    insert into tongzhi (id, title, school_id, 
+      url, update_time, type, 
+      target, chaKanRenIDs)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{schoolId,jdbcType=INTEGER}, 
+      #{url,jdbcType=VARCHAR}, #{updateTime,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, 
+      #{target,jdbcType=VARCHAR}, #{chakanrenids,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.TongZhi" >
+    insert into tongzhi
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="schoolId != null" >
+        school_id,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="target != null" >
+        target,
+      </if>
+      <if test="chakanrenids != null" >
+        chaKanRenIDs,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="schoolId != null" >
+        #{schoolId,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="target != null" >
+        #{target,jdbcType=VARCHAR},
+      </if>
+      <if test="chakanrenids != null" >
+        #{chakanrenids,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.TongZhi" >
+    update tongzhi
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="schoolId != null" >
+        school_id = #{schoolId,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="target != null" >
+        target = #{target,jdbcType=VARCHAR},
+      </if>
+      <if test="chakanrenids != null" >
+        chaKanRenIDs = #{chakanrenids,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.web.model.TongZhi" >
+    update tongzhi
+    set title = #{title,jdbcType=VARCHAR},
+      school_id = #{schoolId,jdbcType=INTEGER},
+      url = #{url,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=VARCHAR},
+      type = #{type,jdbcType=TINYINT},
+      target = #{target,jdbcType=VARCHAR},
+      chaKanRenIDs = #{chakanrenids,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.TongZhi" >
+    update tongzhi
+    set title = #{title,jdbcType=VARCHAR},
+      school_id = #{schoolId,jdbcType=INTEGER},
+      url = #{url,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=VARCHAR},
+      type = #{type,jdbcType=TINYINT},
+      target = #{target,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

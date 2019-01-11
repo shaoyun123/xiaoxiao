@@ -1,0 +1,31 @@
+package com.web.hessian.utils;
+
+import com.caucho.hessian.client.HessianProxyFactory;
+import com.web.hessian.client.ClientHessian;
+
+
+public class SendUtil {
+	
+	
+	public static String sendToAliServer(Integer ipNum,Integer num){
+		// 创建hessian的工厂
+		HessianProxyFactory factory = new HessianProxyFactory();
+		// 设置允许重载
+		factory.setOverloadEnabled(true);
+		factory.setConnectTimeout(5000);
+		// 设置那个service 此service时本地的service 其中只需要包含有服务器要调用的接口方法即可
+		ClientHessian sync = null;
+		try {
+			sync = (ClientHessian) factory.create(
+					ClientHessian.class,SyncUtils.getSyncUrl("www.5ic.net.cn", "80", "xiaoyuan"));
+			return sync.sumServerConnectByIp(ipNum, num);
+		}catch (Exception e) {
+			// TODO: handle exception
+			return "0";
+		}
+	}
+	
+	public static void main(String args[]){
+		sendToAliServer(1,0);
+	}
+}

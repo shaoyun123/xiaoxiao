@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.DeYuPingFenFangAnMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.DeYuPingFenFangAn" >
+    <id column="pingFenID" property="pingfenid" jdbcType="INTEGER" />
+    <result column="fangAnID" property="fanganid" jdbcType="INTEGER" />
+    <result column="mingCheng" property="mingcheng" jdbcType="VARCHAR" />
+    <result column="xiangLeiXing" property="xiangleixing" jdbcType="INTEGER" />
+    <result column="shangJiID" property="shangjiid" jdbcType="INTEGER" />
+    <result column="xueShengTianXie" property="xueshengtianxie" jdbcType="INTEGER" />
+    <result column="manFen" property="manfen" jdbcType="INTEGER" />
+    <result column="danXiangFen" property="danxiangfen" jdbcType="INTEGER" />
+    <result column="xueFen" property="xuefen" jdbcType="DOUBLE" />
+    <result column="zuiDiFen" property="zuidifen" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap type="java.lang.Integer" id="PingFenDian">
+  	<id column="pingFenID" property="pingfenid" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    pingFenID, fangAnID, mingCheng, xiangLeiXing, shangJiID, xueShengTianXie, manFen, 
+    danXiangFen, xueFen, zuiDiFen
+  </sql>
+  <select id="selectAllByFangAnID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from deyupingfenfangantiaomu
+    where fangAnID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getPingFenIdByFangAnID" resultMap="PingFenDian" parameterType="java.lang.Integer" >
+    select pingFenID
+    from deyupingfenfangantiaomu
+    where fangAnID = #{FangAnId,jdbcType=INTEGER}
+    and xiangLeiXing = 0
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from deyupingfenfangantiaomu
+    where pingFenID = #{pingfenid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.DeYuPingFenFangAn" >
+    insert into deyupingfenfangantiaomu (pingFenID, fangAnID, mingCheng, 
+      xiangLeiXing, shangJiID, xueShengTianXie, 
+      manFen, danXiangFen, xueFen, 
+      zuiDiFen)
+    values (#{pingfenid,jdbcType=INTEGER}, #{fanganid,jdbcType=INTEGER}, #{mingcheng,jdbcType=VARCHAR}, 
+      #{xiangleixing,jdbcType=INTEGER}, #{shangjiid,jdbcType=INTEGER}, #{xueshengtianxie,jdbcType=INTEGER}, 
+      #{manfen,jdbcType=INTEGER}, #{danxiangfen,jdbcType=INTEGER}, #{xuefen,jdbcType=DOUBLE}, 
+      #{zuidifen,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.DeYuPingFenFangAn" >
+    insert into deyupingfenfangantiaomu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pingfenid != null" >
+        pingFenID,
+      </if>
+      <if test="fanganid != null" >
+        fangAnID,
+      </if>
+      <if test="mingcheng != null" >
+        mingCheng,
+      </if>
+      <if test="xiangleixing != null" >
+        xiangLeiXing,
+      </if>
+      <if test="shangjiid != null" >
+        shangJiID,
+      </if>
+      <if test="xueshengtianxie != null" >
+        xueShengTianXie,
+      </if>
+      <if test="manfen != null" >
+        manFen,
+      </if>
+      <if test="danxiangfen != null" >
+        danXiangFen,
+      </if>
+      <if test="xuefen != null" >
+        xueFen,
+      </if>
+      <if test="zuidifen != null" >
+        zuiDiFen,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pingfenid != null" >
+        #{pingfenid,jdbcType=INTEGER},
+      </if>
+      <if test="fanganid != null" >
+        #{fanganid,jdbcType=INTEGER},
+      </if>
+      <if test="mingcheng != null" >
+        #{mingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="xiangleixing != null" >
+        #{xiangleixing,jdbcType=INTEGER},
+      </if>
+      <if test="shangjiid != null" >
+        #{shangjiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengtianxie != null" >
+        #{xueshengtianxie,jdbcType=INTEGER},
+      </if>
+      <if test="manfen != null" >
+        #{manfen,jdbcType=INTEGER},
+      </if>
+      <if test="danxiangfen != null" >
+        #{danxiangfen,jdbcType=INTEGER},
+      </if>
+      <if test="xuefen != null" >
+        #{xuefen,jdbcType=DOUBLE},
+      </if>
+      <if test="zuidifen != null" >
+        #{zuidifen,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.DeYuPingFenFangAn" >
+    update deyupingfenfangantiaomu
+    <set >
+      <if test="fanganid != null" >
+        fangAnID = #{fanganid,jdbcType=INTEGER},
+      </if>
+      <if test="mingcheng != null" >
+        mingCheng = #{mingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="xiangleixing != null" >
+        xiangLeiXing = #{xiangleixing,jdbcType=INTEGER},
+      </if>
+      <if test="shangjiid != null" >
+        shangJiID = #{shangjiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengtianxie != null" >
+        xueShengTianXie = #{xueshengtianxie,jdbcType=INTEGER},
+      </if>
+      <if test="manfen != null" >
+        manFen = #{manfen,jdbcType=INTEGER},
+      </if>
+      <if test="danxiangfen != null" >
+        danXiangFen = #{danxiangfen,jdbcType=INTEGER},
+      </if>
+      <if test="xuefen != null" >
+        xueFen = #{xuefen,jdbcType=DOUBLE},
+      </if>
+      <if test="zuidifen != null" >
+        zuiDiFen = #{zuidifen,jdbcType=INTEGER},
+      </if>
+    </set>
+    where pingFenID = #{pingfenid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.DeYuPingFenFangAn" >
+    update deyupingfenfangantiaomu
+    set fangAnID = #{fanganid,jdbcType=INTEGER},
+      mingCheng = #{mingcheng,jdbcType=VARCHAR},
+      xiangLeiXing = #{xiangleixing,jdbcType=INTEGER},
+      shangJiID = #{shangjiid,jdbcType=INTEGER},
+      xueShengTianXie = #{xueshengtianxie,jdbcType=INTEGER},
+      manFen = #{manfen,jdbcType=INTEGER},
+      danXiangFen = #{danxiangfen,jdbcType=INTEGER},
+      xueFen = #{xuefen,jdbcType=DOUBLE},
+      zuiDiFen = #{zuidifen,jdbcType=INTEGER}
+    where pingFenID = #{pingfenid,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.NaXinMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.NaXin" >
+    <id column="ID" property="naxingid" jdbcType="INTEGER" />
+    <result column="naXingJiBenXinXiID" property="naxingjibenxinxiid" jdbcType="INTEGER" />
+    <result column="xueShengID" property="xueshengid" jdbcType="INTEGER" />
+    <result column="xingMing" property="xingming" jdbcType="VARCHAR" />
+    <result column="xingBie" property="xingbie" jdbcType="BIT" />
+    <result column="chuShengRiQi" property="chushengriqi" jdbcType="DATE" />
+    <result column="lianXiDianHua" property="lianxidianhua" jdbcType="VARCHAR" />
+    <result column="aiHaoTeChang" property="aihaotechang" jdbcType="VARCHAR" />
+    <result column="ziWoJieShao" property="ziwojieshao" jdbcType="VARCHAR" />
+    <result column="baoMingSheTuanID" property="baomingshetuanid" jdbcType="INTEGER" />
+    <result column="baoMingXueShengZuZhiID" property="baomingxueshengzuzhiid" jdbcType="INTEGER" />
+    <result column="baoMingBuMenID" property="baomingbumenid" jdbcType="INTEGER" />
+    <result column="zhuangTai" property="zhuangtai" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, naXingJiBenXinXiID, xueShengID, xingMing, xingBie, chuShengRiQi, lianXiDianHua, 
+    aiHaoTeChang, ziWoJieShao, baoMingSheTuanID, baoMingXueShengZuZhiID, baoMingBuMenID, zhuangTai
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from naxin
+    where ID = #{naxinid,jdbcType=INTEGER}
+  </select>
+  <select id="selectNaXinBySheTuanXinXiID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from naxin
+    where baoMingSheTuanID = #{shetuanxinxiid,jdbcType=INTEGER}
+    order by ID DESC
+  </select>
+  <select id="selectNaXinByXueShengZuZhiXinXiID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from naxin
+    where baoMingXueShengZuZhiID = #{xueshengzuzhixinxiid,jdbcType=INTEGER}
+    order by ID DESC
+  </select>
+  <select id="selectNaXinByXueShengIDAndSheTuanXinXiID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from naxin
+    where xueShengID=#{0}
+    and baoMingSheTuanID = #{1}
+  </select>
+  <select id="selectNaXinByXueShengIDAndXueShengZuZhiXinXiID" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from naxin
+    where xueShengID=#{0}
+    and baoMingXueShengZuZhiID = #{1}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from naxin
+    where ID = #{naxingid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertNaXin" parameterType="com.web.model.NaXin" useGeneratedKeys="true" keyProperty="naxingid">
+    insert into naxin (naXingJiBenXinXiID, xueShengID, 
+      xingMing, xingBie, chuShengRiQi, 
+      lianXiDianHua, aiHaoTeChang, ziWoJieShao, 
+      baoMingSheTuanID, baoMingXueShengZuZhiID, 
+      baoMingBuMenID,zhuangTai)
+    values (#{naxingjibenxinxiid,jdbcType=INTEGER}, #{xueshengid,jdbcType=INTEGER}, 
+      #{xingming,jdbcType=VARCHAR}, #{xingbie,jdbcType=BIT}, #{chushengriqi,jdbcType=DATE}, 
+      #{lianxidianhua,jdbcType=VARCHAR}, #{aihaotechang,jdbcType=VARCHAR}, #{ziwojieshao,jdbcType=VARCHAR}, 
+      #{baomingshetuanid,jdbcType=INTEGER}, #{baomingxueshengzuzhiid,jdbcType=INTEGER}, 
+      #{baomingbumenid,jdbcType=INTEGER},0)
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.NaXin" >
+    insert into naxin
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="naxingid != null" >
+        ID,
+      </if>
+      <if test="naxingjibenxinxiid != null" >
+        naXingJiBenXinXiID,
+      </if>
+      <if test="xueshengid != null" >
+        xueShengID,
+      </if>
+      <if test="xingming != null" >
+        xingMing,
+      </if>
+      <if test="xingbie != null" >
+        xingBie,
+      </if>
+      <if test="chushengriqi != null" >
+        chuShengRiQi,
+      </if>
+      <if test="lianxidianhua != null" >
+        lianXiDianHua,
+      </if>
+      <if test="aihaotechang != null" >
+        aiHaoTeChang,
+      </if>
+      <if test="ziwojieshao != null" >
+        ziWoJieShao,
+      </if>
+      <if test="baomingshetuanid != null" >
+        baoMingSheTuanID,
+      </if>
+      <if test="baomingxueshengzuzhiid != null" >
+        baoMingXueShengZuZhiID,
+      </if>
+      <if test="baomingbumenid != null" >
+        baoMingBuMenID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="naxingid != null" >
+        #{naxingid,jdbcType=INTEGER},
+      </if>
+      <if test="naxingjibenxinxiid != null" >
+        #{naxingjibenxinxiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengid != null" >
+        #{xueshengid,jdbcType=INTEGER},
+      </if>
+      <if test="xingming != null" >
+        #{xingming,jdbcType=VARCHAR},
+      </if>
+      <if test="xingbie != null" >
+        #{xingbie,jdbcType=BIT},
+      </if>
+      <if test="chushengriqi != null" >
+        #{chushengriqi,jdbcType=DATE},
+      </if>
+      <if test="lianxidianhua != null" >
+        #{lianxidianhua,jdbcType=VARCHAR},
+      </if>
+      <if test="aihaotechang != null" >
+        #{aihaotechang,jdbcType=VARCHAR},
+      </if>
+      <if test="ziwojieshao != null" >
+        #{ziwojieshao,jdbcType=VARCHAR},
+      </if>
+      <if test="baomingshetuanid != null" >
+        #{baomingshetuanid,jdbcType=INTEGER},
+      </if>
+      <if test="baomingxueshengzuzhiid != null" >
+        #{baomingxueshengzuzhiid,jdbcType=INTEGER},
+      </if>
+      <if test="baomingbumenid != null" >
+        #{baomingbumenid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.NaXin" >
+    update naxin
+    <set >
+      <if test="naxingjibenxinxiid != null" >
+        naXingJiBenXinXiID = #{naxingjibenxinxiid,jdbcType=INTEGER},
+      </if>
+      <if test="xueshengid != null" >
+        xueShengID = #{xueshengid,jdbcType=INTEGER},
+      </if>
+      <if test="xingming != null" >
+        xingMing = #{xingming,jdbcType=VARCHAR},
+      </if>
+      <if test="xingbie != null" >
+        xingBie = #{xingbie,jdbcType=BIT},
+      </if>
+      <if test="chushengriqi != null" >
+        chuShengRiQi = #{chushengriqi,jdbcType=DATE},
+      </if>
+      <if test="lianxidianhua != null" >
+        lianXiDianHua = #{lianxidianhua,jdbcType=VARCHAR},
+      </if>
+      <if test="aihaotechang != null" >
+        aiHaoTeChang = #{aihaotechang,jdbcType=VARCHAR},
+      </if>
+      <if test="ziwojieshao != null" >
+        ziWoJieShao = #{ziwojieshao,jdbcType=VARCHAR},
+      </if>
+      <if test="baomingshetuanid != null" >
+        baoMingSheTuanID = #{baomingshetuanid,jdbcType=INTEGER},
+      </if>
+      <if test="baomingxueshengzuzhiid != null" >
+        baoMingXueShengZuZhiID = #{baomingxueshengzuzhiid,jdbcType=INTEGER},
+      </if>
+      <if test="baomingbumenid != null" >
+        baoMingBuMenID = #{baomingbumenid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{naxingid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.NaXin" >
+    update naxin
+    set naXingJiBenXinXiID = #{naxingjibenxinxiid,jdbcType=INTEGER},
+      xueShengID = #{xueshengid,jdbcType=INTEGER},
+      xingMing = #{xingming,jdbcType=VARCHAR},
+      xingBie = #{xingbie,jdbcType=BIT},
+      chuShengRiQi = #{chushengriqi,jdbcType=DATE},
+      lianXiDianHua = #{lianxidianhua,jdbcType=VARCHAR},
+      aiHaoTeChang = #{aihaotechang,jdbcType=VARCHAR},
+      ziWoJieShao = #{ziwojieshao,jdbcType=VARCHAR},
+      baoMingSheTuanID = #{baomingshetuanid,jdbcType=INTEGER},
+      baoMingXueShengZuZhiID = #{baomingxueshengzuzhiid,jdbcType=INTEGER},
+      baoMingBuMenID = #{baomingbumenid,jdbcType=INTEGER}
+    where ID = #{naxingid,jdbcType=INTEGER}
+  </update>
+  <update id="updateNaXinZhuangTaiByNaXinID" >
+    update naxin
+    set zhuangTai = #{0}
+    where ID = #{1,jdbcType=INTEGER}
+  </update>
+</mapper>

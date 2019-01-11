@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.SheTuanXinXiMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.SheTuanXinXi" >
+    <id column="sheTuanXinXiID" property="shetuanxinxiid" jdbcType="INTEGER" />
+    <result column="sheTuanID" property="shetuanid" jdbcType="INTEGER" />
+    <result column="sheYuanIDs" property="sheyuanids" jdbcType="VARCHAR" />
+    <result column="sheYuanRenShu" property="sheyuanrenshu" jdbcType="INTEGER" />
+    <result column="sheZhang" property="shezhang" jdbcType="INTEGER" />
+    <result column="bianJi" property="bianji" jdbcType="VARCHAR" />
+    <result column="nianDu" property="niandu" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sheTuanXinXiID, sheTuanID, sheYuanIDs, sheYuanRenShu, sheZhang, bianJi, nianDu
+  </sql>
+  <select id="selectSheTuanXinXiBySheTuanIDAndNianDu" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanxinxi
+    where sheTuanID = #{0,jdbcType=INTEGER}
+    and nianDu = #{1}
+  </select>
+  <select id="selectSheTuanXinXiBySheTuanXinXiIDAndXueShengID" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanxinxi 
+    where (sheYuanIDs like #{1,jdbcType=VARCHAR} or sheYuanIDs like #{2,jdbcType=VARCHAR})
+    and sheTuanXinXiID = #{0,jdbcType=INTEGER}
+  </select>
+  <select id="selectSheTuanXinXiBySheTuanXinXiID" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanxinxi 
+    where sheTuanXinXiID = #{shetuanxinxiid,jdbcType=INTEGER}
+  </select>
+  <select id="selectSheTuanXinXiBySheTuanXinXiIDAndSheZhangID" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanxinxi 
+    where sheTuanXinXiID = #{0,jdbcType=INTEGER}
+    and sheZhang = #{1,jdbcType=INTEGER}
+  </select>
+  <select id="selectSheTuanXinXiByXueShengIDAndNianDuAndXueXiaoID" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from shetuanxinxi 
+    where ((sheYuanIDs like #{0,jdbcType=VARCHAR} or sheYuanIDs like #{1,jdbcType=VARCHAR})
+    and nianDu = #{2} 
+    and sheTuanID in (select sheTuanID from shetuanjibenxinxi where xueXiaoID=#{3} and zhuangTai = 1))
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from shetuanxinxi
+    where sheTuanXinXiID = #{shetuanxinxiid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSheTuanXinXi" parameterType="com.web.model.SheTuanXinXi" >
+    insert into shetuanxinxi (sheTuanID, sheYuanIDs, 
+      sheYuanRenShu, sheZhang, nianDu, bianJi
+      )
+    values (#{shetuanid,jdbcType=INTEGER}, #{sheyuanids,jdbcType=VARCHAR}, 
+      #{sheyuanrenshu,jdbcType=INTEGER}, #{shezhang,jdbcType=INTEGER}, #{niandu,jdbcType=INTEGER}, #{bianji,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.SheTuanXinXi" >
+    insert into shetuanxinxi
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="shetuanxinxiid != null" >
+        sheTuanXinXiID,
+      </if>
+      <if test="shetuanid != null" >
+        sheTuanID,
+      </if>
+      <if test="sheyuanids != null" >
+        sheYuanIDs,
+      </if>
+      <if test="sheyuanrenshu != null" >
+        sheYuanRenShu,
+      </if>
+      <if test="shezhang != null" >
+        sheZhang,
+      </if>
+      <if test="niandu != null" >
+        nianDu,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="shetuanxinxiid != null" >
+        #{shetuanxinxiid,jdbcType=INTEGER},
+      </if>
+      <if test="shetuanid != null" >
+        #{shetuanid,jdbcType=INTEGER},
+      </if>
+      <if test="sheyuanids != null" >
+        #{sheyuanids,jdbcType=VARCHAR},
+      </if>
+      <if test="sheyuanrenshu != null" >
+        #{sheyuanrenshu,jdbcType=INTEGER},
+      </if>
+      <if test="shezhang != null" >
+        #{shezhang,jdbcType=INTEGER},
+      </if>
+      <if test="niandu != null" >
+        #{niandu,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateSheTuanXinXi" parameterType="com.web.model.SheTuanXinXi" >
+    update shetuanxinxi
+    set sheYuanIDs =#{sheyuanids,jdbcType=VARCHAR},
+    	sheYuanRenShu = #{sheyuanrenshu,jdbcType=INTEGER},
+    	bianJi = #{bianji,jdbcType=INTEGER},
+    	sheZhang = #{shezhang,jdbcType=VARCHAR}
+    where sheTuanXinXiID = #{shetuanxinxiid,jdbcType=INTEGER}
+  </update>
+  <update id="updateSheZhangBySheTuanXinXiID">
+    update shetuanxinxi
+    set sheZhang = #{1,jdbcType=VARCHAR}
+    where sheTuanXinXiID = #{0,jdbcType=INTEGER}
+  </update>
+  <update id="updateSheTuanRenYuanBySheTuanXinXiID">
+    update shetuanxinxi
+    set sheYuanIDs = #{1,jdbcType=VARCHAR},
+    sheYuanRenShu = sheYuanRenShu+1
+    where sheTuanXinXiID = #{0,jdbcType=INTEGER}
+  </update>
+</mapper>

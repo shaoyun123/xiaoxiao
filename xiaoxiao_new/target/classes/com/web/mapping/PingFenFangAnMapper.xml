@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.PingFenFangAnMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.PingFenFangAn" >
+    <id column="ID" property="fanganid" jdbcType="INTEGER" />
+    <result column="jiaoShiID" property="jiaoshiid" jdbcType="INTEGER" />
+    <result column="fangAnMingCheng" property="fanganmingcheng" jdbcType="VARCHAR"></result>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, jiaoShiID,fangAnMingCheng
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from pingfenfangan
+    where ID = #{fanganid,jdbcType=INTEGER}
+  </select>
+  <select id="selectPingFenFangAnSByXueXiaoID" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from pingfenfangan
+    WHERE
+	pingfenfangan.jiaoShiID IN (
+		SELECT
+			ID
+		FROM
+			yonghu
+		WHERE
+			yonghu.yuanXiID IN (
+				SELECT
+					ID
+				FROM
+					yuanxi
+				WHERE
+					xueXiaoID = #{xuexiaoid}
+			)
+	)
+	or pingfenfangan.ID = 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from pingfenfangan
+    where ID = #{fanganid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.PingFenFangAn" >
+    <selectKey keyProperty="fanganid" order="AFTER" resultType="java.lang.Integer">
+         select LAST_INSERT_ID()
+    </selectKey>
+    insert into pingfenfangan (jiaoShiID,fangAnMingCheng)
+    values (#{jiaoshiid,jdbcType=INTEGER},#{fanganmingcheng,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.PingFenFangAn" >
+    insert into pingfenfangan
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fanganid != null" >
+        ID,
+      </if>
+      <if test="jiaoshiid != null" >
+        jiaoShiID,
+      </if>
+      <if test="fanganmingcheng != null" >
+        fangAnMingCheng,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fanganid != null" >
+        #{fanganid,jdbcType=INTEGER},
+      </if>
+      <if test="jiaoshiid != null" >
+        #{jiaoshiid,jdbcType=INTEGER},
+      </if>
+      <if test="fanganmingcheng != null" >
+        #{fangAnMingCheng,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.PingFenFangAn" >
+    update pingfenfangan
+    <set >
+      <if test="jiaoshiid != null" >
+        jiaoShiID = #{jiaoshiid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{fanganid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.PingFenFangAn" >
+    update pingfenfangan
+    set jiaoShiID = #{jiaoshiid,jdbcType=INTEGER}
+    where ID = #{fanganid,jdbcType=INTEGER}
+  </update>
+</mapper>

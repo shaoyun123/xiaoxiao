@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.NianFenMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.NianFen" >
+    <id column="ID" property="ruxuenianfenid" jdbcType="INTEGER" />
+    <result column="ruXueNianFen" property="ruxuenianfen" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, ruXueNianFen
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from nianfen
+    where ID = #{ruxuenianfenid,jdbcType=INTEGER}
+  </select>
+  <select id="getNianFen" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from nianfen order by ruXueNianFen desc;
+  </select>
+  <select id="selectByRuXueNianFen" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from nianfen
+    where ruXueNianFen = #{ruxuenianfen,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from nianfen
+    where ID = #{ruxuenianfenid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.NianFen" >
+    insert into nianfen (ID, ruXueNianFen)
+    values (#{ruxuenianfenid,jdbcType=INTEGER}, #{ruxuenianfen,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.NianFen" >
+    insert into nianfen
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="ruxuenianfenid != null" >
+       ID,
+      </if>
+      <if test="ruxuenianfen != null" >
+        ruXueNianFen,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="ruxuenianfenid != null" >
+        #{ruxuenianfenid,jdbcType=INTEGER},
+      </if>
+      <if test="ruxuenianfen != null" >
+        #{ruxuenianfen,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.web.model.NianFen" >
+    update nianfen
+    <set >
+      <if test="ruxuenianfen != null" >
+        ruXueNianFen = #{ruxuenianfen,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{ruxuenianfenid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.NianFen" >
+    update nianfen
+    set ruXueNianFen = #{ruxuenianfen,jdbcType=INTEGER}
+    where ID = #{ruxuenianfenid,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findByNianFen" parameterType="java.lang.String" resultType="com.web.model.NianFen">
+  	select * from nianfen where ruXueNianFen >= #{ruxuenianfen,jdbcType=INTEGER}
+  </select>
+</mapper>

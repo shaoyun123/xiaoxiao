@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.App_KeChengKaoPingMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.App_KeChengKaoPing">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="keChengID" property="shiJianKeChengId"
+			jdbcType="INTEGER" />
+		<result column="kaoPingMingCheng" property="kaoPingMingCheng"
+			jdbcType="VARCHAR" />
+		<result column="zhuangTai" property="zhuangTai" jdbcType="INTEGER" />
+		<result column="fenShuZhanBi" property="fenShuZhanBi" jdbcType="DOUBLE" />
+		<result column="kaiShiShiJian" property="kaiShiShiJian"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,keChengID,kaoPingMingCheng,zhuangTai,fenShuZhanBi,kaiShiShiJian
+	</sql>
+	<select id="getKaoPing" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kechengkaoping
+		where keChengID =
+		#{shiJianKeChengId,jdbcType=INTEGER} and zhuangTai <![CDATA[ > ]]>0
+	</select>
+	<select id="getKaoPing2" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kechengkaoping
+		where keChengID =
+		#{shiJianKeChengId,jdbcType=INTEGER}
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kechengkaoping
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectByFenZu" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select
+		kp.ID as kaopingid ,kp.kaoPingMingCheng as
+		mingcheng,kp.keChengID as
+		shijiankechengid,
+		kp.zhuangTai as
+		kaopingzhuangtai,kp.fenShuZhanBi as
+		fenshuzhanbi,kp.kaiShiShiJian as
+		kaishishijian,
+		fz.ID as fenzuid,
+		fz.zuMingCheng as
+		dazumingcheng,fz.rongLiang as rongliang,fz.zuZhangID
+		as zuzhangid
+		from
+		app_kechengkaoping as kp left join app_fenzu as fz on
+		kp.keChengID =
+		fz.keChengID
+		where kp.ID= #{0,jdbcType=INTEGER}
+		and
+		(kp.zhuangTai = 1 or
+		kp.zhuangTai = 2) and fz.zuZhangID =
+		#{1,jdbcType=INTEGER}
+	</select>
+	<select id="selectByXueXiZu" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select
+		kp.ID as kaopingid ,kp.kaoPingMingCheng as
+		mingcheng,kp.keChengID
+		as shijiankechengid
+		,kp.zhuangTai as
+		kaopingzhuangtai,kp.fenShuZhanBi as
+		fenshuzhanbi,kp.kaiShiShiJian as
+		kaishishijian,
+		xxz.ID as
+		xiaozuid,xxz.fenZuID as fenzuid,xxz.xueXiZuMing
+		as
+		xuexizuming,xxz.chengYuanIDLieBiao as chengyuanliebiao,xxz.zhuangTai
+		as
+		zhuangtai
+		from app_kechengkaoping as kp left join app_xuexizu as xxz
+		on
+		kp.keChengID = xxz.keChengID
+		where kp.ID= #{0,jdbcType=INTEGER} and
+		(kp.zhuangTai = 1 or kp.zhuangTai=2) and
+		xxz.xueShengID
+		=
+		#{1,jdbcType=INTEGER} and
+		(xxz.zhuangTai=1 or xxz.zhuangTai=2) and
+		xxz.fenZuID in(select ID from app_fenzu where xxz.fenZuID =
+		app_fenzu.ID)
+	</select>
+
+	<insert id="insert" parameterType="com.web.model.App_KeChengKaoPing">
+		insert into app_kechengkaoping
+		(ID,keChengID,kaoPingMingCheng,zhuangTai,fenShuZhanBi,kaiShiShiJian)
+		values (#{id,jdbcType=INTEGER},
+		#{shiJianKeChengId,jdbcType=INTEGER},
+		#{kaoPingMingCheng,jdbcType=VARCHAR},
+		#{zhuangTai,jdbcType=INTEGER},
+		#{fenShuZhanBi,jdbcType=DOUBLE}),
+		#{kaiShiShiJian,jdbcType=VARCHAR})
+	</insert>
+
+	<update id="update" parameterType="com.web.model.App_KeChengKaoPing">
+		update app_kechengkaoping
+		<set>
+			<if test="shiJianKeChengId != null">
+				keChengID = #{shiJianKeChengId,jdbcType=INTEGER},
+			</if>
+			<if test="kaoPingMingCheng != null">
+				kaoPingMingCheng = #{kaoPingMingCheng,jdbcType=VARCHAR} ,
+			</if>
+			<if test="zhuangTai != null">
+				zhuangTai = #{zhuangTai,jdbcType=INTEGER},
+			</if>
+			<if test="fenShuZhanBi != null">
+				fenShuZhanBi = #{fenShuZhanBi,jdbcType=DOUBLE} ,
+			</if>
+			<if test="kaiShiShiJian != null">
+				kaiShiShiJian = #{kaiShiShiJian,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from app_kechengkaoping
+		where ID = #{id,jdbcType=INTEGER}
+	</delete>
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.JCSJMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.JCSJ" >
+  	<id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="jieCi" property="jieci" jdbcType="INTEGER" />
+    <result column="kaiShiShiJian" property="kaishishijian" jdbcType="VARCHAR" />
+    <result column="jieShuShiJian" property="jieshushijian" jdbcType="VARCHAR" />
+    <result column="jieCiFangAnID" property="jiecifanganid" jdbcType="INTEGER" />
+    <result column="shiJianDuan" property="shijianduan" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap type="java.lang.String" id="kaishishijian">
+  	<result column="kaiShiShiJian" property="kaishishijian" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap type="java.lang.String" id="jieshushijian">
+  	<result column="jieShuShiJian" property="jieshushijian" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+  	ID,jieCi,jieCiFangAnID,kaiShiShiJian,jieShuShiJian,shiJianDuan
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select 
+    <include refid="Base_Column_List" />
+    from jiecishijian
+    where ID = #{id}
+  </select>
+  <select id="findJCSJIDbyFangAnIdandJcsj" resultType="java.lang.Integer" >
+  	select 
+       ID
+    from jiecishijian
+    where jieCi=#{1} and jieCiFangAnID=#{0}
+  </select>
+  <select id="getAllByjieCiFangAnID" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from jiecishijian
+    where jieCiFangAnID = #{jiecifanganid,jdbcType=INTEGER}
+  </select>
+  <select id="getCountByJieCiFangAnID" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+  	select count(*)
+    from jiecishijian
+    where jieCiFangAnID = #{jiecifanganid,jdbcType=INTEGER}
+  </select>
+  <select id="getkaiShiShiJianByid" resultMap="kaishishijian" parameterType="java.lang.Integer">
+  	select kaiShiShiJian
+    from jiecishijian
+    where ID = #{id,jdbcType=INTEGER}
+	
+  </select>
+  <select id="getjieShuShiJianByid" resultMap="jieshushijian" parameterType="java.lang.Integer">
+  	select jieShuShiJian
+    from jiecishijian
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getkaiShiShiJianByidTwo" resultMap="kaishishijian" parameterType="map">
+  	select kaiShiShiJian from jiecishijian where jieci=#{kaishijieci} and jieCiFangAnID = (
+		select id from jiecifangan where xuexiaoid=#{xuexiao} and zhuangtai=1
+	)
+	
+  </select>
+  <select id="getjieShuShiJianByidTwo" resultMap="jieshushijian" parameterType="map">
+  	select jieShuShiJian from jiecishijian where jieci=#{jieshujieci} and jieCiFangAnID = (
+		select id from jiecifangan where xuexiaoid=#{xuexiao} and zhuangtai=1
+	)
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from jiecishijian
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.JCSJ" >
+    insert into jiecishijian (ID,jieCi,jieCiFangAnID,kaiShiShiJian,jieShuShiJian,shiJianDuan)
+    values (#{id,jdbcType=INTEGER}, #{jieci,jdbcType=INTEGER}, #{jiecifanganid,jdbcType=INTEGER}, 
+      #{kaishishijian,jdbcType=INTEGER}, #{jieshushijian,jdbcType=INTEGER}, #{shijianduan,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.JCSJ" >
+    update jiecishijian
+    set jieCi = #{jieci,jdbcType=INTEGER},
+      jieCiFangAnID = #{jiecifanganid,jdbcType=INTEGER},
+      kaiShiShiJian = #{kaishishijian,jdbcType=VARCHAR},
+      jieshuShiJian = #{jieshushijian,jdbcType=VARCHAR},
+      shiJianDuan = #{shijianduan,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

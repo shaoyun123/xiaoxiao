@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.HuoDongMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.HuoDong" >
+    <id column="huoDongID" property="huodongid" jdbcType="INTEGER" />
+    <result column="huoDongMingCheng" property="huodongmingcheng" jdbcType="VARCHAR" />
+    <result column="riQi" property="riqi" jdbcType="DATE" />
+    <result column="kaiShiShiJian" property="kaishishijian" jdbcType="VARCHAR" />
+    <result column="jieShuShiJian" property="jieshushijian" jdbcType="VARCHAR" />
+    <result column="diDian" property="didian" jdbcType="VARCHAR" />
+    <result column="tianJiaRen" property="tianjiaren" jdbcType="VARCHAR" />
+    <result column="canYuRen" property="canyuren" jdbcType="VARCHAR" />
+    <result column="beiZhu" property="beizhu" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap type="java.lang.String" id="canyuren">
+ 	 <result column="canYuRen" property="canyuren" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    huoDongID, huoDongMingCheng, riQi, kaiShiShiJian, jieShuShiJian, diDian, 
+    tianJiaRen, canYuRen, beiZhu
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from huodong
+    where huoDongID = #{huodongid,jdbcType=INTEGER}
+  </select>
+  <select id="getAllBycanYuRen" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select
+  	<include refid="Base_Column_List" />
+    from huodong
+    where canYuRen like "%;"#{canyuren,jdbcType=VARCHAR}";%" or canYuRen like #{canyuren,jdbcType=VARCHAR}";%"
+    order by kaiShiShiJian
+  </select>
+  <select id="getAllBycanYuRen2" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select
+  	<include refid="Base_Column_List" />
+    from huodong
+    where canYuRen like "%;"#{0,jdbcType=VARCHAR}";%" or canYuRen like #{0,jdbcType=VARCHAR}";%" or canYuRen like "%;"#{1,jdbcType=VARCHAR}"%" or canYuRen like #{1,jdbcType=VARCHAR}"%"
+    order by kaiShiShiJian
+  </select>
+  <select id="getAllBycanYuRenAndRiQi" resultMap="BaseResultMap" parameterType="map">
+  	select
+  	<include refid="Base_Column_List" />
+    from huodong
+    where canYuRen like "%"#{canyuren,jdbcType=VARCHAR}"%" and riQi =#{riqi,jdbcType=DATE}
+    order by kaiShiShiJian
+  </select>
+  <select id="getAllBycanYuRenAndRiQiInAppMain" resultMap="BaseResultMap" parameterType="map">
+  	select
+  	<include refid="Base_Column_List" />
+    from huodong
+    where ( canYuRen like "%"#{canyuren1,jdbcType=VARCHAR}"%" or canYuRen like "%"#{canyuren2,jdbcType=VARCHAR}"%" ) and riQi =#{riqi,jdbcType=DATE}
+    order by kaiShiShiJian
+  </select>
+  <select id="getcanYuRenByhuoDongID" resultMap="canyuren" parameterType="java.lang.Integer">
+  	select canYuRen
+  	from huodong
+  	where huoDongID = #{huodongid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from huodong
+    where huoDongID = #{huodongid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="map" >
+    insert into huodong (huoDongID, huoDongMingCheng, 
+      riQi, kaiShiShiJian, 
+      jieShuShiJian, diDian, 
+      tianJiaRen, canYuRen, beiZhu
+      )
+    values (#{huodongid,jdbcType=INTEGER}, #{huodongmingcheng,jdbcType=VARCHAR}, 
+      #{riqi,jdbcType=DATE},  #{kaishishijian,jdbcType=VARCHAR}, 
+      #{jieshushijian,jdbcType=VARCHAR}, #{didian,jdbcType=VARCHAR}, 
+      #{tianjiaren,jdbcType=VARCHAR}, #{canyuren,jdbcType=VARCHAR}, #{beizhu,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.web.model.HuoDong" >
+    insert into huodong
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="huodongid != null" >
+        huoDongID,
+      </if>
+      <if test="huodongmingcheng != null" >
+        huoDongMingCheng,
+      </if>
+      <if test="riqi != null" >
+        riQi,
+      </if>
+      <if test="kaishishijian != null" >
+        kaiShiShiJian,
+      </if>
+      <if test="jieshushijian != null" >
+        jieShuShiJian,
+      </if>
+      <if test="didian != null" >
+        diDian,
+      </if>
+      <if test="tianjiaren != null" >
+        tianJiaRen,
+      </if>
+      <if test="canyuren != null" >
+        canYuRen,
+      </if>
+      <if test="beizhu != null" >
+        beiZhu,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="huodongid != null" >
+        #{huodongid,jdbcType=INTEGER},
+      </if>
+      <if test="huodongmingcheng != null" >
+        #{huodongmingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="riqi != null" >
+        #{riqi,jdbcType=DATE},
+      </if>
+      <if test="kaishishijian != null" >
+        #{kaishishijian,jdbcType=VARCHAR},
+      </if>
+      <if test="jieshushijian != null" >
+        #{jieshushijian,jdbcType=VARCHAR},
+      </if>
+      <if test="didian != null" >
+        #{didian,jdbcType=VARCHAR},
+      </if>
+      <if test="tianjiaren != null" >
+        #{tianjiaren,jdbcType=VARCHAR},
+      </if>
+      <if test="canyuren != null" >
+        #{canyuren,jdbcType=VARCHAR},
+      </if>
+      <if test="beizhu != null" >
+        #{beizhu,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="map" >
+    update huodong
+    set canYuRen = #{canyuren,jdbcType=VARCHAR}
+    where huoDongID = #{huodongid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.HuoDong" >
+    update huodong
+    set 
+      huoDongMingCheng = #{huodongmingcheng,jdbcType=VARCHAR},
+      riQi = #{riqi,jdbcType=DATE},
+      kaiShiShiJian = #{kaishishijian,jdbcType=VARCHAR},
+      jieShuShiJian = #{jieshushijian,jdbcType=VARCHAR},
+      diDian = #{didian,jdbcType=VARCHAR},
+      tianJiaRen = #{tianjiaren,jdbcType=VARCHAR},
+      canYuRen = #{canyuren,jdbcType=VARCHAR},
+      beiZhu = #{beizhu,jdbcType=VARCHAR}
+    where huoDongID = #{huodongid,jdbcType=INTEGER}
+  </update>
+</mapper>

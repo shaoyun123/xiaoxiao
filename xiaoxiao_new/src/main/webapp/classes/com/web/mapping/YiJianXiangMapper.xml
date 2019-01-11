@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.YiJianXiangMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.YiJianXiang" >
+    <id column="yiJianID" property="yijianid" jdbcType="INTEGER" />
+    <result column="yiJianMingCheng" property="yijianmingcheng" jdbcType="VARCHAR" />
+    <result column="xueShengID" property="xueshengid" jdbcType="INTEGER" />
+    <result column="jieShouRenLeiXing" property="jieshourenleixing" jdbcType="INTEGER" />
+    <result column="jieShouRenID" property="jieshourenid" jdbcType="INTEGER" />
+    <result column="chuLiRenID" property="chulirenid" jdbcType="INTEGER" />
+    <result column="wenZiNeiRong" property="wenzineirong" jdbcType="VARCHAR" />
+    <result column="tuMingCheng" property="tumingcheng" jdbcType="VARCHAR" />
+    <result column="niMingBiaoJi" property="nimingbiaoji" jdbcType="VARCHAR" />
+    <result column="chuLiBiaoJi" property="chulibiaoji" jdbcType="VARCHAR" />
+    <result column="gongBuZhuangTai" property="gongbuzhuangtai" jdbcType="VARCHAR" />
+    <result column="biaoQian" property="biaoqian" jdbcType="VARCHAR" />
+    <result column="tiJiaoZhuangTai" property="tijiaozhuangtai" jdbcType="VARCHAR" />
+    <result column="tiJiaoShiJian" property="tijiaoshijian" jdbcType="TIMESTAMP" />
+    <result column="guoQiBiaoJi" property="guoqibiaoji" jdbcType="VARCHAR" />
+    <result column="dianZanLiang" property="dianzanliang" jdbcType="INTEGER" />
+    <result column="dianZanRenID" property="dianzanrenid" jdbcType="VARCHAR" />
+    <result column="liuLanLiang" property="liulanliang" jdbcType="INTEGER" />
+    <result column="pingLunLiang" property="pinglunliang" jdbcType="INTEGER" />
+    <result column="baoCunShiJian" property="baocunshijian" jdbcType="TIMESTAMP" />
+    <result column="keJianXueShengID" property="kejianxueshengid" jdbcType="VARCHAR" />
+    <result column="keJianJiaoShiID" property="kejianjiaoshiid" jdbcType="VARCHAR" />
+    <result column="keJianRenFanWei" property="kejianrenfanwei" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    yiJianID, yiJianMingCheng, xueShengID, jieShouRenLeiXing, jieShouRenID, chuLiRenID, wenZiNeiRong, tuMingCheng, niMingBiaoJi, 
+    chuLiBiaoJi, gongBuZhuangTai, biaoQian, tiJiaoZhuangTai, tiJiaoShiJian, guoQiBiaoJi, 
+    dianZanLiang, dianZanRenID, liuLanLiang, pingLunLiang, baoCunShiJian, keJianXueShengID, keJianRenFanWei
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yijianxiang
+    where yiJianID = #{yijianid,jdbcType=INTEGER}
+  </select>
+  <select id="getAllByxueShengIDandtiJiaoZhuangTai" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where xueShengID = #{0,jdbcType=INTEGER} and tiJiaoZhuangTai = #{1,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc
+  </select>
+  <select id="getAllByxueShengIDandtiJiaoZhuangTaiandPage" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where xueShengID = #{xueshengid,jdbcType=INTEGER} and tiJiaoZhuangTai = #{tijiaozhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc limit ${start},${stop}
+  </select>
+  <select id="getCountByxueShengIDandtiJiaoZhuangTai" resultType="java.lang.Integer">
+  	select count(*)
+  	from yijianxiang
+  	where xueShengID = #{0,jdbcType=INTEGER} and tiJiaoZhuangTai = #{1,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc
+  </select>
+  <select id="getAllByXSandBQandNM" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc
+  </select>
+  <select id="getCountByXSandBQandNM" resultType="java.lang.Integer">
+  	select count(*)
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc
+  </select>
+  <select id="getAllByXSandBQandNMandpage" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc limit ${start},${stop}
+  </select>
+  <select id="getAllByJSandBQandNM" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where (keJianJiaoShiID like "%,"#{kejianjiaoshiid,jdbcType=VARCHAR}",%" or keJianJiaoShiID like #{kejianjiaoshiid,jdbcType=VARCHAR}",%")
+  		and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  		and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  		<if test="banjiid!=''">and xueShengID in(select xueShengID from xuesheng where xuesheng.banJiID = #{banjiid,jdbcType=INTEGER})
+  			and niMingBiaoJi = "0"
+  		</if>
+  		<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  		<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	order by tiJiaoShiJian desc
+  </select>
+  <select id="getAllByXSandBQandBJandNMandpage" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	and xueShengID in(select xueShengID from xuesheng where xuesheng.banJiID = #{banji,jdbcType=INTEGER})
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc limit ${start},${stop}
+  </select>
+  <select id="getAllByXSandBQandBJandNM" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	and xueShengID in(select xueShengID from xuesheng where xuesheng.banJiID = #{banji,jdbcType=INTEGER})
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc
+  </select>
+  <select id="getCountByXSandBQandBJandNM" resultType="java.lang.Integer">
+  	select count(*)
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	and xueShengID in(select xueShengID from xuesheng where xuesheng.banJiID = #{banji,jdbcType=INTEGER})
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc
+  </select>
+  <select id="getAllByXSandBQandZYandNMandpage" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	and xueShengID in(select xueShengID from xuesheng where xuesheng.banJiID in (select banJiID from banji where banji.zhuanYeDaiMa=#{zhuanyedaima,jdbcType=VARCHAR} and banji.yuanXiID=#{yuanxiid,jdbcType=INTEGER}))
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc limit ${start},${stop}
+  </select>
+  <select id="getAllByXSandBQandZYandNM" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	and xueShengID in(select xueShengID from xuesheng where xuesheng.banJiID in (select banJiID from banji where banji.zhuanYeDaiMa=#{zhuanyedaima,jdbcType=VARCHAR} and banji.yuanXiID=#{yuanxiid,jdbcType=INTEGER}))
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc
+  </select>
+  <select id="getCountByXSandBQandZYandNM" resultType="java.lang.Integer">
+  	select count(*)
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	and xueShengID in(select xueShengID from xuesheng where xuesheng.banJiID in (select banJiID from banji where banji.zhuanYeDaiMa=#{zhuanyedaima,jdbcType=VARCHAR} and banji.yuanXiID=#{yuanxiid,jdbcType=INTEGER}))
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc
+  </select>
+  <select id="getAllByXSandBQandYXandNMandpage" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	and xueShengID in(select xueShengID from xuesheng where xuesheng.banJiID in (select banJiID from banji where banji.yuanXiID=#{yuanxiid,jdbcType=INTEGER}))
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc limit ${start},${stop}
+  </select>
+  <select id="getAllByXSandBQandYXandNM" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	and xueShengID in(select xueShengID from xuesheng where xuesheng.banJiID in (select banJiID from banji where banji.yuanXiID=#{yuanxiid,jdbcType=INTEGER}))
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc
+  </select>
+  <select id="getCountByXSandBQandYXandNM" resultType="java.lang.Integer">
+  	select count(*)
+  	from yijianxiang
+  	where (keJianXueShengID like "%,"#{kejianxueshengid,jdbcType=VARCHAR}",%" or keJianXueShengID like #{kejianxueshengid,jdbcType=VARCHAR}",%")
+  	<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  	and xueShengID in(select xueShengID from xuesheng where xuesheng.banJiID in (select banJiID from banji where banji.yuanXiID=#{yuanxiid,jdbcType=INTEGER}))
+  	<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  	and tiJiaoZhuangTai=#{tijiaozhuangtai,jdbcType=VARCHAR}
+  	and gongBuZhuangtai=#{gongbuzhuangtai,jdbcType=VARCHAR}
+  	order by tiJiaoShiJian desc
+  </select>
+  <select id="getAllByjieShouRenIDandtiJiaoZhuangTai" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from yijianxiang
+  	where jieShouRenID = #{jieshourenid,jdbcType=INTEGER}
+  		and tiJiaoZhuangTai = #{tijiaozhuangtai,jdbcType=VARCHAR}
+  		<if test="biaoqian!=''">and biaoQian = #{biaoqian,jdbcType=VARCHAR}</if>
+  		<if test="nimingbiaoji!=''">and niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR}</if>
+  		<if test="chulibiaoji!=''">and chuLiBiaoJi = #{chulibiaoji,jdbcType=VARCHAR}</if>
+  		<if test="banjiid!=''">and xueShengID in(select xueShengID from xuesheng where xuesheng.banJiID = #{banjiid,jdbcType=INTEGER})
+  			and niMingBiaoJi = "0"
+  		</if>
+  	order by tiJiaoShiJian
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from yijianxiang
+    where yiJianID = #{yijianid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.web.model.YiJianXiang" >
+    insert into yijianxiang (yiJianID, yiJianMingCheng, xueShengID, jieShouRenLeiXing,jieShouRenID, 
+      wenZiNeiRong, tuMingCheng, 
+      niMingBiaoJi, chuLiBiaoJi, gongBuZhuangTai, 
+      biaoQian, tiJiaoZhuangTai, baoCunShiJian, tiJiaoShiJian, 
+      guoQiBiaoJi, dianZanLiang, 
+      liuLanLiang, pingLunLiang)
+    values (#{yijianid,jdbcType=INTEGER}, #{yijianmingcheng,jdbcType=VARCHAR}, #{xueshengid,jdbcType=INTEGER}, 
+      #{jieshourenleixing,jdbcType=INTEGER},#{jieshourenid,jdbcType=INTEGER}, 
+      #{wenzineirong,jdbcType=VARCHAR}, #{tumingcheng,jdbcType=VARCHAR}, 
+      #{nimingbiaoji,jdbcType=VARCHAR}, #{chulibiaoji,jdbcType=VARCHAR}, #{gongbuzhuangtai,jdbcType=VARCHAR}, 
+      #{biaoqian,jdbcType=VARCHAR}, #{tijiaozhuangtai,jdbcType=VARCHAR}, #{baocunshijian,jdbcType=TIMESTAMP}, #{tijiaoshijian,jdbcType=TIMESTAMP}, 
+      #{guoqibiaoji,jdbcType=VARCHAR}, #{dianzanliang,jdbcType=INTEGER}, 
+      #{liulanliang,jdbcType=INTEGER}, #{pinglunliang,jdbcType=INTEGER})
+  </insert>
+  <insert id="insert2" parameterType="com.web.model.YiJianXiang" >
+    insert into yijianxiang (yiJianID, yiJianMingCheng, xueShengID, jieShouRenLeiXing,jieShouRenID, 
+      wenZiNeiRong, 
+      niMingBiaoJi, chuLiBiaoJi, gongBuZhuangTai, 
+      biaoQian, tiJiaoZhuangTai, baoCunShiJian, tiJiaoShiJian, 
+      guoQiBiaoJi, dianZanLiang, 
+      liuLanLiang, pingLunLiang)
+    values (#{yijianid,jdbcType=INTEGER}, #{yijianmingcheng,jdbcType=VARCHAR}, #{xueshengid,jdbcType=INTEGER}, 
+      #{jieshourenleixing,jdbcType=INTEGER},#{jieshourenid,jdbcType=INTEGER}, 
+      #{wenzineirong,jdbcType=VARCHAR}, 
+      #{nimingbiaoji,jdbcType=VARCHAR}, #{chulibiaoji,jdbcType=VARCHAR}, #{gongbuzhuangtai,jdbcType=VARCHAR}, 
+      #{biaoqian,jdbcType=VARCHAR}, #{tijiaozhuangtai,jdbcType=VARCHAR}, #{baocunshijian,jdbcType=TIMESTAMP}, #{tijiaoshijian,jdbcType=TIMESTAMP}, 
+      #{guoqibiaoji,jdbcType=VARCHAR}, #{dianzanliang,jdbcType=INTEGER}, 
+      #{liulanliang,jdbcType=INTEGER}, #{pinglunliang,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.web.model.YiJianXiang" >
+    update yijianxiang
+    set yiJianMingCheng = #{yijianmingcheng,jdbcType=VARCHAR},
+      xueShengID = #{xueshengid,jdbcType=INTEGER},
+      jieShouRenLeiXing = #{jieshourenleixing,jdbcType=INTEGER},
+      jieShouRenID = #{jieshourenid,jdbcType=INTEGER},
+      wenZiNeiRong = #{wenzineirong,jdbcType=VARCHAR},
+      tuMingCheng = #{tumingcheng,jdbcType=VARCHAR},
+      niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR},
+      chuLiBiaoJi = #{chulibiaoji,jdbcType=VARCHAR},
+      gongBuZhuangTai = #{gongbuzhuangtai,jdbcType=VARCHAR},
+      biaoQian = #{biaoqian,jdbcType=VARCHAR},
+      tiJiaoZhuangTai = #{tijiaozhuangtai,jdbcType=VARCHAR},
+      tiJiaoShiJian = #{tijiaoshijian,jdbcType=TIMESTAMP},
+      guoQiBiaoJi = #{guoqibiaoji,jdbcType=VARCHAR},
+      dianZanLiang = #{dianzanliang,jdbcType=INTEGER},
+      liuLanLiang = #{liulanliang,jdbcType=INTEGER},
+      pingLunLiang = #{pinglunliang,jdbcType=INTEGER},
+      baoCunShiJian = #{baocunshijian,jdbcType=TIMESTAMP}
+    where yiJianID = #{yijianid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey2" parameterType="com.web.model.YiJianXiang" >
+    update yijianxiang
+    set yiJianMingCheng = #{yijianmingcheng,jdbcType=VARCHAR},
+      xueShengID = #{xueshengid,jdbcType=INTEGER},
+      jieShouRenLeiXing = #{jieshourenleixing,jdbcType=INTEGER},
+      jieShouRenID = #{jieshourenid,jdbcType=INTEGER},
+      wenZiNeiRong = #{wenzineirong,jdbcType=VARCHAR},
+      niMingBiaoJi = #{nimingbiaoji,jdbcType=VARCHAR},
+      chuLiBiaoJi = #{chulibiaoji,jdbcType=VARCHAR},
+      gongBuZhuangTai = #{gongbuzhuangtai,jdbcType=VARCHAR},
+      biaoQian = #{biaoqian,jdbcType=VARCHAR},
+      tiJiaoZhuangTai = #{tijiaozhuangtai,jdbcType=VARCHAR},
+      tiJiaoShiJian = #{tijiaoshijian,jdbcType=TIMESTAMP},
+      guoQiBiaoJi = #{guoqibiaoji,jdbcType=VARCHAR},
+      dianZanLiang = #{dianzanliang,jdbcType=INTEGER},
+      liuLanLiang = #{liulanliang,jdbcType=INTEGER},
+      pingLunLiang = #{pinglunliang,jdbcType=INTEGER},
+      baoCunShiJian = #{baocunshijian,jdbcType=TIMESTAMP}
+    where yiJianID = #{yijianid,jdbcType=INTEGER}
+  </update>
+  <update id="updatedianZanByByPrimaryKey" parameterType="com.web.model.YiJianXiang" >
+    update yijianxiang
+    set dianZanLiang = #{dianzanliang,jdbcType=INTEGER},
+    	dianZanRenID = #{dianzanrenid,jdbcType=VARCHAR}
+    where yiJianID = #{yijianid,jdbcType=INTEGER}
+  </update>
+  <update id="updatepingLunLiangByPrimaryKey" parameterType="com.web.model.YiJianXiang" >
+    update yijianxiang
+    set pingLunLiang = #{pinglunliang,jdbcType=INTEGER}
+    where yiJianID = #{yijianid,jdbcType=INTEGER}
+  </update>
+  <update id="updatechuliByPrimaryKey" parameterType="com.web.model.YiJianXiang" >
+    update yijianxiang
+    set
+    	chuLiBiaoJi = #{chulibiaoji,jdbcType=VARCHAR},
+    	chuLiRenID = #{chulirenid,jdbcType=INTEGER},
+    	gongBuZhuangTai = #{gongbuzhuangtai,jdbcType=VARCHAR}, 
+   		pingLunLiang = #{pinglunliang,jdbcType=INTEGER},
+   		keJianRenFanWei = #{kejianrenfanwei,jdbcType=VARCHAR},
+   		keJianXueShengID = #{kejianxueshengid,jdbcType=VARCHAR},
+   		keJianJiaoShiID = #{kejianjiaoshiid,jdbcType=VARCHAR} 
+    where yiJianID = #{yijianid,jdbcType=INTEGER}
+  </update>
+</mapper>

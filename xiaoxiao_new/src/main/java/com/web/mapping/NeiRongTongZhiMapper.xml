@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.NeiRongTongZhiMapper" >
+ 	<resultMap id="BaseResultMap" type="com.web.model.NeiRongTongZhi">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="content" property="content" jdbcType="VARCHAR" />
+		<result column="faBuRenID" property="faburenid" jdbcType="INTEGER" />
+		<result column="faBuRenLeiXing" property="faburenleixing" jdbcType="INTEGER" />
+		<result column="faBuFanWei" property="fabufanwei" jdbcType="INTEGER" />
+		<result column="tiaoJian" property="tiaojian" jdbcType="VARCHAR" />
+		<result column="isTop" property="istop" jdbcType="BIT" />
+		<result column="faBuRiQi" property="faburiqi" jdbcType="DATE" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,title,content,faBuRenID,faBuRenLeiXing,faBuFanWei,tiaoJian,isTop,faBuRiQi
+	</sql>
+	<insert id="insert" parameterType="com.web.model.NeiRongTongZhi" keyProperty="id">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+		insert into neirongtongzhi 
+		<trim prefix="(" suffix=")" suffixOverrides=","> 
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="title != null">
+				title,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="faburenid != null">
+				faBuRenID,
+			</if>
+			<if test="faburenleixing != null">
+				faBuRenLeiXing,
+			</if>
+			<if test="fabufanwei != null">
+				faBuFanWei,
+			</if>
+			<if test="tiaojian != null">
+				tiaoJian,
+			</if>
+			<if test="istop != null">
+				isTop,
+			</if>
+			<if test="faburiqi != null">
+				faBuRiQi,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="faburenid != null">
+				#{faburenid,jdbcType=INTEGER},
+			</if>
+			<if test="faburenleixing != null">
+				#{faburenleixing,jdbcType=INTEGER},
+			</if>
+			<if test="fabufanwei != null">
+				#{fabufanwei,jdbcType=INTEGER},
+			</if>
+			<if test="tiaojian != null">
+				#{tiaojian,jdbcType=VARCHAR},
+			</if>
+			<if test="istop != null">
+				#{istop,jdbcType=BIT},
+			</if>
+			<if test="faburiqi != null">
+				#{faburiqi,jdbcType=DATE},
+			</if>
+		</trim>
+	</insert>
+	
+	<update id="update" parameterType="com.web.model.NeiRongTongZhi">
+		update neirongtongzhi 
+		set 
+		<trim prefix="" suffix="" suffixOverrides=",">
+			<if test="title != null">
+				title=#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				content=#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="faburenid != null">
+				faBuRenID=#{faburenid,jdbcType=INTEGER},
+			</if>
+			<if test="faburenleixing != null">
+				faBuRenLeiXing=#{faburenleixing,jdbcType=INTEGER},
+			</if>
+			<if test="fabufanwei != null">
+				faBuFanWei=#{fabufanwei,jdbcType=INTEGER},
+			</if>
+			<if test="tiaojian != null">
+				tiaoJian=#{tiaojian,jdbcType=VARCHAR},
+			</if>
+			<if test="istop != null">
+				isTop=#{istop,jdbcType=BIT},
+			</if>
+			<if test="faburiqi != null">
+				faBuRiQi=#{faburiqi,jdbcType=DATE},
+			</if>
+		</trim>
+		where ID=#{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="findByFaBuRenIDAndLeiXing" parameterType="map" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" />
+		from neirongtongzhi 
+		where faBuRenID=#{faburenid,jdbcType=INTEGER} and faBuRenLeiXing=#{faburenleixing,jdbcType=INTEGER}
+		order by faburiqi desc
+	</select>
+	
+	<select id="selectByPrimaryKey" parameterType="java.lang.String" resultType="com.web.model.NeiRongTongZhi">
+		select `ID`,`title`,`content`,`faBuRenID`,`faBuRenLeiXing`,`faBuFanWei`,`isTop`,`faBuRiQi`,`tiaoJian`
+		from neirongtongzhi 
+		where ID=#{id,jdbcType=INTEGER}
+	</select>
+	
+	<delete id="delete" parameterType="java.lang.String">
+		delete from neirongtongzhi where ID=#{id,jdbcType=INTEGER}
+	</delete>
+	
+	<select id="findByBanJiIDAndZhuanYeID" parameterType="map" resultMap="BaseResultMap">
+		select * from (
+			select n.* from neirongtongzhi n 
+			  where n.fabufanwei=1
+			UNION
+			select n.* from neirongtongzhi n 
+			  where n.fabufanwei=3 and (n.tiaoJian like '${banJiID},%' or n.tiaoJian like '%,${banJiID},%' or n.tiaoJian like '%,${banJiID}' or n.tiaoJian = '${banJiID}')
+			UNION
+			select n.* from neirongtongzhi n 
+			  where n.fabufanwei=2 and (n.tiaoJian like '${banJiID},%' or n.tiaoJian like '%,${banJiID},%' or n.tiaoJian like '%,${banJiID}' or n.tiaoJian = '${banJiID}')
+		) temp  
+			ORDER BY temp.faburiqi desc,temp.isTop desc 
+			<if test="pageSize > 0">
+		   		 LIMIT #{pageNum},#{pageSize}
+		   	</if>
+	</select>
+</mapper>

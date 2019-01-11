@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.BanJiMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.BanJi">
+		<id column="ID" property="banjiid" jdbcType="INTEGER" />
+		<result column="yuanXiID" property="yuanxiid" jdbcType="INTEGER" />
+		<result column="zhuanYeID" property="zhuanyeid" jdbcType="INTEGER" />
+		<result column="nianFenID" property="ruxuenianfenid" jdbcType="INTEGER" />
+		<result column="leiXing" property="leixing" jdbcType="INTEGER" />
+		<result column="banJiMingCheng" property="banjimingcheng"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, yuanXiID, zhuanYeID, banJiMingCheng,
+		nianFenID, leiXing
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from banji
+		where ID = #{banjiid,jdbcType=INTEGER}
+	</select>
+	<select id="getAllByzhuanYeDaiMaAndruXueNianFen" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from banji
+		where zhuanYeID = #{0,jdbcType=VARCHAR} and nianFenID
+		=
+		#{1,jdbcType=INTEGER} order by banJiMingCheng;
+	</select>
+	<select id="getAllByYuanXiIdAndRuXueNianFenIdAndBanJiMingCheng"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from banji
+		where yuanXiID = #{0,jdbcType=INTEGER} and nianFenID =
+		#{1,jdbcType=INTEGER} and banJiMingCheng like #{2,jdbcType=VARCHAR}
+		order by banJiMingCheng asc;
+	</select>
+
+	<select id="getAllByYuanXiIDAndZhuanYeDaiMaAndRuXueNianFen"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from banji
+		where yuanXiID = #{0,jdbcType=INTEGER} and zhuanYeID =
+		#{1,jdbcType=VARCHAR} and nianFenID = #{2,jdbcType=INTEGER} order
+		by id
+		asc;
+	</select>
+	<select id="getAllByyuanXiIDAndruXueNianFen" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from banji
+		where yuanXiID = #{0,jdbcType=VARCHAR} and nianFenID =
+		#{1,jdbcType=INTEGER} order by banJiMingCheng asc;
+	</select>
+	<select id="selectBanJiByBanJiMingChengAndXueXiaoID" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from banji
+		where banji.yuanXiID IN (SELECT ID FROM yuanxi WHERE
+		yuanxi.xueXiaoID= #{0,jdbcType=INTEGER}) AND banJiMingCheng =
+		#{1,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByBanJiMingChengAndYuanXiIdAndRuXueNianFenId"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from banji
+		where banJiMingCheng = #{0,jdbcType=VARCHAR} and yuanXiID =
+		#{1,jdbcType=INTEGER} and nianFenID = #{2,jdbcType=INTEGER}
+	</select>
+	<select id="getAllByYuanXiID" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from banji
+		where yuanXiID = #{yuanxiid,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from banji
+		where ID = #{banjiid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.web.model.BanJi">
+		insert into banji (ID,
+		yuanXiID, zhuanYeID,
+		banJiMingCheng, nianFenID,leiXing)
+		values
+		(#{banjiid,jdbcType=INTEGER}, #{yuanxiid,jdbcType=INTEGER},
+		#{zhuanyeid,jdbcType=INTEGER},
+		#{banjimingcheng,jdbcType=VARCHAR},
+		#{ruxuenianfenid,jdbcType=INTEGER},
+		#{leixing,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.web.model.BanJi">
+		insert into banji
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="banjiid != null">
+				ID,
+			</if>
+			<if test="yuanxiid != null">
+				yuanXiID,
+			</if>
+			<if test="zhuanyeid != null">
+				zhuanYeID,
+			</if>
+			<if test="banjimingcheng != null">
+				banJiMingCheng,
+			</if>
+			<if test="ruxuenianfenid != null">
+				nianFenID,
+			</if>
+			<if test="leixing != null">
+				leiXing,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="banjiid != null">
+				#{banjiid,jdbcType=INTEGER},
+			</if>
+			<if test="yuanxiid != null">
+				#{yuanxiid,jdbcType=INTEGER},
+			</if>
+			<if test="zhuanyeid != null">
+				#{zhuanyeid,jdbcType=VARCHAR},
+			</if>
+			<if test="banjimingcheng != null">
+				#{banjimingcheng,jdbcType=VARCHAR},
+			</if>
+			<if test="ruxuenianfenid != null">
+				#{ruxuenianfenid,jdbcType=INTEGER},
+			</if>
+			<if test="leixing != null">
+				#{leixing,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.web.model.BanJi">
+		update banji
+		<set>
+			<if test="yuanxiid != null">
+				yuanXiID = #{yuanxiid,jdbcType=INTEGER},
+			</if>
+			<if test="zhuanyeid != null">
+				zhuanYeID = #{zhuanyeid,jdbcType=VARCHAR},
+			</if>
+			<if test="banjimingcheng != null">
+				banJiMingCheng = #{banjimingcheng,jdbcType=VARCHAR},
+			</if>
+			<if test="ruxuenianfenid != null">
+				nianFenID = #{ruxuenianfenid,jdbcType=INTEGER},
+			</if>
+			<if test="leixing != null">
+				leiXing = #{leixing,jdbcType=INTEGER},
+			</if>
+		</set>
+		where ID = #{banjiid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.web.model.BanJi">
+		update banji
+		set
+		yuanXiID = #{yuanxiid,jdbcType=INTEGER},
+		zhuanYeID =
+		#{zhuanyeid,jdbcType=VARCHAR},
+		banJiMingCheng =
+		#{banjimingcheng,jdbcType=VARCHAR},
+		nianFenID =
+		#{ruxuenianfenid,jdbcType=INTEGER},
+		leiXing =
+		#{leiXing,jdbcType=INTEGER}
+		where ID =
+		#{banjiid,jdbcType=INTEGER}
+	</update>
+
+	<select id="selectBanJiJiaoLiuList" resultType="com.web.model.JiaoLiu"
+		parameterType="java.util.HashMap">
+		select * from (
+
+		select DISTINCT CONCAT('b${xuexiao}', '_', ID) as
+		id,
+		banjimingcheng as mingcheng,(select COUNT(1) from rongyunshezhi
+		where rongId =
+		CONCAT('b${xuexiao}', '_', ID) and leixing = '2_1'
+		) as
+		rongCount,nianFenID as ruxuenianfenid 
+		from (select ID, banjimingcheng,nianFenID 
+		from banji
+		where 1=1
+		and
+		ID=${banjiid}
+		) temp
+
+		where 1=1
+		) tem where 1=1
+		<if test=" zuId != null and  zuId != ''  ">
+    		<![CDATA[ 
+  and id = '${zuId}'
+		]]>
+		</if>
+
+	</select>
+
+	<select id="selectBanJiZuYongHuList" resultType="com.web.model.LoginInfo"
+		parameterType="java.util.HashMap">
+		select *
+		from (
+		select yongHuXingMing as xingMing,
+		yongHuMing as yongHuMing ,
+		CONCAT('${xuexiao}','_',yongHuMing) as xuexiao_xuehao 
+		from yonghu 
+		where id = 
+			(select fudaoyuanid from fudaoyuan where banjiid like '${banjiid},%' or banjiid like '%,${banjiid},%')
+		and CONCAT('b${xuexiao}', '_', ${banjiid}) = '${zuId}'
+		union
+		select xingMing as xingMing,
+		yongHuMing as yongHuMing,
+		xuexiao_xuehao as xuexiao_xuehao
+		from xuesheng
+		where banjiid =
+		${banjiid} and CONCAT('b${xuexiao}', '_', ${banjiid}) = '${zuId}'
+		)
+		temp
+		LEFT JOIN (select *
+		from rongyunshezhi
+		where leixing = '2'
+		and ID =
+		'${zuId}'
+		and rongZhangHao =
+		CONCAT('${xuexiao}', '_', '${yongHuMing}'))
+		t
+		on temp.xuexiao_xuehao = pingBiZhanghu
+		where yongHuMing != '${yongHuMing}'
+	</select>
+	<select id="findXueXiaoIDByBanJiID" parameterType="java.lang.Integer" resultType="java.lang.String">
+		select yx.xuexiaoid from banji bj LEFT JOIN yuanxi yx on bj.yuanxiid = yx.id  where bj.id=#{banjiid}
+	</select>
+	<select id="findByXueXiaoID" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select b.* from banji b LEFT JOIN yuanxi y on b.yuanxiid=y.id where y.xuexiaoid=#{xuexiaoid ,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectBanJiByZhuanYeAndXueXiao" resultType="com.web.model.BanJi" parameterType="map">
+		select b.ID as banjiid,b.banJiMingCheng,b.yuanXiID,b.zhuanYeID,b.leiXing,b.nianFenID as ruxuenianfenid from banji b LEFT JOIN yuanxi y on b.yuanXiID=y.id where b.zhuanyeid=#{zhuanyeid,jdbcType=INTEGER} and y.xueXiaoID=#{xuexiaoid ,jdbcType=INTEGER}
+	</select>
+</mapper>

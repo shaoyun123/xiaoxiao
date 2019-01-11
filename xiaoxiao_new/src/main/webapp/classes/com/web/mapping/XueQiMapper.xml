@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.XueQiMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.XueQi">
+		<id column="xueQiID" property="xueqiid" jdbcType="INTEGER" />
+		<result column="xueXiaoID" property="xuexiaoid" jdbcType="INTEGER" />
+		<result column="xueNian" property="xuenian" jdbcType="VARCHAR" />
+		<result column="xueQi" property="xueqi" jdbcType="INTEGER" />
+		<result column="kaiShiRiQi" property="kaishiriqi" jdbcType="DATE" />
+		<result column="jieShuRiQi" property="jieshuriqi" jdbcType="DATE" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		xueQiID,xueXiaoID, xueNian, xueQi, kaiShiRiQi, jieShuRiQi
+	</sql>
+	<select id="getByxueXiaoIDandriQi" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xueqi
+		where (kaiShiRiQi&lt;#{riqi,jdbcType=DATE} or kaiShiRiQi=#{riqi,jdbcType=DATE})AND
+		(jieShuRiQi&gt;#{riqi,jdbcType=DATE} or jieShuRiQi=#{riqi,jdbcType=DATE})
+		AND xueXiaoID=#{xueXiaoID,jdbcType=INTEGER}
+	</select>
+	<select id="getByXueXiaoIDAndXueNianAndXueQi" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xueqi
+		where xueNian=#{xuenian,jdbcType=VARCHAR} AND
+		xueQi=#{xueqi,jdbcType=INTEGER}
+		AND xueXiaoID=#{xuexiaoid,jdbcType=INTEGER}
+	</select>
+	<select id="getXueQiByXueXiaoID" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xueqi
+		where xueXiaoID=#{xuexiaoid,jdbcType=INTEGER}
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xueqi
+		where xueQiID=#{xueqiid,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from xueqi
+		where xueQiID = #{xueqiid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.web.model.XueQi">
+		insert into xueqi (xueQiID, xueXiaoID, xueNian,
+		xueQi, kaiShiRiQi, jieShuRiQi
+		)
+		values (#{xueqiid,jdbcType=INTEGER}, #{xuexiaoid,jdbcType=INTEGER},
+		#{xuenian,jdbcType=VARCHAR},
+		#{xueqi,jdbcType=INTEGER}, #{kaishiriqi,jdbcType=DATE}, #{jieshuriqi,jdbcType=DATE}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.web.model.XueQi">
+		insert into xueqi
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="xueqiid != null">
+				xueQiID,
+			</if>
+			<if test="xuexiaoid != null">
+				xueXiaoID,
+			</if>
+			<if test="xuenian != null">
+				xueNian,
+			</if>
+			<if test="xueqi != null">
+				xueQi,
+			</if>
+			<if test="kaishiriqi != null">
+				kaiShiRiQi,
+			</if>
+			<if test="jieshuriqi != null">
+				jieShuRiQi,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="xueqiid != null">
+				#{xueqiid,jdbcType=INTEGER},
+			</if>
+			<if test="xuexiaoid != null">
+				#{xuexiaoid,jdbcType=INTEGER},
+			</if>
+			<if test="xuenian != null">
+				#{xuenian,jdbcType=VARCHAR},
+			</if>
+			<if test="xueqi != null">
+				#{xueqi,jdbcType=INTEGER},
+			</if>
+			<if test="kaishiriqi != null">
+				#{kaishiriqi,jdbcType=DATE},
+			</if>
+			<if test="jieshuriqi != null">
+				#{jieshuriqi,jdbcType=DATE},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.web.model.XueQi">
+		update xueqi
+		<set>
+			<if test="xuexiaoid != null">
+				xueXiaoID = #{xuexiaoid,jdbcType=INTEGER},
+			</if>
+			<if test="xuenian != null">
+				xueNian = #{xuenian,jdbcType=VARCHAR},
+			</if>
+			<if test="xueqi != null">
+				xueQi = #{xueqi,jdbcType=INTEGER},
+			</if>
+			<if test="kaishiriqi != null">
+				kaiShiRiQi = #{kaishiriqi,jdbcType=DATE},
+			</if>
+			<if test="jieshuriqi != null">
+				jieShuRiQi = #{jieshuriqi,jdbcType=DATE},
+			</if>
+		</set>
+		where xueQiID = #{xueqiid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.web.model.XueQi">
+		update xueqi
+		set xueXiaoID = #{xuexiaoid,jdbcType=INTEGER},
+		xueNian = #{xuenian,jdbcType=VARCHAR},
+		xueQi = #{xueqi,jdbcType=INTEGER},
+		kaiShiRiQi = #{kaishiriqi,jdbcType=DATE},
+		jieShuRiQi = #{jieshuriqi,jdbcType=DATE}
+		where xueQiID = #{xueqiid,jdbcType=INTEGER}
+	</update>
+</mapper>

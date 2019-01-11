@@ -1,0 +1,14 @@
+#mysql version database druid setting
+validationQuery=SELECT 1
+#jdbc.url=jdbc:mysql://60.205.179.223:3306/xuexiao?useUnicode=true&characterEncoding=utf-8
+jdbc.url=jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf-8
+jdbc.username=root
+#jdbc.password=k_aos_hi#304@(2^0^1^5)
+jdbc.password=123456
+
+sendMail=net5ic@163.com
+
+serverUrl=http://www.5ic.net.cn/xiaoyuan/
+#serverUrl=http\://www.fuyuman.top/xiaoyuan/
+
+isTest=1

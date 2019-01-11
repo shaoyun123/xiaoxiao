@@ -1,0 +1,199 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page isELIgnored="false"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<style>
+.table th {
+	text-align: center;
+}
+
+.table td {
+	text-align: center;
+}
+
+#navigation, #navigation li ul {
+	list-style-type: none;
+}
+
+#navigation {
+	margin: 9px;
+	vertical-align: middle;
+}
+
+#wapper {
+	height: 50px;
+	position: relative;
+}
+
+#wapper ul {
+	text-align: center;
+	width: auto;
+	position: absolute;
+	margin: 0;
+	left: 0%;
+}
+
+#navigation li {
+	float: left;
+	text-align: center;
+	position: relative;
+}
+
+#navigation li a:link, #navigation li a:visited {
+	display: block;
+	text-decoration: none;
+	color: #000;
+	width: 114px;
+	height: 30px;
+	line-height: 30px;
+	border: 1px solid #fff;
+	border-width: 1px 1px 0 0;
+	background: #c5dbf2;
+	padding-left: 10px;
+}
+
+#navigation li a:hover {
+	color: #fff;
+	background: #2687eb;
+}
+
+#navigation li ul li a:hover {
+	color: #fff;
+	background: #6b839c;
+}
+
+#navigation li ul {
+	display: none;
+	position: absolute;
+	top: 30px;
+	left: 0;
+	margin-top: 1px;
+	width: 110px;
+}
+
+#navigation li ul li ul {
+	display: none;
+	position: absolute;
+	top: 0px;
+	left: 130px;
+	margin-top: 0;
+	margin-left: 1px;
+	width: 110px;
+}
+}
+</style>
+<div class="row-fluid">
+	<div class="box span12">
+		<!-- 		<div class="box-header"> -->
+		<div id="wrapper">
+			<ul id="navigation">
+				<li><a href="javascript:void(0);"
+					onclick="toContentPage('getxiaozu?id=${kechengid}')">学生分组</a></li>
+				<li><a href="javascript:void(0);"
+					onclick="toContentPage('getdazu?id=${kechengid}')">大组分组</a></li>
+				<li><a href="javascript:void(0);"
+					onclick="toContentPage('getjianbao?id=${kechengid}')">课程简报</a></li>
+				<li><a href="javascript:void(0);"
+					onclick="toContentPage('getkaoping?id=${kechengid}')">课程考评</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="box-content">
+		<input type="hidden" name="kechengid" id = "kechengid" value="${kechengid}">
+		<input type="hidden" name="kaopingid" id= "kaopingid" value="${kaopingid}">
+		<form action="" class="form-horizontal" method="post" id="forms">
+			<fieldset>
+				<div class="control-group" style="display: inline-block;">
+					<label class="control-label" for="dazuid">大组：</label>
+					<div class="controls">
+						<select id="dazuid" name="dazuid">
+						<option value="">--请选择--</option>
+							<c:forEach items="${dazus }" var="dazu">
+								<option value="${dazu.fenzuid}" <c:if test="${dazu.fenzuid == dazuid}">selected="selected"</c:if>>${dazu.dazuming }</option>
+							</c:forEach>
+						</select>
+					</div>
+				</div>
+				<div style="display: inline-block;">
+					<button onclick="query()" type="button" class="btn btn-success">查询</button>
+				</div>
+			</fieldset>
+		</form>
+		<table
+			class="table table-bordered table-striped table-condensed bootstrap-datatable ">
+			<thead>
+				<tr>
+					<th>小组名</th>
+					<th>组长</th>
+					<th>成员</th>
+					<th>总得分</th>
+					<th>加权分</th>
+					<th>平均分</th>
+					<th>总扣分</th>
+					<th>最终得分</th>
+					<th>名次</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach items="${xiaozus}" var="xiaozu">
+					<tr>
+						<td>${xiaozu.xueXiZuMing}</td>
+						<td>${xiaozu.chengyuanxinxi.xiaozuzhang}</td>
+						<td>
+							<table
+								class="table table-bordered table-striped table-condensed bootstrap-datatable ">
+								<tbody>
+									<c:forEach items="${xiaozu.chengyuanxinxi.chengyuan}"
+										var="chengyuan">
+										<tr>
+											<td>${chengyuan.banjimingcheng}</td>
+											<td>${chengyuan.xuehao}</td>
+											<td>${chengyuan.xingming}</td>
+										</tr>
+									</c:forEach>
+								</tbody>
+							</table>
+						</td>
+						<td>${xiaozu.defen.zongFen }</td>
+						<td>${xiaozu.defen.quMaxAndMin }</td>
+						<td>${xiaozu.defen.pingJunFen }</td>
+						<td>${xiaozu.defen.zongKouFen }</td>
+						<td>${xiaozu.defen.zuiZhongDeFen }</td>
+						<td>${xiaozu.defen.mingCi }</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+		<div class="pagination pagination-centered">
+			<ul>
+				<c:if test="${page >1}">
+					<li><a href="JavaScript:void(0);"
+						onclick="toContentPage('getshijianke')">首页</a></li>
+				</c:if>
+				<c:if test="${page > 1}">
+					<li><a href="JavaScript:void(0);"
+						onclick="toContentPage('getshijianke?page=${page-1})">上一页</a></li>
+				</c:if>
+				<li class="active"><a href="JavaScript:void(0);">第${page}页</a>
+				</li>
+				<c:if test="${page < pages}">
+					<li><a href="JavaScript:void(0);"
+						onclick="toContentPage('getshijianke?page=${page+1}')">下一页</a></li>
+				</c:if>
+				<c:if test="${page < pages}">
+					<li><a href="JavaScript:void(0);"
+						onclick="toContentPage('getshijianke?page=${pages}')">尾页</a></li>
+				</c:if>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function query(){
+	var dazuid = document.getElementById("dazuid").value;
+	var kaopingid = document.getElementById("kaopingid").value;
+	toContentPage('chakandefen?dazuid='+dazuid+'&kaopingid='+kaopingid);
+}
+</script>

@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.XueShengMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.XueSheng">
+		<id column="ID" property="xueshengid" jdbcType="INTEGER" />
+		<result column="banJiID" property="banjiid" jdbcType="INTEGER" />
+		<result column="xueHao" property="xuehao" jdbcType="VARCHAR" />
+		<result column="xingMing" property="xingming" jdbcType="VARCHAR" />
+		<result column="dianHua" property="dianhua" jdbcType="VARCHAR" />
+		<result column="youXiang" property="youxiang" jdbcType="VARCHAR" />
+		<result column="yongHuMing" property="yonghuming" jdbcType="VARCHAR" />
+		<result column="xuexiao_xuehao" property="xuexiaoXuehao"
+			jdbcType="VARCHAR" />
+		<result column="yanZhengMa" property="yanzhengma" jdbcType="VARCHAR" />
+		<result column="checkCodeFor" property="checkcodefor" jdbcType="VARCHAR" />
+		<result column="isBanZhang" property="isbanzhang" jdbcType="BIT" />
+		<result column="suSheID" property="susheid" jdbcType="INTEGER" />
+		<result column="touXiang" property="touxiang" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap type="java.lang.Integer" id="xueShengIDs">
+		<result column="ID" property="xueshengid" jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap type="java.lang.String" id="mima">
+		<result column="miMaMD5" property="mimamd5" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap type="java.lang.String" id="xuexiao">
+		<result column="xuexiao_xuehao" property="xuexiaoXuehao"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap type="java.lang.Integer" id="xueshengIDs">
+		<result column="ID" property="xueshengid" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, banJiID, xueHao, xingMing, dianHua, youXiang,
+		yongHuMing,
+		xuexiao_xuehao,
+		yanZhengMa,
+		checkCodeFor,isBanZhang,suSheID,miMaMD5,touXiang
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from xuesheng
+		where ID = #{xueshengid,jdbcType=INTEGER}
+	</select>
+	<select id="getKaoShiXinXi" parameterType="map" resultMap="BaseResultMap">
+		select * from xuesheng where xuexiao_xuehao=#{xuexiaoxuehao} and
+		xuehao=#{xuehao}
+	</select>
+	<select id="selectPassWdByID" resultMap="mima">
+		select
+		miMaMD5
+		from
+		xuesheng
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="getXueShengsByBanJiID" resultMap="xueShengIDs"
+		parameterType="java.lang.Integer">
+		select ID
+		from xuesheng
+		where banJiID =
+		#{banjiid,jdbcType=INTEGER}
+		order by ID ASC
+	</select>
+	<select id="getcountByBanJiID" resultType="java.lang.Integer"
+		parameterType="java.lang.Integer">
+		select count(*)
+		from xuesheng
+		where banJiID =
+		#{banjiid,jdbcType=INTEGER}
+	</select>
+	<select id="getXueShengIDsByBanJiIdAndSuSheId" resultMap="xueShengIDs">
+		select
+		ID
+		from xuesheng
+		where (banJiID = #{0,jdbcType=INTEGER}
+		and suSheID =
+		#{1,jdbcType=INTEGER})
+		order by ID ASC
+	</select>
+	<select id="selectBanZhangIDByBanJiID" resultMap="xueShengIDs"
+		parameterType="java.lang.Integer">
+		select ID
+		from xuesheng
+		where banJiID =#{banjiid} and
+		isBanZhang=1
+	</select>
+	<select id="getTongZhuanYeXueShengByBanJiID" resultMap="xueShengIDs">
+		SELECT
+		xuesheng.ID
+		FROM
+		xuesheng
+		WHERE
+		banJiID IN (
+		SELECT
+		ID
+		FROM
+		banji
+		WHERE
+		banji.yuanXiID = (
+		SELECT
+		yuanXiID
+		FROM
+		banji
+		WHERE
+		ID = #{0}
+		)
+		AND
+		banJiMingCheng LIKE #{1}
+		)
+		ORDER BY ID ASC
+	</select>
+	<select id="getAllByBanJiID" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from xuesheng
+		where banJiID = #{banjiid,jdbcType=INTEGER}
+		order by ID
+		ASC
+	</select>
+	<select id="getByBanJiIDPage" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from xuesheng
+		where banJiID = #{banjiid,jdbcType=INTEGER}
+		order by ID
+		ASC
+		<if test="stop > 0">
+			LIMIT ${start},${stop}
+		</if>
+	</select>
+	<select id="selectByYongHuMingAndPasswd" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from xuesheng
+		where yongHuMing = #{id,jdbcType=INTEGER}
+		AND miMaMD5 =
+		#{password,jdbcType=VARCHAR}
+	</select>
+	<select id="getBanJiByParam" parameterType="map" resultType="com.web.model.BanJi">
+		select b.* from banji b LEFT JOIN xuesheng x on b.ID=x.banJiID
+		where
+		x.ID=#{xueShengId} and x.banJiID = #{banJiId}
+	</select>
+	<!-- <select id="getxueShengIDByxueXiaoXueHao" resultMap="xueshengIDs" parameterType="java.lang.String"> 
+		select xueShengID from xuesheng where xuexiao_xuehao like "%"#{xuexiaoxuehao,jdbcType=VARCHAR}"%" 
+		</select> -->
+	<select id="selectXueShengByXueXiaoXueHao" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from xuesheng
+		where xuexiao_xuehao = #{_parameter}
+	</select>
+	<select id="selectXueShengByXueHao" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from xuesheng
+		where xuehao = #{_parameter}
+	</select>
+	<select id="selectXueShengBysuSheIDandbanJiID" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from xuesheng
+		where suSheID = #{susheid} and banJiID = #{banjiid}
+	</select>
+	<select id="getAllXueSheng" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from xuesheng
+		where xuexiao_xuehao like
+		#{newxuexiaoid,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		xuesheng
+		where ID = #{xueshengid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.web.model.XueSheng">
+		insert into xuesheng (ID,
+		banJiID, xueHao,
+		xingMing, dianHua, youXiang,
+		miMaMD5, yongHuMing,
+		xuexiao_xuehao,
+		yanZhengMa, checkCodeFor,isBanZhang,suSheID
+		)
+		values
+		(#{xueshengid,jdbcType=INTEGER}, #{banjiid,jdbcType=INTEGER},
+		#{xuehao,jdbcType=VARCHAR},
+		#{xingming,jdbcType=VARCHAR},
+		#{dianhua,jdbcType=VARCHAR}, #{youxiang,jdbcType=VARCHAR},
+		#{mimamd5,jdbcType=VARCHAR}, #{yonghuming,jdbcType=VARCHAR},
+		#{xuexiaoXuehao,jdbcType=VARCHAR},
+		#{yanzhengma,jdbcType=VARCHAR},
+		#{checkcodefor,jdbcType=VARCHAR},#{isbanzhang,jdbcType=BIT},#{susheid,jdbcType=INTEGER}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.web.model.XueSheng">
+		insert into xuesheng
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="xueshengid != null">
+				ID,
+			</if>
+			<if test="banjiid != null">
+				banJiID,
+			</if>
+			<if test="xuehao != null">
+				xueHao,
+			</if>
+			<if test="xingming != null">
+				xingMing,
+			</if>
+			<if test="dianhua != null">
+				dianHua,
+			</if>
+			<if test="youxiang != null">
+				youXiang,
+			</if>
+			<if test="mimamd5 != null">
+				miMaMD5,
+			</if>
+			<if test="yonghuming != null">
+				yongHuMing,
+			</if>
+			<if test="xuexiaoXuehao != null">
+				xuexiao_xuehao,
+			</if>
+			<if test="yanzhengma != null">
+				yanZhengMa,
+			</if>
+			<if test="checkcodefor != null">
+				checkCodeFor,
+			</if>
+			<if test="isbanzhang != null">
+				isBanZhang,
+			</if>
+			<if test="susheid != null">
+				suSheID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="xueshengid != null">
+				#{xueshengid,jdbcType=INTEGER},
+			</if>
+			<if test="banjiid != null">
+				#{banjiid,jdbcType=INTEGER},
+			</if>
+			<if test="xuehao != null">
+				#{xuehao,jdbcType=VARCHAR},
+			</if>
+			<if test="xingming != null">
+				#{xingming,jdbcType=VARCHAR},
+			</if>
+			<if test="dianhua != null">
+				#{dianhua,jdbcType=VARCHAR},
+			</if>
+			<if test="youxiang != null">
+				#{youxiang,jdbcType=VARCHAR},
+			</if>
+			<if test="mimamd5 != null">
+				#{mimamd5,jdbcType=VARCHAR},
+			</if>
+			<if test="yonghuming != null">
+				#{yonghuming,jdbcType=VARCHAR},
+			</if>
+			<if test="xuexiaoXuehao != null">
+				#{xuexiaoXuehao,jdbcType=VARCHAR},
+			</if>
+			<if test="yanzhengma != null">
+				#{yanzhengma,jdbcType=VARCHAR},
+			</if>
+			<if test="checkcodefor != null">
+				#{checkcodefor,jdbcType=VARCHAR},
+			</if>
+			<if test="isbanzhang != null">
+				#{isbanzhang,jdbcType=BIT},
+			</if>
+			<if test="susheid != null">
+				#{susheid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.web.model.XueSheng">
+		update xuesheng
+		<set>
+			<if test="banjiid != null">
+				banJiID = #{banjiid,jdbcType=INTEGER},
+			</if>
+			<if test="xuehao != null">
+				xueHao = #{xuehao,jdbcType=VARCHAR},
+			</if>
+			<if test="xingming != null">
+				xingMing = #{xingming,jdbcType=VARCHAR},
+			</if>
+			<if test="dianhua != null">
+				dianHua = #{dianhua,jdbcType=VARCHAR},
+			</if>
+			<if test="youxiang != null">
+				youXiang = #{youxiang,jdbcType=VARCHAR},
+			</if>
+			<if test="mimamd5 != null">
+				miMaMD5 = #{mimamd5,jdbcType=VARCHAR},
+			</if>
+			<if test="yonghuming != null">
+				yongHuMing = #{yonghuming,jdbcType=VARCHAR},
+			</if>
+			<if test="xuexiaoXuehao != null">
+				xuexiao_xuehao = #{xuexiaoXuehao,jdbcType=VARCHAR},
+			</if>
+			<if test="yanzhengma != null">
+				yanZhengMa = #{yanzhengma,jdbcType=VARCHAR},
+			</if>
+			<if test="checkcodefor != null">
+				checkCodeFor = #{checkcodefor,jdbcType=VARCHAR},
+			</if>
+			<if test="isbanzhang != null">
+				isBanZhang = #{isbanzhang,jdbcType=BIT},
+			</if>
+			<if test="susheid != null">
+				suSheID = #{susheid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where ID = #{xueshengid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.web.model.XueSheng">
+		update xuesheng
+		set banJiID = #{banjiid,jdbcType=INTEGER},
+		xueHao =
+		#{xuehao,jdbcType=VARCHAR},
+		xingMing = #{xingming,jdbcType=VARCHAR},
+		dianHua = #{dianhua,jdbcType=VARCHAR},
+		youXiang =
+		#{youxiang,jdbcType=VARCHAR},
+		yongHuMing =
+		#{yonghuming,jdbcType=VARCHAR},
+		xuexiao_xuehao =
+		#{xuexiaoXuehao,jdbcType=VARCHAR},
+		yanZhengMa =
+		#{yanzhengma,jdbcType=VARCHAR},
+		checkCodeFor =
+		#{checkcodefor,jdbcType=VARCHAR},
+		isBanZhang =
+		#{isbanzhang,jdbcType=BIT},
+		suSheID = #{susheid,jdbcType=INTEGER},
+		miMaMD5=#{mimamd5,jdbcType=VARCHAR}
+		where ID =
+		#{xueshengid,jdbcType=INTEGER}
+	</update>
+	<update id="updatePassWdByID">
+		update xuesheng
+		set miMaMD5 = #{0}
+		where ID =
+		#{1,jdbcType=INTEGER}
+	</update>
+	<select id="getuserinfo" parameterType="java.util.Map"
+		resultType="map">
+		select
+		a.*,b.banJiMingCheng,c.yuanXiMingCheng,d.xueXiaoMingCheng from
+		kaoshi.xuesheng a INNER JOIN kaoshi.banji b ON a.banJiID=b.banJiID
+		INNER JOIN kaoshi.yuanxi
+		c ON b.yuanXiID=c.yuanXiID INNER JOIN
+		kaoshi.xuexiao d on
+		d.xueXiaoID=c.xueXiaoID WHERE a.yongHuMing =
+		#{username,jdbcType=VARCHAR}
+	</select>
+	<select id="getkaoshi" parameterType="java.util.Map" resultType="map">
+		SELECT
+		kaoshi.kaoShiID AS
+		kaoShiID,
+		jiaoXueZuMc,
+		keChengMingCheng,
+		kaoshi.zhuangTai as zhuangTai,
+		kaoshi.fangShi as fangShi
+		FROM
+		kaoshi.jiaoxuebanxueshengliebiao
+		INNER
+		JOIN
+		kaoshi.yonghujiaoxuezuguanlian
+		ON
+		jiaoxuebanxueshengliebiao.guanLianBiaoId =
+		yonghujiaoxuezuguanlian.guanLianBiaoId
+		INNER JOIN kaoshi.jiaoxuezu ON
+		yonghujiaoxuezuguanlian.jiaoXueZuID =
+		jiaoxuezu.jiaoXueZuID
+		LEFT JOIN
+		kaoshi.kaoshi ON jiaoxuebanxueshengliebiao.jiaoXueBanXueShengLieBiaoID
+		= kaoshi.jiaoXueBanXueShengLieBiaoID
+		WHERE
+		(jiaoxuebanxueshengliebiao.banJiIDLieBiao LIKE
+		CONCAT('%',#{banjiid,jdbcType=INTEGER},',%')
+		OR
+		jiaoxuebanxueshengliebiao.fuJiaXueShengIDLieBiao LIKE
+		CONCAT('%',#{xueshengid,jdbcType=INTEGER},',%')
+		) AND
+		jiaoxuebanxueshengliebiao.paiChuXueShengIDLieBiao NOT LIKE
+		CONCAT('%',#{xueshengid1,jdbcType=INTEGER},',%')
+		AND jiaoxuezu.keMuID =
+		11;
+	</select>
+	<select id="getstat" parameterType="java.lang.Integer"
+		resultType="map">
+		SELECT daJuanYiJiao
+		FROM kaoshi.kaochangdajuan
+		WHERE
+		xueShengID = #{1,jdbcType=INTEGER} AND kaoShiID =
+		#{0,jdbcType=INTEGER}
+	</select>
+	<select id="getfangshi" parameterType="java.lang.Integer"
+		resultType="map">
+		SELECT daTiFangShi
+		FROM kaoshi.kaochangdajuan
+		WHERE
+		xueShengID = #{1,jdbcType=INTEGER} AND kaoShiID =
+		#{0,jdbcType=INTEGER}
+
+	</select>
+	<select id="getkaoshistatus" parameterType="java.lang.Integer"
+		resultType="map">
+		SELECT kaoshi.fangShi, kaoshi.zhuangTai
+		FROM kaoshi.kaoshi
+		WHERE kaoshi.kaoShiID = #{kaoshiid,jdbcType=INTEGER}
+	</select>
+	<select id="getcontent" parameterType="java.lang.Integer"
+		resultType="map">
+		SELECT *
+		FROM kaoshi.kaochangdajuan
+		WHERE kaoShiID =
+		#{0,jdbcType=INTEGER} AND xueShengID =
+		#{1,jdbcType=INTEGER}
+	</select>
+	<select id="getkaoti" parameterType="java.lang.Integer"
+		resultType="map">
+		SELECT * FROM kaoshi.kaoti WHERE kaoTiID =
+		#{kaotiid,jdbcType=INTEGER}
+	</select>
+	<select id="selectkaoshi" parameterType="java.lang.Integer"
+		resultType="map">
+		SELECT * FROM kaoshi.kaoshi WHERE kaoShiID =
+		#{kaoshiid,jdbcType=INTEGER}
+	</select>
+	<update id="update">
+		UPDATE kaoshi.kaochangdajuan SET
+		daJuanNeiRong=#{dajuanneirong,jdbcType=VARCHAR},
+		daJuanYiJiao=1,daTiFangShi=2 WHERE
+		xueShengID=#{xueshengid,jdbcType=INTEGER} and
+		kaoShiID=#{kaoshiid,jdbcType=INTEGER}
+	</update>
+	<select id="getshenqingkaojuan" parameterType="java.lang.Integer"
+		resultType="map">
+		SELECT * FROM kaoshi.shenqingkaojuan WHERE xueShengID =
+		#{kaoshixueshengid,jdbcType=INTEGER}
+	</select>
+	<select id="getkaochangid" parameterType="map" resultType="map">
+		SELECT kaoChangID FROM kaoshi.kaochangjiben WHERE ((banJiIdLieBiao like
+		CONCAT('%,',#{banjiid,jdbcType=INTEGER},',%') or banJiIdLieBiao like
+		CONCAT(#{banjiid,jdbcType=INTEGER},',%')) OR (buFenXueShengIDLieBiao
+		LIKE CONCAT('%,',#{kaoshixueshengid,jdbcType=INTEGER},',%')
+		OR
+		buFenXueShengIDLieBiao LIKE
+		CONCAT(#{kaoshixueshengid,jdbcType=INTEGER},',%'))
+		OR
+		(xuanXiuXueShengIdLieBiao LIKE
+		CONCAT('%,',#{kaoshixueshengid,jdbcType=INTEGER},',%')
+		OR
+		xuanXiuXueShengIdLieBiao LIKE
+		CONCAT(#{kaoshixueshengid,jdbcType=INTEGER},',%'))) AND kaoShiID = #{kaoshiid,jdbcType=INTEGER};
+	</select>
+	<delete id="deletedajuan" parameterType="java.lang.Integer">
+		delete FROM
+		kaoshi.kaochangdajuan WHERE kaoShiID = #{0,jdbcType=INTEGER} AND
+		xueShengID =
+		#{1,jdbcType=INTEGER}
+	</delete>
+	<insert id="insertshenqingkaojuan" parameterType="map">
+		insert into kaoshi.shenqingkaojuan
+		(xueShengID,kaoChangID,xuHao
+		)
+		values
+		(#{kaoshixueshengid}, #{kaochangid},
+		#{xuhao}
+		)
+	</insert>
+	<insert id="insertTongBuFaSong" parameterType="map">
+	INSERT INTO kaoshi.tongbufasongbiao (fasongzhuangtai, shunxuhao, dizhiliebiao,
+	tongbucishu, tongbuneirong, leimingcheng, chulizhuangtai)
+	VALUES (0,
+	#{shunxuhao},
+	(SELECT group_concat(id)
+	FROM kaoshi.jingxiangfuwuqi
+	WHERE shiFouBenDi = 0
+	GROUP BY ''),
+	0,
+	#{tongbuneirong},
+	'com.ccbupt.kaoshi.dao.KaoChangDaJuan',
+	1
+	)
+	</insert>
+	<insert id="insertKaoShiRiZhi" parameterType="map">
+	INSERT INTO kaoshi.kaoshirizhi (xueShengID, kaoShiID, jiaoJuanShiJian,
+	keGuanFen, shouJiID)
+	VALUES (#{xueshengid},
+	#{kaoshiid},
+	#{jiaojuanshijian},
+	#{keguanfen},
+	#{shoujiid}
+	)
+	</insert>
+	<select id="getKaoShiRiZhi" parameterType="java.lang.Integer"
+		resultType="map">
+		SELECT * FROM kaoshi.kaoshirizhi WHERE xueShengID =
+		#{1,jdbcType=INTEGER} and kaoShiID =
+		#{0,jdbcType=INTEGER} ORDER BY jiaoJuanShiJian DESC
+	</select>
+	<select id="selectByXueShengIDs" parameterType="java.util.List"
+		resultType="java.util.Map">
+		select
+		ID as ID,xingMing as xingming
+		from xuesheng
+		where ID in
+		<foreach collection="list"  index="index"  item="item"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+</mapper>

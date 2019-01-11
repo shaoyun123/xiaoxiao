@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.XueShengDeYuMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.XueShengDeYu">
+		<id column="ID" property="deyufenid" jdbcType="INTEGER" />
+		<result column="xueQiDeYuID" property="xueqideyuid" jdbcType="INTEGER" />
+		<result column="xueShengID" property="xueshengid" jdbcType="INTEGER" />
+		<result column="deFenXiangQing" property="defenxiangqing"
+			jdbcType="VARCHAR" />
+		<result column="deYuFen" property="deyufen" jdbcType="DOUBLE" />
+		<result column="leiXing" property="leixing" jdbcType="INTEGER" />
+
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, xueQiDeYuID, xueShengID, deFenXiangQing,
+		deYuFen,leiXing
+	</sql>
+	<select id="selectAllByXueShengID" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from xueshengdeyu
+		where xueShengID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectByXueShengIDAndXueQiDeYuID" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from xueshengdeyu
+		where xueShengID = #{xueShengID,jdbcType=INTEGER}
+		AND
+		xueQiDeYuID =#{xueQiDeYuID,jdbcType=INTEGER}
+	</select>
+	<select id="selectByXueShengIDAndDeYuFenID" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from xueshengdeyu
+		where xueShengID = #{xueShengID,jdbcType=INTEGER}
+		AND
+		ID =#{deYuFenID,jdbcType=INTEGER}
+	</select>
+	<select id="selectByDeYuFenID" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from xueshengdeyu
+		where ID =#{deYuFenId,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		xueshengdeyu
+		where ID = #{deyufenid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.web.model.XueShengDeYu">
+		insert into xueshengdeyu
+		(xueQiDeYuID, xueShengID,
+		deFenXiangQing, deYuFen,leiXing)
+		values
+		(#{xueqideyuid,jdbcType=INTEGER}, #{xueshengid,jdbcType=INTEGER},
+		#{defenxiangqing,jdbcType=VARCHAR}, #{deyufen,jdbcType=DOUBLE},
+		#{leixing,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.web.model.XueShengDeYu">
+		insert into xueshengdeyu
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="deyufenid != null">
+				ID,
+			</if>
+			<if test="xueqideyuid != null">
+				xueQiDeYuID,
+			</if>
+			<if test="xueshengid != null">
+				xueShengID,
+			</if>
+			<if test="defenxiangqing != null">
+				deFenXiangQing,
+			</if>
+			<if test="deyufen != null">
+				deYuFen,
+			</if>
+			<if test="leixing != null">
+				leiXing,
+			</if>
+
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="deyufenid != null">
+				#{deyufenid,jdbcType=INTEGER},
+			</if>
+			<if test="xueqideyuid != null">
+				#{xueqideyuid,jdbcType=INTEGER},
+			</if>
+			<if test="xueshengid != null">
+				#{xueshengid,jdbcType=INTEGER},
+			</if>
+			<if test="defenxiangqing != null">
+				#{defenxiangqing,jdbcType=VARCHAR},
+			</if>
+			<if test="deyufen != null">
+				#{deyufen,jdbcType=DOUBLE},
+			</if>
+			<if test="leixing != null">
+				#{leixing,jdbcType=INTEGER},
+			</if>
+
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.web.model.XueShengDeYu">
+		update xueshengdeyu
+		<set>
+			<trim prefix="" suffix="" suffixOverrides=",">
+				<if test="xueqideyuid != null">
+					xueQiDeYuID = #{xueqideyuid,jdbcType=INTEGER},
+				</if>
+				<if test="xueshengid != null">
+					xueShengID = #{xueshengid,jdbcType=INTEGER},
+				</if>
+				<if test="defenxiangqing != null">
+					deFenXiangQing = #{defenxiangqing,jdbcType=VARCHAR},
+				</if>
+				<if test="deyufen != null">
+					deYuFen = #{deyufen,jdbcType=DOUBLE},
+				</if>
+				<if test="leixing != null">
+					leiXing = #{leixing,jdbcType=INTEGER},
+				</if>
+			</trim>
+		</set>
+		where ID = #{deyufenid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByDeYuFenID" parameterType="map">
+		update xueshengdeyu
+		set
+		deFenXiangQing =
+		#{defenxiangqing,jdbcType=VARCHAR},
+		<if test="leixing != null">
+			leiXing = #{leixing,jdbcType=INTEGER},
+		</if>
+		deYuFen = #{deyufen,jdbcType=DOUBLE}
+		where ID =
+		#{deyufenid,jdbcType=INTEGER}
+	</update>
+
+	<select id="selectAllByXueQiDeYuID" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from xueshengdeyu
+		where xueQiDeYuID =#{xueQiDeYuID,jdbcType=INTEGER}
+
+	</select>
+</mapper>

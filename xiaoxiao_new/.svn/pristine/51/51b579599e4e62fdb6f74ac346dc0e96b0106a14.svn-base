@@ -1,0 +1,352 @@
+package com.web.controller.app.stu;
+
+import java.util.Date;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.web.service.XueShengService;
+import com.web.util.Util;
+
+import net.sf.json.JSONObject;
+
+@Controller
+public class KaoShiController {
+	@Autowired
+	private XueShengService xueShengService;
+
+	/**
+	 * 获得考试学生信息
+	 * 
+	 * @param xueshengid
+	 *            token status yonghuming
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_getuserinfo")
+	public JSONObject app_getuserinfo(HttpServletRequest request, HttpServletResponse response) throws ParseException {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String username = request.getParameter("yonghuming");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		Map<String, Object> userMap = null;
+		if (str.equals(token)) {
+			userMap = xueShengService.getuserinfo(username);
+			jsonObject.put("userMap", userMap);
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 获取考生的所有考试
+	 * 
+	 * @param xueshengid
+	 *            banjiid kaoshixueshengid token status
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_getkaoshi")
+	public JSONObject app_getkaoshi(HttpServletRequest request, HttpServletResponse response) throws ParseException {
+		String xueshengid = request.getParameter("xueshengid");// xuexiao库xuesheng表里面的xueshengid
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String banjiid = request.getParameter("banjiid");// kaoshi库banji表里面的banjiid
+		String kaoshixueshengid = request.getParameter("kaoshixueshengid");// kaoshi库xuesheng表里面的kaoshixueshengid
+		String xuehao = request.getParameter("xuehao");// kaoshi库xuesheng表里面的xuehao
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			Map<String, Integer> paraMap = new HashMap<>();
+			paraMap.put("xueshengid", Integer.parseInt(kaoshixueshengid));
+			paraMap.put("banjiid", Integer.parseInt(banjiid));
+			paraMap.put("xueshengid1", Integer.parseInt(kaoshixueshengid));
+			List<Map<String, Object>> kaoShiMap = xueShengService.getkaoshi(paraMap);
+			Map<String, Object> staMap = null;
+			Map<String, Object> wayMap = null;
+			Map<String, Object> statusMap = null;
+			for (int i = 0; i < kaoShiMap.size(); i++) {
+				staMap = xueShengService.getstat(Integer.parseInt(kaoShiMap.get(i).get("kaoShiID").toString()),
+						Integer.parseInt(kaoshixueshengid));
+				wayMap = xueShengService.getfangshi(Integer.parseInt(kaoShiMap.get(i).get("kaoShiID").toString()),
+						Integer.parseInt(kaoshixueshengid));
+				statusMap = xueShengService
+						.getkaoshistatus(Integer.parseInt(kaoShiMap.get(i).get("kaoShiID").toString()));
+				// 针对每场考试查询答卷状态
+				// 没有答卷，申请答卷
+				// 有答卷，没有提交，不动
+				// 有答卷，已经提交，计算客观题成绩
+				kaoShiMap.get(i).put("waymap", wayMap == null ? new HashMap<String, Object>() : wayMap);// danjuan表里面的daTiFangShi
+				kaoShiMap.get(i).put("stamap", staMap == null ? new HashMap<String, Object>() : staMap);// dajuan表里面的daJuanYiJiao
+				kaoShiMap.get(i).put("statusmap", statusMap == null ? new HashMap<String, Object>() : statusMap);// 考试的fangShi,zhuangTai
+				Map<String, Object> contentMap = xueShengService.getcontent(
+						Integer.parseInt(kaoShiMap.get(i).get("kaoShiID").toString()),
+						Integer.parseInt(kaoshixueshengid));
+				if (contentMap == null) {
+					if (kaoShiMap.get(i).get("zhuangTai").toString().equals("1")) {
+						shenqingkaojuan(kaoShiMap.get(i).get("kaoShiID").toString(), kaoshixueshengid, banjiid, xuehao);
+					}
+				} else if (contentMap.get("daJuanYiJiao").toString().equals("1")) {
+					List<Map<String, Object>> kaoshirizhi = xueShengService.getKaoShiRiZhi(
+							Integer.parseInt(kaoShiMap.get(i).get("kaoShiID").toString()),
+							Integer.parseInt(kaoshixueshengid));
+					if (kaoshirizhi == null || kaoshirizhi.size() == 0) {
+						kaoShiMap.get(i).put("defen", scorecaculate(contentMap.get("daJuanNeiRong")));
+					} else {
+						kaoShiMap.get(i).put("defen", kaoshirizhi.get(0).get("keGuanFen"));
+					}
+				}
+			}
+			jsonObject.put("kaoshimap", kaoShiMap);
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 获得考试考题
+	 * 
+	 * @param xueshengid
+	 *            token status kaoshiid kaoshixueshengid
+	 * @param response
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_getcontent")
+	public JSONObject app_getcontent(HttpServletRequest request, HttpServletResponse response) throws ParseException {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kaoshiid = request.getParameter("kaoshiid");
+		String kaoshixueshengid = request.getParameter("kaoshixueshengid");
+		String banjiid = request.getParameter("banjiid");
+		String xuehao = request.getParameter("xuehao");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		Map<String, Object> contentMap = null;
+		if (str.equals(token)) {
+			contentMap = xueShengService.getcontent(Integer.parseInt(kaoshiid), Integer.parseInt(kaoshixueshengid));
+			if (contentMap == null) {
+				shenqingkaojuan(kaoshiid, kaoshixueshengid, banjiid, xuehao);
+				jsonObject.put("contentmap", null);
+				return jsonObject;
+			}
+			List<Object> content = new ArrayList<>();
+			String kaoti[] = contentMap.get("daJuanNeiRong").toString().split("zqxj");
+			Map<String, Object> mapss = xueShengService.selectkaoshi(Integer.parseInt(kaoshiid));
+			for (String string2 : kaoti) {
+				if (string2 == null || "".equals(string2)) {
+					continue;
+				}
+				String item2[] = string2.split("jqxzxjzq");
+				for (String _item : item2[1].split("xjzq")) {
+					String _item_data[] = _item.split("_");
+					Map<String, Object> map = new HashMap<>();
+					map.put("item", _item_data);
+					Map<String, Object> kaotimap = xueShengService.getkaoti(Integer.parseInt(_item_data[0]));
+					map.put("leixing", item2[0].split("_")[0]);
+					map.put("kaotineirong", kaotimap.get("kaoTiNeiRong"));
+					content.add(map);
+				}
+			}
+			jsonObject.put("contentmap", contentMap);
+			jsonObject.put("kaoti", content);
+			jsonObject.put("kaoshishijian", mapss.get("kaoShiShiJian"));
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 更新学生答卷，写入学生答案，计算成绩
+	 * 
+	 * @param xueshengid
+	 *            token status kaoshiid kaoshixueshengid danjunneirong
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_updatedajuan")
+	public JSONObject app_updatedajuan(HttpServletRequest request, HttpServletResponse response) throws ParseException {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kaoshiid = request.getParameter("kaoshiid");
+		String kaoshixueshengid = request.getParameter("kaoshixueshengid");
+		String dajuanneirong = request.getParameter("dajuanneirong");
+		String device = request.getParameter("device");
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		JSONObject jsonObject = new JSONObject();
+		if (str.equals(token)) {
+			Map<String, Object> paramMap = new HashMap<>();
+			paramMap.put("dajuanneirong", dajuanneirong);
+			paramMap.put("xueshengid", kaoshixueshengid);
+			paramMap.put("kaoshiid", kaoshiid);
+			int k = 1;
+			try {
+				xueShengService.update(paramMap);
+			} catch (Exception e) {
+				k = 0;
+			}
+			if (k == 0) {
+				jsonObject.put("status", "fail");
+				return jsonObject;
+			}
+			Date date = new Date();
+			Map<String, Object> mapss = new HashMap<>();
+			String dajuan = "'" + dajuanneirong + "'";
+			String tongbuneirong = "update kaoshi.kaochangdajuan set daJuanNeiRong = " + dajuan + ","
+					+ "daJuanYiJiao=1,daTiFangShi=2 WHERE" + " " + "xueShengID = " + kaoshixueshengid + " " + "and"
+					+ " " + "kaoShiID=" + kaoshiid + ";";
+			mapss.put("shunxuhao", date.getTime());
+			mapss.put("tongbuneirong", tongbuneirong);
+			xueShengService.insertTongBuFaSong(mapss);
+			jsonObject.put("status", "success");
+			Double defen = scorecaculate(dajuanneirong);
+			jsonObject.put("defen", defen);
+			Map<String, Object> riZhiMap = new HashMap<>();
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			riZhiMap.put("xueshengid", kaoshixueshengid);
+			riZhiMap.put("kaoshiid", kaoshiid);
+			riZhiMap.put("jiaojuanshijian", simpleDateFormat.format(date));
+			riZhiMap.put("keguanfen", new DecimalFormat("#.00").format(defen));
+			riZhiMap.put("shoujiid", device);
+			xueShengService.insertKaoShiRiZhi(riZhiMap);
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 重考
+	 * 
+	 * @param xueshengid
+	 *            token status kaoshiid kaoshixueshengid
+	 * @return JSONObject
+	 * @throws ParseException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "app_chongkao")
+	public JSONObject app_chongkao(HttpServletRequest request, HttpServletResponse response) throws ParseException {
+		String xueshengid = request.getParameter("xueshengid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kaoshiid = request.getParameter("kaoshiid");// kaoshi库里面的banjiid
+		String kaoshixueshengid = request.getParameter("kaoshixueshengid");
+		String xuehao = request.getParameter("xuehao");
+		String banjiid = request.getParameter("banjiid");
+		JSONObject jsonObject = new JSONObject();
+		String string = xueshengid + "," + status;
+		String str = Util.SHA1Encode(string);
+		Map<String, Object> contentMap = null;
+		if (str.equals(token)) {
+			contentMap = xueShengService.getcontent(Integer.parseInt(kaoshiid), Integer.parseInt(kaoshixueshengid));
+			if (contentMap != null) {
+				xueShengService.deletedajuan(Integer.parseInt(kaoshiid), Integer.parseInt(kaoshixueshengid));
+			}
+			shenqingkaojuan(kaoshiid, kaoshixueshengid, banjiid, xuehao);
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 计算选择题,判断题得分
+	 * 
+	 * @param dajuanneirong
+	 * @return Double
+	 */
+	private Double scorecaculate(Object dajuanneirong) {
+		Double totalScore = 0d;
+		String kaoti[] = String.valueOf(dajuanneirong).trim().split("zqxj");// 拆分考题，获得不同类型的考题
+		for (String string2 : kaoti) {
+			if (string2 == null || "".equals(string2)) {
+				continue;
+			}
+			String item2[] = string2.split("jqxzxjzq");
+			for (String _item : item2[1].trim().split("xjzq")) {
+				String _item_data[] = _item.split("_");
+				Double fenzhi = Double.valueOf(_item_data[1]);
+				String userAnswer = _item_data[2];
+				Map<String, Object> kaotimap = xueShengService.getkaoti(Integer.parseInt(_item_data[0]));
+				String canKaoDaAn = kaotimap.get("kaoTiCanKaoDaAn").toString().trim();
+				String kaoTiLeiXing = item2[0].split("_")[0];
+				if (kaoTiLeiXing.equals("1")) {
+					// 单选
+					if (userAnswer.equals(canKaoDaAn)) {
+						totalScore += fenzhi;
+					} else {
+						continue;
+					}
+				} else if (kaoTiLeiXing.equals("2")) {// 多选题判分，选项为四个或六个
+					if (canKaoDaAn.length() == 4) {// 选项为四个，补零，补到六位
+						canKaoDaAn = canKaoDaAn + "00";
+					}
+					if (userAnswer.length() == 4) {// 学生答案为四位，补零，补到六位
+						userAnswer = userAnswer + "00";
+					}
+					if (userAnswer.equals(canKaoDaAn)) {// 长度为六，直接比
+						totalScore += fenzhi;
+					}
+				} else if (kaoTiLeiXing.equals("4")) {// 判断题判分
+					if (userAnswer.equals(canKaoDaAn)) {
+						totalScore += fenzhi;
+					}
+				} else if (kaoTiLeiXing.equals("3")) {// 填空题判分,暂不支持
+					continue;
+				} else if (kaoTiLeiXing.equals("7")) {// 简答题判分，暂不支持
+					continue;
+				} else {
+					continue;
+				}
+			}
+		}
+		return totalScore;
+	}
+
+	/**
+	 * 生成考卷
+	 * 
+	 * @param kaoshiid
+	 *            kaoshixueshengid banjiid xuehao
+	 * @return
+	 * @throws ParseException
+	 */
+	public void shenqingkaojuan(String kaoshiid, String kaoshixueshengid, String banjiid, String xuehao)
+			throws ParseException {
+		Map<String, Object> shenQingMap = null;
+		shenQingMap = xueShengService.getshenqingkaojuan(Integer.parseInt(kaoshixueshengid));
+		if (shenQingMap == null) {
+			Map<String, Object> paraMap = new HashMap<>();
+			paraMap.put("banjiid", banjiid);
+			paraMap.put("xueShengID", kaoshixueshengid);
+			paraMap.put("kaoshiid", kaoshiid);
+			Map<String, Object> kaoChangMap = xueShengService.getkaochangid(paraMap);
+			if (kaoChangMap == null) {
+				return;
+			}
+			Map<String, Object> shenQingKaoJuan = new HashMap<>();
+			shenQingKaoJuan.put("kaoshixueshengid", kaoshixueshengid);
+			shenQingKaoJuan.put("kaochangid", kaoChangMap.get("kaoChangID"));
+			shenQingKaoJuan.put("xuhao", kaoshixueshengid + "_" + kaoChangMap.get("kaoChangID").toString());
+			int i = xueShengService.insertshenqingkaojuan(shenQingKaoJuan);
+		}
+		return;
+	}
+}

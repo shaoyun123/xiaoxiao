@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.KeChengMapper" >
+  <resultMap id="BaseResultMap" type="com.web.model.KeCheng" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="keChengID" property="kechengid" jdbcType="INTEGER" />
+    <result column="keChengMingCheng" property="kechengmingcheng" jdbcType="VARCHAR" />
+    <result column="tianJiaRenID" property="tianjiarenid" jdbcType="VARCHAR" />
+    <result column="kaiFangYuanXi" property="kaifangyuanxi" jdbcType="VARCHAR" />
+    <result column="renKeJiaoShi" property="renkejiaoshi" jdbcType="VARCHAR" />
+    <result column="kaiShiZhou" property="kaishizhou" jdbcType="INTEGER" />
+    <result column="jieShuZhou" property="jieshuzhou" jdbcType="INTEGER" />
+    <result column="danShuangZhou" property="danshuangzhou" jdbcType="INTEGER" />
+    <result column="danShuangZhouShuoMing" property="danshuangzhoushuoming" jdbcType="VARCHAR" />
+    <result column="zhouCi" property="zhouci" jdbcType="INTEGER" />
+    <result column="kaiShiJieCi" property="kaishijieci" jdbcType="INTEGER" />
+    <result column="jieShuJieCi" property="jieshujieci" jdbcType="INTEGER" />
+    <result column="canYuRen" property="canyuren" jdbcType="VARCHAR" />
+    <result column="banJiIDs" property="banjiids" jdbcType="VARCHAR" />
+    <result column="xiaoQu" property="xiaoqu" jdbcType="VARCHAR" />
+    <result column="shangKeJiaoShi" property="shangkejiaoshi" jdbcType="VARCHAR" />
+    <result column="xueNian" property="xuenian" jdbcType="VARCHAR" />
+    <result column="xueQi" property="xueqi" jdbcType="INTEGER" />
+    <result column="shangKeRiQi" property="shangkeriqi" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, kechengid,keChengMingCheng, tianJiaRenID, kaiFangYuanXi, renKeJiaoShi, 
+    kaiShiZhou, jieShuZhou, danShuangZhou, danShuangZhouShuoMing, zhouCi, kaiShiJieCi, jieShuJieCi, canYuRen, 
+    banJiIDs, xiaoQu, shangKeJiaoShi, xueNian, xueQi, shangKeRiQi
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from kecheng
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getAllByxiaoQuandshangKeJiaoShiandzhouCi" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from kecheng
+    where xiaoQu = #{xiaoqu,jdbcType=VARCHAR} 
+    and shangKeJiaoShi = #{shangkejiaoshi,jdbcType=VARCHAR} 
+    and zhouCi = #{zhouci,jdbcType=INTEGER}
+    and xuenian = #{xuenian,jdbcType=VARCHAR}
+    and xueqi = #{xueqi,jdbcType=INTEGER}
+  </select>
+  <select id="getAllBykaiFangYuanXiandxueNianxueQi" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from kecheng
+    where (kaiFangYuanXi like #{yuanxiid,jdbcType=INTEGER}",%" or kaiFangYuanXi like "%,"#{yuanxiid,jdbcType=INTEGER}",%")
+    and xueNian = #{xuenian,jdbcType=VARCHAR}
+    and xueQi = #{xueqi,jdbcType=VARCHAR}
+  </select>
+  <select id="getAllBybanJiID" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from kecheng
+    where banJiIDs like #{banjiid,jdbcType=VARCHAR}",%" or banJiIDs like "%,"#{banjiid,jdbcType=VARCHAR}",%"
+  </select>
+  <select id="getAllBybanJiIDs" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from kecheng
+    where ${_parameter}
+  </select>
+  <select id="getAllByxueShengID" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from kecheng
+    where canYuRen like #{canyuren,jdbcType=VARCHAR}";%" or canYuRen like "%;"#{canyuren,jdbcType=VARCHAR}";%"
+  </select>
+  <select id="getAllByxueShengIDandXueNianXueQi" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from kecheng
+    where (canYuRen like #{canyuren,jdbcType=VARCHAR}";%" or canYuRen like "%;"#{canyuren,jdbcType=VARCHAR}";%")
+    and xueNian = #{xuenian,jdbcType=VARCHAR}
+    and xueQi = #{xueqi,jdbcType=VARCHAR}
+  </select>
+  <select id="getAllByTianJiaRen" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from kecheng
+    where tianJiaRenID = #{tianjiarenid,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getAllByrenKeJiaoShi" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from kecheng
+    where keChengID in (
+    	select keChengID 
+    	from kechengjiben 
+    	where kechengjiben.renKeJiaoShiIDs like #{0,jdbcType=VARCHAR}
+    	or kechengjiben.renKeJiaoShiIDs like #{1,jdbcType=VARCHAR}
+    	)
+  </select>
+  <select id="getAllByxueShengIDandshangKeRiQi" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from kecheng
+    where (canYuRen like #{canyuren,jdbcType=VARCHAR}";%" or canYuRen like "%;"#{canyuren,jdbcType=VARCHAR}";%")
+    and (shangKeRiQi like #{shangkeriqi,jdbcType=VARCHAR}"%" or shangKeRiQi like "%"#{shangkeriqi,jdbcType=VARCHAR}"%")
+  </select>
+   <select id="getAllBycanYuRenandxueNianxueQi" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from kecheng
+    where (canYuRen like #{canyuren1,jdbcType=VARCHAR} or canYuRen like #{canyuren2,jdbcType=VARCHAR}
+    or canYuRen like #{canyuren3,jdbcType=VARCHAR} or canYuRen like #{canyuren4,jdbcType=VARCHAR}
+    or kaiFangYuanXi like #{yuanxiid1,jdbcType=VARCHAR} or kaiFangYuanXi like #{yuanxiid2,jdbcType=VARCHAR})
+    and xueNian = #{xuenian,jdbcType=VARCHAR}
+    and xueQi = #{xueqi,jdbcType=VARCHAR}
+  </select>
+  <select id="getAllBytianJiaRenandxueNianxueQi" resultMap="BaseResultMap" parameterType="map" >
+    select 
+   	<include refid="Base_Column_List" />
+    from kecheng
+    where tianJiaRenID in(
+    	select xueShengID
+    	from xuesheng
+    	where xuesheng.xuexiao_xuehao like #{xuexiaoid,jdbcType=VARCHAR}
+    )
+    and xueNian = #{xuenian,jdbcType=VARCHAR}
+    and xueQi = #{xueqi,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from kecheng
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insertSelective" parameterType="com.web.model.KeCheng" >
+    insert into kecheng
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+       <if test="kechengmingcheng != null" >
+        keChengID,
+      </if>
+      <if test="kechengmingcheng != null" >
+        keChengMingCheng,
+      </if>
+      <if test="tianjiarenid != null" >
+        tianJiaRenID,
+      </if>
+      <if test="kaifangyuanxi != null" >
+        kaiFangYuanXi,
+      </if>
+      <if test="renkejiaoshi != null" >
+        renKeJiaoShi,
+      </if>
+      <if test="kaishizhou != null" >
+        kaiShiZhou,
+      </if>
+      <if test="jieshuzhou != null" >
+        jieShuZhou,
+      </if>
+      <if test="danshuangzhou != null" >
+        danShuangZhou,
+      </if>
+      <if test="danshuangzhoushuoming != null" >
+        danShuangZhouShuoMing,
+      </if>
+      <if test="zhouci != null" >
+        zhouCi,
+      </if>
+      <if test="kaishijieci != null" >
+        kaiShiJieCi,
+      </if>
+      <if test="jieshujieci != null" >
+        jieShuJieCi,
+      </if>
+      <if test="canyuren != null" >
+        canYuRen,
+      </if>
+      <if test="banjiids != null" >
+        banJiIDs,
+      </if>
+      <if test="xiaoqu != null" >
+        xiaoQu,
+      </if>
+      <if test="shangkejiaoshi != null" >
+        shangKeJiaoShi,
+      </if>
+      <if test="xuenian != null" >
+        xueNian,
+      </if>
+      <if test="xueqi != null" >
+        xueQi,
+      </if>
+      <if test="shangkeriqi != null" >
+        shangKeRiQi,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="kechengid != null" >
+        #{kechengid,jdbcType=INTEGER},
+      </if>
+      <if test="kechengmingcheng != null" >
+        #{kechengmingcheng,jdbcType=VARCHAR},
+      </if>
+      <if test="tianjiarenid != null" >
+        #{tianjiarenid,jdbcType=VARCHAR},
+      </if>
+      <if test="kaifangyuanxi != null" >
+        #{kaifangyuanxi,jdbcType=VARCHAR},
+      </if>
+      <if test="renkejiaoshi != null" >
+        #{renkejiaoshi,jdbcType=VARCHAR},
+      </if>
+      <if test="kaishizhou != null" >
+        #{kaishizhou,jdbcType=INTEGER},
+      </if>
+      <if test="jieshuzhou != null" >
+        #{jieshuzhou,jdbcType=INTEGER},
+      </if>
+      <if test="danshuangzhou != null" >
+        #{danshuangzhou,jdbcType=INTEGER},
+      </if>
+      <if test="danshuangzhoushuoming != null" >
+        #{danshuangzhoushuoming,jdbcType=VARCHAR},
+      </if>
+      <if test="zhouci != null" >
+        #{zhouci,jdbcType=INTEGER},
+      </if>
+      <if test="kaishijieci != null" >
+        #{kaishijieci,jdbcType=INTEGER},
+      </if>
+      <if test="jieshujieci != null" >
+        #{jieshujieci,jdbcType=INTEGER},
+      </if>
+      <if test="canyuren != null" >
+        #{canyuren,jdbcType=VARCHAR},
+      </if>
+      <if test="banjiids != null" >
+        #{banjiids,jdbcType=VARCHAR},
+      </if>
+      <if test="xiaoqu != null" >
+        #{xiaoqu,jdbcType=VARCHAR},
+      </if>
+      <if test="shangkejiaoshi != null" >
+        #{shangkejiaoshi,jdbcType=VARCHAR},
+      </if>
+      <if test="xuenian != null" >
+        #{xuenian,jdbcType=VARCHAR},
+      </if>
+      <if test="xueqi != null" >
+        #{xueqi,jdbcType=INTEGER},
+      </if>
+      <if test="shangkeriqi != null" >
+        #{shangkeriqi,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <insert id="insert_addkecheng_zizhu" parameterType="com.web.model.KeCheng" >
+   insert into kecheng
+   	 (ID, keChengMingCheng, tianJiaRenID, renKeJiaoShi, 
+    kaiShiZhou, jieShuZhou, danShuangZhou, danShuangZhouShuoMing, zhouCi, kaiShiJieCi, jieShuJieCi, canYuRen, 
+    banJiIDs, xiaoQu, shangKeJiaoShi, xueNian, xueQi, shangKeRiQi)
+    values (
+      #{id,jdbcType=INTEGER},
+      #{kechengmingcheng,jdbcType=VARCHAR},
+      #{tianjiarenid,jdbcType=VARCHAR},
+      #{renkejiaoshi,jdbcType=VARCHAR},
+      #{kaishizhou,jdbcType=INTEGER},
+      #{jieshuzhou,jdbcType=INTEGER},
+      #{danshuangzhou,jdbcType=INTEGER},
+      #{danshuangzhoushuoming,jdbcType=VARCHAR},
+      #{zhouci,jdbcType=INTEGER},
+      #{kaishijieci,jdbcType=INTEGER},
+      #{jieshujieci,jdbcType=INTEGER},
+      #{canyuren,jdbcType=VARCHAR},
+      #{banjiids,jdbcType=VARCHAR},
+      #{xiaoqu,jdbcType=VARCHAR},
+      #{shangkejiaoshi,jdbcType=VARCHAR},
+      #{xuenian,jdbcType=VARCHAR},
+      #{xueqi,jdbcType=INTEGER},
+      #{shangkeriqi,jdbcType=VARCHAR})
+     
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.web.model.KeCheng" >
+    update kecheng
+    set
+      keChengID = #{kechengid,jdbcType=INTEGER},
+      keChengMingCheng = #{kechengmingcheng,jdbcType=VARCHAR},
+      tianJiaRenID = #{tianjiarenid,jdbcType=VARCHAR},
+      kaiFangYuanXi = #{kaifangyuanxi,jdbcType=VARCHAR},
+      renKeJiaoShi = #{renkejiaoshi,jdbcType=VARCHAR},
+      kaiShiZhou = #{kaishizhou,jdbcType=INTEGER},
+      jieShuZhou = #{jieshuzhou,jdbcType=INTEGER},
+      danShuangZhou = #{danshuangzhou,jdbcType=INTEGER},
+      danShuangZhouShuoMing = #{danshuangzhoushuoming,jdbcType=VARCHAR},
+      zhouCi = #{zhouci,jdbcType=INTEGER},
+      kaiShiJieCi = #{kaishijieci,jdbcType=INTEGER},
+      jieShuJieCi = #{jieshujieci,jdbcType=INTEGER},
+      canYuRen = #{canyuren,jdbcType=VARCHAR},
+      banJiIDs = #{banjiids,jdbcType=VARCHAR},
+      xiaoQu = #{xiaoqu,jdbcType=VARCHAR},
+      shangKeJiaoShi = #{shangkejiaoshi,jdbcType=VARCHAR},
+      xueNian = #{xuenian,jdbcType=VARCHAR},
+      xueQi = #{xueqi,jdbcType=INTEGER},
+      shangKeRiQi = #{shangkeriqi,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateshangKeRiQiByPrimaryKey" parameterType="com.web.model.KeCheng" >
+    update kecheng
+    set shangKeRiQi = #{shangkeriqi,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByPrimaryKey2" parameterType="com.web.model.KeCheng" >
+    update kecheng
+    set
+      keChengID = #{kechengid,jdbcType=INTEGER},
+      keChengMingCheng = #{kechengmingcheng,jdbcType=VARCHAR},
+      tianJiaRenID = #{tianjiarenid,jdbcType=VARCHAR},
+      kaiFangYuanXi = #{kaifangyuanxi,jdbcType=VARCHAR},
+      renKeJiaoShi = #{renkejiaoshi,jdbcType=VARCHAR},
+      kaiShiZhou = #{kaishizhou,jdbcType=INTEGER},
+      jieShuZhou = #{jieshuzhou,jdbcType=INTEGER},
+      danShuangZhou = #{danshuangzhou,jdbcType=INTEGER},
+      danShuangZhouShuoMing = #{danshuangzhoushuoming,jdbcType=VARCHAR},
+      zhouCi = #{zhouci,jdbcType=INTEGER},
+      kaiShiJieCi = #{kaishijieci,jdbcType=INTEGER},
+      jieShuJieCi = #{jieshujieci,jdbcType=INTEGER},
+      xiaoQu = #{xiaoqu,jdbcType=VARCHAR},
+      shangKeJiaoShi = #{shangkejiaoshi,jdbcType=VARCHAR},
+      xueNian = #{xuenian,jdbcType=VARCHAR},
+      xueQi = #{xueqi,jdbcType=INTEGER},
+      shangKeRiQi = #{shangkeriqi,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByPrimaryKey3" parameterType="com.web.model.KeCheng" >
+    update kecheng
+    set
+      keChengMingCheng = #{kechengmingcheng,jdbcType=VARCHAR},
+      tianJiaRenID = #{tianjiarenid,jdbcType=VARCHAR},
+      renKeJiaoShi = #{renkejiaoshi,jdbcType=VARCHAR},
+      kaiShiZhou = #{kaishizhou,jdbcType=INTEGER},
+      jieShuZhou = #{jieshuzhou,jdbcType=INTEGER},
+      danShuangZhou = #{danshuangzhou,jdbcType=INTEGER},
+      danShuangZhouShuoMing = #{danshuangzhoushuoming,jdbcType=VARCHAR},
+      zhouCi = #{zhouci,jdbcType=INTEGER},
+      kaiShiJieCi = #{kaishijieci,jdbcType=INTEGER},
+      jieShuJieCi = #{jieshujieci,jdbcType=INTEGER},
+      xiaoQu = #{xiaoqu,jdbcType=VARCHAR},
+      shangKeJiaoShi = #{shangkejiaoshi,jdbcType=VARCHAR},
+      xueNian = #{xuenian,jdbcType=VARCHAR},
+      xueQi = #{xueqi,jdbcType=INTEGER},
+      shangKeRiQi = #{shangkeriqi,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updatecanYuRenByPrimaryKey" parameterType="com.web.model.KeCheng" >
+    update kecheng
+    set
+      canYuRen = #{canyuren,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updatebanJiIDsandcanYuRenByPrimaryKey" parameterType="com.web.model.KeCheng" >
+    update kecheng
+    set
+      banJiIDs = #{banjiids,jdbcType=VARCHAR},
+      canYuRen = #{canyuren,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,21 @@
+package com.web.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.web.model.App_XueXiZu;
+
+public interface App_XueXiZuMapper {
+	List<App_XueXiZu> getXueXiZu(Integer fenZuId);
+	List<Map<String, Object>> getXueXZ(Integer fenZuId);
+	App_XueXiZu selectByPrimaryKey(Integer id);
+	List<App_XueXiZu> getXueXiZuByKeCheng(Integer kechengid);
+	List<App_XueXiZu> selectXueXiZu(Integer kechengid,Integer xueshengid);
+	List<App_XueXiZu> selectXueXiZuByXsID(App_XueXiZu app_XueXiZu);
+	Map<String, Object> selectByPrimaryKey1(Integer id);
+	List<Map<String, Object>> selectBykaoPingIdAndXueshengId(Map<String, Object> map);
+	List<Map<String, Object>> selectXiaoZu(Integer fenZuId);
+	int update(App_XueXiZu record);
+	int insert(App_XueXiZu record);
+	int delete(Integer id);
+}

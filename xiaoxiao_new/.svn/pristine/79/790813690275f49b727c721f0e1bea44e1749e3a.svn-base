@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.App_KaoPingJieGuoMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.App_KaoPingJieGuo">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="kaoPingID" property="kaoPingId" jdbcType="INTEGER" />
+		<result column="xueXiZuID" property="xueXiZuId" jdbcType="INTEGER" />
+		<result column="paiXu" property="paiXu" jdbcType="VARCHAR" />
+		<result column="zhaoPian" property="zhaoPian" jdbcType="VARCHAR" />
+		<result column="faYanRenID" property="faYanRenId" jdbcType="INTEGER" />
+		<result column="zhuangTai" property="zhuangTai" jdbcType="INTEGER" />
+		<result column="zongDeFen" property="zongFen" jdbcType="DOUBLE" />
+		<result column="kouFen" property="zongKouFen" jdbcType="DOUBLE" />
+		<result column="pingJunFen" property="pingJunFen" jdbcType="DOUBLE" />
+		<result column="zuiHongFen" property="zuiZhongDeFen" jdbcType="DOUBLE" />
+		<result column="deFen" property="quMaxAndMin" jdbcType="DOUBLE" />
+		<result column="mingCi" property="mingCi" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,kaoPingID,xueXiZuID,paiXu,zhaoPian,faYanRenID,zhuangTai,zongDeFen,kouFen,pingJunFen,zuiHongFen,deFen,mingCi
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingjieguo
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="getJieGuo" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingjieguo
+		where kaoPingID = #{kaopingid}
+	</select>
+	<select id="selectJieGuoByXiaoZuId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingjieguo
+		where kaoPingID = #{0,jdbcType=INTEGER} and
+		xueXiZuID =#{1,jdbcType=INTEGER}
+	</select>
+	<insert id="insert" parameterType="com.web.model.App_KaoPingJieGuo">
+		<!-- useGeneratedKeys="true" keyProperty="id" > -->
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into app_kaopingjieguo
+		(kaoPingID,xueXiZuID,paiXu,zhaoPian,faYanRenID,zhuangTai,zongDeFen,kouFen,pingJunFen,zuiHongFen,deFen,mingCi)
+		values
+		(
+		#{kaoPingId,jdbcType=INTEGER},
+		#{xueXiZuId,jdbcType=INTEGER},
+		#{paiXu,jdbcType=VARCHAR},
+		#{zhaoPian,jdbcType=VARCHAR},
+		#{faYanRenId,jdbcType=INTEGER},
+		#{zhuangTai,jdbcType=INTEGER},
+		#{zongFen,jdbcType=DOUBLE},
+		#{zongKouFen,jdbcType=DOUBLE},
+		#{pingJunFen,jdbcType=DOUBLE},
+		#{zuiZhongDeFen,jdbcType=DOUBLE},
+		#{quMaxAndMin,jdbcType=DOUBLE},
+		#{mingCi,jdbcType=INTEGER})
+	</insert>
+	<update id="update" parameterType="com.web.model.App_KaoPingJieGuo">
+		update app_kaopingjieguo
+		<set>
+			<if test="kaoPingId != null">
+				kaoPingID = #{kaoPingId,jdbcType=INTEGER},
+			</if>
+			<if test="xueXiZuId != null">
+				xueXiZuID = #{xueXiZuId,jdbcType=INTEGER},
+			</if>
+<!-- 			<if test="paiXu != null"> -->
+				paiXu = #{paiXu,jdbcType=VARCHAR},
+<!-- 			</if> -->
+			<if test="zhaoPian != null">
+				zhaoPian = #{zhaoPian,jdbcType=VARCHAR},
+			</if>
+			<if test="faYanRenId != null">
+				faYanRenID = #{faYanRenId,jdbcType=INTEGER},
+			</if>
+			<if test="zhuangTai != null">
+				zhuangTai = #{zhuangTai,jdbcType=INTEGER},
+			</if>
+			<if test="zongFen != null">
+				zongDeFen = #{zongFen,jdbcType=DOUBLE},
+			</if>
+			<if test="zongKouFen != null">
+				kouFen = #{zongKouFen,jdbcType=DOUBLE},
+			</if>
+			<if test="pingJunFen != null">
+				pingJunFen = #{pingJunFen,jdbcType=DOUBLE},
+			</if>
+			<if test="zuiZhongDeFen != null">
+				zuiHongFen = #{zuiZhongDeFen,jdbcType=DOUBLE},
+			</if>
+			<if test="quMaxAndMin != null">
+				deFen = #{quMaxAndMin,jdbcType=DOUBLE},
+			</if>
+			<if test="mingCi != null">
+				mingCi = #{mingCi,jdbcType=INTEGER},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

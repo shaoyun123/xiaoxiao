@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.App_LiaoTianJiLuMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.App_LiaoTianJiLu">
+		<id column="ID" property="jiluid" jdbcType="INTEGER" />
+		<result column="qunID" property="qunid" jdbcType="INTEGER" />
+		<result column="xueShengID" property="xueshengid" jdbcType="INTEGER" />
+		<result column="jiaoShiID" property="jiaoshiid" jdbcType="INTEGER" />
+		<result column="liaoTianNeiRong" property="liaotianneirong"
+			jdbcType="VARCHAR" />
+		<result column="shiJian" property="shijian" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, qunID, xueShengID, jiaoShiID, liaoTianNeiRong,
+		shiJian
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_liaotianjilu
+		where ID = #{jiluid,jdbcType=INTEGER}
+	</select>
+	<select id="getALLByQunID" resultMap="BaseResultMap" parameterType="map" >
+		select
+		<include refid="Base_Column_List" />
+		from app_liaotianjilu
+		where qunID = #{qunid} order by jiLuID DESC limit ${start},${stop}
+	</select>
+	<select id="selectCountLiaoTianJiLuByQunID" resultType="java.lang.Integer">
+		select count(*)
+		from app_liaotianjilu
+		where qunID = #{qunid,jdbcType=INTEGER}
+	</select>
+  <insert id="insertByQunID" parameterType="com.web.model.App_LiaoTianJiLu" >
+    insert into app_liaotianjilu (qunID, xueShengID, jiaoShiID, liaoTianNeiRong,
+		shiJian)
+    values (#{qunid,jdbcType=INTEGER}, 
+      #{xueshengid,jdbcType=INTEGER}, #{jiaoshiid,jdbcType=INTEGER}, 
+      #{liaotianneirong,jdbcType=VARCHAR}, 
+      #{shijian,jdbcType=TIMESTAMP})
+  </insert>
+</mapper>

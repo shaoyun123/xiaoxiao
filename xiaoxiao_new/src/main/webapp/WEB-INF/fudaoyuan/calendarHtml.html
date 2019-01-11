@@ -1,0 +1,404 @@
+<div style="overflow: hidden;" id='calendar'></div>
+<script type="text/javascript">
+	
+// 		$(document).ready(function() {
+		$(function() {
+			alert(111);
+			$.ajaxSetup({
+				cache:false
+			});
+			initFullCalendar();
+		});
+
+	function initFullCalendar() {
+		alert(thisDate);
+		var initialLocaleCode = 'zh-cn';
+		//alert(api.winHeight);
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: ''
+			},
+			height: h ,
+			handleWindowResize: true,
+			timezone: 'local',
+			defaultView: 'agendaDay',
+			defaultDate: thisDate,
+			locale: initialLocaleCode,
+			buttonIcons: false, // show the prev/next text
+			weekNumbers: true,
+			navLinks: false, // can click day/week names to navigate views
+			editable: false,
+			allDaySlot: false,
+			eventLimit: true, // allow "more" link when too many events
+			buttonText: {
+				prev: '<', // ?
+				next: '>', // ?
+				prevYear: '<', // ?
+				nextYear: '>', // ?
+				today: '今天',
+				month: '月',
+				week: '周',
+				day: '日'
+			},
+			dayClick: function(date, allDay, jsEvent, view) {},
+			eventClick: function(event, jsEvent, view) {
+				toDo(event, jsEvent, view);
+			},
+			events: function(start, end, timezone, callback) {
+				getData(start, end, timezone, callback);
+			},
+			eventRender: function(calEvent, element, view) {
+				eventRender(calEvent, element, view);
+			}
+		});
+	}
+
+	function eventRender(calEvent, element, view) {
+		var html = $(element).html();
+		var temp = '@-@';
+		var cText = html.split(temp);
+		var tempStr = '</br>';
+		var setHtml = '';
+		if (cText > 1) {
+			for (var i = 0; i < cText.length; i++) {
+				if (setHtml == '') {
+					setHtml = cText[i] + tempStr;
+				} else {
+					setHtml += cText[i] + tempStr;
+				}
+			}
+		} else {
+			setHtml = cText;
+		}
+		$(element).html(setHtml);
+	}
+
+	function getData(start, end, timezone, callback) {
+		var nDate = new Date(start); //直接将毫秒数当参数传进去。
+		var day = ("0" + nDate.getDate()).slice(-2);
+		//格式化月，如果小于9，前面补0
+		var month = ("0" + (nDate.getMonth() + 1)).slice(-2);
+		//拼装完整日期格式
+		var datetime = nDate.getFullYear() + "-" + (month) + "-" + (day);
+// 		$api.setStorage('rilitime', datetime);
+		thisDate = nDate;
+// 		var susheid = $api.getStorage('loginsusheid');
+// 		var studentid = $api.getStorage("loginxueshengid");
+// 		var status = $api.getStorage('loginstatus');
+// 		var token = $api.getStorage("logintoken");
+// 		var banjiid = $api.getStorage('loginbanjiid');
+// 		var code = studentid + ',zytech,' + datetime+',zytech,'+susheid;
+		//event.id中逗号后面1代表课程，2代表活动，3代表事件
+		var mydate = new Date();
+		var time = mydate.getFullYear();
+		if (mydate.getMonth() < 10) {
+			time += '-0' + (mydate.getMonth() + 1);
+		} else {
+			time += '-' + (mydate.getMonth() + 1);
+		}
+		if (mydate.getDate() < 10) {
+			time += '-0' + mydate.getDate();
+		} else {
+			time += '-' + mydate.getDate();
+		}
+		if (mydate.getHours() < 10) {
+			time += ' 0' + mydate.getHours();
+		} else {
+			time += ' ' + mydate.getHours();
+		}
+		if (mydate.getMinutes() < 10) {
+			time += ':0' + mydate.getMinutes();
+		} else {
+			time += ':' + mydate.getMinutes();
+		}
+		if (status == "xuesheng") {
+			loadData();
+			$.ajax({
+				type: "POST",
+				url: "chaxunrichengbydate_fdy",
+				data: {
+// 					CODE: code,
+// 					status: status,
+// 					token: token,
+// 					banjiid: banjiid,
+					riqi: datetime,
+				},
+				dataType: 'json',
+				cache: false,
+				//timeout: 10000,
+				success: function(data) {
+var data = eval(data.shuju);
+					
+					if (data) {
+						var event = [];              
+						if (data.kechengs != null || data.kechengs != "") {
+							for (var i = 0; i < data.kechengs.length; i++) {
+								var jieshu_time = datetime + ' ' + data.kechengs[i].jieshushijian;
+								if (time <= jieshu_time) {
+									event.push({
+										id: data.kechengs[i].id + ",1",
+										title: "地点：" + data.kechengs[i].xiaoquming + " " + data.kechengs[i].jiaoshiming + "@-@课程：" + data.kechengs[i].kechengmingcheng,
+										start: datetime + " " + data.kechengs[i].kaishishijian,
+										color: '#32CD32;',
+										end: datetime + " " + data.kechengs[i].jieshushijian,
+									});
+								} else {
+									event.push({
+										id: data.kechengs[i].id + ",1",
+										title: "地点：" + data.kechengs[i].xiaoquming + " " + data.kechengs[i].jiaoshiming + "@-@课程：" + data.kechengs[i].kechengmingcheng,
+										start: datetime + " " + data.kechengs[i].kaishishijian,
+										color: 'gray;',
+										end: datetime + " " + data.kechengs[i].jieshushijian,
+									});
+								}
+							}
+						}
+						if (data.huodongs != null || data.huodongs != "") {
+							for (var j = 0; j < data.huodongs.length; j++) {
+								var jieshu_time = datetime + ' ' + data.huodongs[j].jieshushijian;
+								if (time <= jieshu_time) {
+									if (data.huodongs[j].zhuangtai == "0") {
+										event.push({
+											id: data.huodongs[j].huodongid + ",2",
+											title: "地点：" + data.huodongs[j].didian + "@-@待确认活动：" + data.huodongs[j].huodongmingcheng,
+											start: datetime + " " + data.huodongs[j].kaishishijian,
+											color: '#EEAD0E;',
+											end: datetime + " " + data.huodongs[j].jieshushijian,
+										});
+									} else {
+										event.push({
+											id: data.huodongs[j].huodongid + ",2",
+											title: "地点：" + data.huodongs[j].didian + "@-@活动：" + data.huodongs[j].huodongmingcheng,
+											start: datetime + " " + data.huodongs[j].kaishishijian,
+											color: '#EEAD0E;',
+											end: datetime + " " + data.huodongs[j].jieshushijian,
+										});
+									}
+								} else {
+									if (data.huodongs[j].zhuangtai == "0") {
+										event.push({
+											id: data.huodongs[j].huodongid + ",2",
+											title: "地点：" + data.huodongs[j].didian + "@-@待确认活动：" + data.huodongs[j].huodongmingcheng,
+											start: datetime + " " + data.huodongs[j].kaishishijian,
+											color: 'gray;',
+											end: datetime + " " + data.huodongs[j].jieshushijian,
+										});
+									} else {
+										event.push({
+											id: data.huodongs[j].huodongid + ",2",
+											title: "地点：" + data.huodongs[j].didian + "@-@活动：" + data.huodongs[j].huodongmingcheng,
+											start: datetime + " " + data.huodongs[j].kaishishijian,
+											color: 'gray;',
+											end: datetime + " " + data.huodongs[j].jieshushijian,
+										});
+									}
+								}
+							}
+						}
+						if (data.beiwanglus != null && data.beiwanglus != "") {
+							for (var k = 0; k < data.beiwanglus.length; k++) {
+								if (time <= data.beiwanglus[k].shijian) {
+									event.push({
+										id: data.beiwanglus[k].id + ",3",
+										title: "地点：" + data.beiwanglus[k].didian + "@-@事件：" + data.beiwanglus[k].neirong,
+										start: data.beiwanglus[k].shijian,
+										color: '#87CEFA;',
+									});
+								} else {
+									event.push({
+										id: data.beiwanglus[k].id + ",3",
+										title: "地点：" + data.beiwanglus[k].didian + "@-@事件：" + data.beiwanglus[k].neirong,
+										start: data.beiwanglus[k].shijian,
+										color: 'gray;',
+									});
+								}
+
+							}
+						}
+// 						if (data.tixings != null && data.tixings != "") {
+// 							for (var k = 0; k < data.tixings.length; k++) {
+// 								if (time <= data.tixings[k].shijian) {
+// 									event.push({
+// 										id: data.tixings[k].id + ",5",
+// 										title:  "@-@提醒：" + data.tixings[k].neirong,
+// 										start: data.tixings[k].shijian,
+// 										color: '#87CEFF;',
+// 									});
+// 								} else {
+// 									event.push({
+// 										id: data.tixings[k].id + ",5",
+// 										title: "@-@提醒：" + data.tixings[k].neirong,
+// 										start: data.tixings[k].shijian,
+// 										color: 'gray;',
+// 									});
+// 								}
+
+// 							}
+// 						}
+						if(data.anPais!=null&&data.anPais!=""){
+							var rc = eval(data.anPais);
+							for(var i=0;i<rc.length;i++){
+								
+							var jieshu_time = rc[i].riqi + ' ' + rc[i].jieshushijian;
+								if (time <= jieshu_time) {
+									event.push({
+										id: rc[i].anpaiid + ",4,"+ rc[i].jieguo+","+rc[i].jiaoshiid,
+										title: "宿舍查寝@-@拍照要求：" + rc[i].paizhaoyaoqiu,
+										start: datetime + " " + rc[i].kaishishijian,
+										color: '#FFB5C5;',
+										end: datetime + " " + rc[i].jieshushijian,
+									});
+								}
+								else{
+									event.push({
+										id: rc[i].anpaiid + ",4,"+ rc[i].jieguo+","+rc[i].jiaoshiid,
+										title: "宿舍查寝@-@拍照要求：" + rc[i].paizhaoyaoqiu,
+										start: datetime + " " + rc[i].kaishishijian,
+										color: 'gray;',
+										end: datetime + " " + rc[i].jieshushijian,
+									});
+								}
+								
+							}
+						}
+						callback(eval(event));
+					} else {
+						alert("已登出");
+						api.hideProgress();
+						var jsfun = 'logout();';
+						api.execScript({
+						    name: 'index',
+						    script: jsfun
+						});
+					}
+				},
+				error: function() {
+					alert("超时！");
+					api.hideProgress();
+				}
+			});
+		}
+		/*
+		var events = [{
+			title: 'All Day Event',
+			start: '2018-03-01'
+		}, {
+			id: 999,
+			title: 'Repeating Event',
+			start: '2018-03-09 16:00:00'
+		}, {
+			id: 999,
+			title: 'Repeating Event',
+			start: '2018-03-16 16:00:00'
+		}, {
+			title: 'Conference',
+			start: '2018-03-11',
+			end: '2018-03-13'
+		}, {
+			id: "ffffff",
+			title: '地点：什么什么楼@-@课程：计算机应用基础',
+
+			start: '2018-03-07 10:30:00',
+			color: 'red',
+			end: '2018-03-07 12:30:00'
+		}, {
+			id: 2,
+			title: 'Meeting',
+			start: '2018-03-07 13:30:00',
+			color: 'blue',
+			end: '2018-03-07 14:30:00'
+		}, {
+			id: '3',
+			title: 'Meeting',
+			start: '2018-03-07 13:30:00',
+			end: '2018-03-07 16:30:00'
+		}, {
+			id: '34',
+			title: '交作业',
+			start: '2018-03-07 13:30:00',
+			end: '2018-03-07 13:30:00'
+		}, {
+			title: 'Lunch',
+			start: '2018-03-12 12:00:00'
+		}, {
+			title: 'Meeting',
+			start: '2018-03-12 14:30:00'
+		}, {
+			title: 'Happy Hour',
+			start: '2018-03-12 17:30:00'
+		}, {
+			title: 'Dinner',
+			start: '2018-03-12 20:00:00'
+		}, {
+			title: 'Birthday</br>Party',
+			start: '2018-03-13 07:00:00'
+		}, {
+			title: 'Click for Google',
+			url: 'http://google.com/',
+			start: '2018-03-28'
+		}];
+		callback(events);*/
+	}
+
+	function toDo(event, jsEvent, view) {
+		var jsName = $api.getStorage('addMessager_rc');
+		if(!jsName){
+			$api.setStorage('addMessager_rc','richeng');
+		}
+		var items = event.id.split(",");
+		if (items[1] == "1") {
+			api.openWin({
+				name: 'richeng_to_kecheng_title',
+				url: "common/richeng_to_kecheng_title.html",
+				pageParam: {
+					id: items[0],
+				},
+				reload: true,
+				allowEdit:true
+			});
+
+		} else if (items[1] == "2") {
+			if (event.title.indexOf("待确认") != -1) {
+				var zhuangtai = 0;
+			} else {
+				var zhuangtai = 1;
+			}
+			api.openWin({
+				name: 'richeng_to_huodong_title',
+				url: "common/richeng_to_huodong_title.html",
+				pageParam: {
+					id: items[0],
+					zhuangtai: zhuangtai,
+				},
+				reload: true,
+				allowEdit:true
+			});
+
+		} else if(items[1] == "3"){
+			
+			api.openWin({
+				name: 'richeng_to_beiwang_title',
+				url: "common/richeng_to_beiwang_title.html",
+				pageParam: {
+					id: items[0],
+				},
+				reload: true,
+				allowEdit:true
+			});
+		} else if(items[1] == "4"){
+			var rilitime=$api.getStorage('rilitime');
+			api.openWin({
+	            name: 'richeng_to_chaqintitle',
+				url: "common/richeng_to_chaqintitle.html",
+				pageParam: {
+					id: items[0],
+				},
+				reload: true,
+				allowEdit:true
+            });
+		}
+	}
+
+</script>
