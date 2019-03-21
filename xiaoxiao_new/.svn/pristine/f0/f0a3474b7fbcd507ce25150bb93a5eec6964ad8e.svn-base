@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.App_ShiJianTiMapper">
+	<resultMap id="BaseResultMap"
+		type="com.web.model.App_ShiJianTi">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="tiMuID" property="timuid" jdbcType="INTEGER" />
+		<result column="shiFouShenHe" property="shifoushenhe"
+			jdbcType="INTEGER" />
+		<result column="shiXiID" property="shixiid" jdbcType="INTEGER" />
+		<result column="rongLiang" property="rongliang"
+			jdbcType="INTEGER" />
+		<result column="xueShengID" property="xueshengid" jdbcType="VARCHAR" />
+		<result column="mingCheng" property="mingcheng" jdbcType="VARCHAR" />
+		<result column="shiZhi" property="shezhi" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,tiMuID,shiFouShenHe,shiXiID,rongLiang,xueShengID,mingCheng,sheZhi
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_shijianti
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="getShiJianTiByShiXiId" resultType="map"
+		parameterType="java.lang.Integer">
+		<!-- select -->
+		<!-- ID,tiMuID,shiFouShenHe,shiXiID,rongLiang,sheZhi,shangChuanRenID,mingCheng -->
+		<!-- from app_shijianti as shijianti left join app_kaotiku as kaotiku on 
+			shijianti.tiMuID = kaotiku.ID -->
+		<!-- where shijianti.shiXiID = #{shixiid,jdbcType=INTEGER} -->
+		SELECT sjt.ID as kaotiid,tiMuID as
+		kaotikuid,shiXiID,rongLiang,xueShengID,ktk.mingCheng as
+		kaotimingcheng,sjt.mingCheng as fabumingcheng,yh.yongHuXingMing as laoshixingming,sheZhi,shiFouShenHe from app_shijianti
+		as sjt LEFT JOIN app_kaotiku as ktk on sjt.tiMuID = ktk.ID left JOIN
+		yonghu as yh on ktk.shangChuanRenID = yh.ID where sjt.shiXiID = #{shixiid,jdbcType=INTEGER}
+	</select>
+	<select id="getKaoTiByLaoShiId" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select
+		sjt.ID as kaotiid,tiMuID as kaotikuid,sheZhi,shiFouShenHe,shiXiID,rongLiang,xueShengID,shangChuanRenID,ktk.mingCheng as kaotimingcheng,sjt.mingCheng as fabumingcheng
+		from app_shijianti as sjt left join app_kaotiku as ktk on
+		sjt.tiMuID = ktk.ID
+		where ktk.shangChuanRenID =
+		#{0,jdbcType=INTEGER} and sjt.shiXiID = #{1,jdbcType=INTEGER} 
+	</select>
+	<select id="getKaoTiList" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_shijianti
+		where shiXiID = #{shixiid,jdbcType=INTEGER}
+	</select>
+	<insert id="insert" parameterType="com.web.model.App_ShiJianTi">
+		<!-- useGeneratedKeys="true" keyProperty="id" > -->
+		<selectKey keyProperty="id" order="AFTER"
+			resultType="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into app_shijianti
+		(tiMuID,shiFouShenHe,shiXiID,rongLiang,xueShengID,mingCheng,sheZhi)
+		values
+		(
+		#{timuid,jdbcType=INTEGER},
+		#{shifoushenhe,jdbcType=INTEGER},
+		#{shixiid,jdbcType=INTEGER},
+		#{rongliang,jdbcType=INTEGER},
+		#{xueshengid,jdbcType=VARCHAR},
+		#{mingcheng,jdbcType=VARCHAR},
+		#{shezhi,jdbcType=VARCHAR}
+		)
+	</insert>
+	<update id="update" parameterType="com.web.model.App_ShiJianTi">
+		update app_shijianti
+		<set>
+			<if test="timuid != null">
+				tiMuID = #{timuid,jdbcType=INTEGER},
+			</if>
+			<if test="shifoushenhe != null">
+				shiFouShenHe = #{shifoushenhe,jdbcType=INTEGER},
+			</if>
+			<if test="shixiid != null">
+				shiXiID = #{shixiid,jdbcType=INTEGER},
+			</if>
+			<if test="rongliang != null">
+				rongLiang = #{rongliang,jdbcType=INTEGER},
+			</if>
+			<if test="xueshengid != null">
+				xueShengID = #{xueshengid,jdbcType=VARCHAR},
+			</if>
+			<if test="mingcheng != null">
+				mingCheng = #{mingcheng,jdbcType=VARCHAR},
+			</if>
+			<if test="shezhi != null">
+				sheZhi = #{shezhi,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<delete id="delete"  parameterType="java.lang.Integer">
+		delete from app_shijianti where ID = #{id,jdbcType = INTEGER}
+	</delete>
+</mapper>

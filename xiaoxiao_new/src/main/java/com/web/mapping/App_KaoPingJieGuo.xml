@@ -14,10 +14,11 @@
 		<result column="pingJunFen" property="pingJunFen" jdbcType="DOUBLE" />
 		<result column="zuiHongFen" property="zuiZhongDeFen" jdbcType="DOUBLE" />
 		<result column="deFen" property="quMaxAndMin" jdbcType="DOUBLE" />
+		<result column="zongHeFen" property="zonghefen" jdbcType="DOUBLE" />
 		<result column="mingCi" property="mingCi" jdbcType="INTEGER" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		ID,kaoPingID,xueXiZuID,paiXu,zhaoPian,faYanRenID,zhuangTai,zongDeFen,kouFen,pingJunFen,zuiHongFen,deFen,mingCi
+		ID,kaoPingID,xueXiZuID,paiXu,zhaoPian,faYanRenID,zhuangTai,zongDeFen,kouFen,pingJunFen,zuiHongFen,deFen,zongHeFen,mingCi
 	</sql>
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
 		parameterType="java.lang.Integer">
@@ -59,7 +60,7 @@
 			LAST_INSERT_ID()
 		</selectKey>
 		insert into app_kaopingjieguo
-		(kaoPingID,xueXiZuID,paiXu,zhaoPian,faYanRenID,zhuangTai,zongDeFen,kouFen,pingJunFen,zuiHongFen,deFen,mingCi)
+		(kaoPingID,xueXiZuID,paiXu,zhaoPian,faYanRenID,zhuangTai,zongDeFen,kouFen,pingJunFen,zuiHongFen,deFen,zongHeFen,mingCi)
 		values
 		(
 		#{kaoPingId,jdbcType=INTEGER},
@@ -73,7 +74,9 @@
 		#{pingJunFen,jdbcType=DOUBLE},
 		#{zuiZhongDeFen,jdbcType=DOUBLE},
 		#{quMaxAndMin,jdbcType=DOUBLE},
-		#{mingCi,jdbcType=INTEGER})
+		#{zonghefen,jdbcType=DOUBLE},
+		#{mingCi,jdbcType=INTEGER}
+		)
 	</insert>
 	<update id="update" parameterType="com.web.model.App_KaoPingJieGuo">
 		update app_kaopingjieguo
@@ -113,6 +116,9 @@
 			</if>
 			<if test="mingCi != null">
 				mingCi = #{mingCi,jdbcType=INTEGER},
+			</if>
+			<if test="zonghefen != null">
+				zongHeFen = #{zonghefen,jdbcType=DOUBLE},
 			</if>
 		</set>
 		where ID = #{id,jdbcType=INTEGER}

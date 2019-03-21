@@ -11,9 +11,11 @@
 		<result column="fenShuZhanBi" property="fenShuZhanBi" jdbcType="DOUBLE" />
 		<result column="kaiShiShiJian" property="kaiShiShiJian"
 			jdbcType="VARCHAR" />
+			<result column="isCanJia" property="iscanjia"
+			jdbcType="VARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		ID,keChengID,kaoPingMingCheng,zhuangTai,fenShuZhanBi,kaiShiShiJian
+		ID,keChengID,kaoPingMingCheng,zhuangTai,fenShuZhanBi,kaiShiShiJian,isCanJia
 	</sql>
 	<select id="getKaoPing" resultType="java.util.Map"
 		parameterType="java.lang.Integer">
@@ -30,6 +32,14 @@
 		from app_kechengkaoping
 		where keChengID =
 		#{shiJianKeChengId,jdbcType=INTEGER}
+	</select>
+	<select id="getkaopingMap" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kechengkaoping
+		where ID =
+		#{id,jdbcType=INTEGER}
 	</select>
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
 		parameterType="java.lang.Integer">
@@ -93,13 +103,14 @@
 
 	<insert id="insert" parameterType="com.web.model.App_KeChengKaoPing">
 		insert into app_kechengkaoping
-		(ID,keChengID,kaoPingMingCheng,zhuangTai,fenShuZhanBi,kaiShiShiJian)
+		(ID,keChengID,kaoPingMingCheng,zhuangTai,fenShuZhanBi,kaiShiShiJian,isCanJia)
 		values (#{id,jdbcType=INTEGER},
 		#{shiJianKeChengId,jdbcType=INTEGER},
 		#{kaoPingMingCheng,jdbcType=VARCHAR},
 		#{zhuangTai,jdbcType=INTEGER},
 		#{fenShuZhanBi,jdbcType=DOUBLE},
-		#{kaiShiShiJian,jdbcType=VARCHAR})
+		#{kaiShiShiJian,jdbcType=VARCHAR},
+		#{iscanjia,jdbcType=VARCHAR})
 	</insert>
 
 	<update id="update" parameterType="com.web.model.App_KeChengKaoPing">
@@ -119,6 +130,9 @@
 			</if>
 			<if test="kaiShiShiJian != null">
 				kaiShiShiJian = #{kaiShiShiJian,jdbcType=VARCHAR},
+			</if>
+			<if test="iscanjia != null">
+				isCanJia = #{iscanjia,jdbcType=VARCHAR},
 			</if>
 		</set>
 		where ID = #{id,jdbcType=INTEGER}

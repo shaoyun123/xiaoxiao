@@ -10,9 +10,10 @@
 		<result column="qianDao" property="qianDao" jdbcType="VARCHAR" />
 		<result column="xiaoZuPaiXu" property="xiaozupaixu" jdbcType="VARCHAR" />
 		<result column="zhuangTai" property="zhuangTai" jdbcType="INTEGER" />
+		<result column="laoShiPingFen" property="laoshipingfen" jdbcType="VARCHAR" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		ID,kaoPingID,daZuxuHao,chouQian,dangQianZuID,qianDao,xiaoZuPaiXu,zhuangTai
+		ID,kaoPingID,daZuxuHao,chouQian,dangQianZuID,qianDao,xiaoZuPaiXu,zhuangTai,laoShiPingFen
 	</sql>
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
 		parameterType="java.lang.Integer">
@@ -23,6 +24,14 @@
 	</select>
 	<!---->
 	<select id="selectByPrimaryKey1" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{0,jdbcType=INTEGER} and
+		daZuxuHao = #{1,jdbcType=INTEGER}
+	</select>
+	<select id="selectByPrimaryKey2" resultType="java.util.Map"
 		parameterType="java.lang.Integer">
 		select
 		<include refid="Base_Column_List" />
@@ -53,21 +62,37 @@
 				xiaoZuPaiXu = #{xiaozupaixu,jdbcType=VARCHAR},
 			</if>
 			<if test="zhuangTai != null">
-				zhuangTai = #{zhuangTai,jdbcType=INTEGER}
+				zhuangTai = #{zhuangTai,jdbcType=INTEGER},
+			</if>
+			<if test="laoshipingfen != null">
+				laoShiPingFen = #{laoshipingfen,jdbcType=VARCHAR}
 			</if>
 		</set>
 		where ID = #{id,jdbcType=INTEGER}
 	</update>
 
+	<select id="getchouqianbyfenzu" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{kaopingid,jdbcType=INTEGER} 
+	</select>
+	
+	<select id="getchouqianbyfenzu1" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{kaopingid,jdbcType=INTEGER} 
+	</select>
 	<select id="selectchouqian" resultType="java.util.Map"
 		parameterType="java.util.Map">
 		select
 		<include refid="Base_Column_List" />
 		from app_kaopingchouqian
 		where kaoPingID = #{kaopingid} 
-		<if test="dazuid != null">
 			and	daZuxuHao = #{dazuid}
-			</if>
 	</select>
 	
 	<select id="selectchouqian2" resultMap="BaseResultMap"
@@ -87,9 +112,19 @@
 		<include refid="Base_Column_List" />
 		from app_kaopingchouqian
 		where kaoPingID = #{kaopingid} 
-		<if test="dazuid != null">
-			and	daZuxuHao = #{dazuid}
-			</if>
+	</select>
+	
+	<select id="getByDaZu" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{kaopingid} 
+			and	<foreach collection="
+		dazuids " index="index" item="item"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
 	</select>
 
 	<insert id="insert" parameterType="com.web.model.App_KaoPingChouQian">
@@ -98,13 +133,14 @@
 			LAST_INSERT_ID()
 		</selectKey>
 		insert into app_kaopingchouqian
-		(kaoPingID,daZuxuHao,chouQian,dangQianZuID,qianDao,xiaoZuPaiXu,zhuangTai)
+		(kaoPingID,daZuxuHao,chouQian,dangQianZuID,qianDao,xiaoZuPaiXu,zhuangTai,laoShiPingFen)
 		values (#{kaoPingId,jdbcType=INTEGER},
 		#{daZuXuHao,jdbcType=INTEGER}, #{chouQian,jdbcType=VARCHAR},
 		#{dangQianZuId,jdbcType=INTEGER},
 		#{qianDao,jdbcType=VARCHAR},
 		#{xiaozupaixu,jdbcType=VARCHAR},
-		#{zhuangTai,jdbcType=INTEGER}
+		#{zhuangTai,jdbcType=INTEGER},
+		#{laoshipingfen,jdbcType=VARCHAR}
 		)
 	</insert>
 </mapper>

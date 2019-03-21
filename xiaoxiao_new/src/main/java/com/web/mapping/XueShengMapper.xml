@@ -530,4 +530,15 @@
 			#{item}
 		</foreach>
 	</select>
+	<select id="selectByXueShengIDs2" parameterType="java.util.List"
+		resultType="java.util.Map">
+		select
+			xuesheng.ID as ID,xingMing as xingming,banJiMingCheng as banjimingcheng,xueHao as xuehao
+		from xuesheng  LEFT JOIN banji ON xuesheng.banJiID = banji.ID
+		where xuesheng.ID in
+		<foreach collection="list"  index="index"  item="item"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
 </mapper>

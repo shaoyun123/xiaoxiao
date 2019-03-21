@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.App_KaoPingChouQianMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.App_KaoPingChouQian">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="kaoPingID" property="kaoPingId" jdbcType="INTEGER" />
+		<result column="daZuxuHao" property="daZuXuHao" jdbcType="INTEGER" />
+		<result column="chouQian" property="chouQian" jdbcType="VARCHAR" />
+		<result column="dangQianZuID" property="dangQianZuId" jdbcType="INTEGER" />
+		<result column="qianDao" property="qianDao" jdbcType="VARCHAR" />
+		<result column="xiaoZuPaiXu" property="xiaozupaixu" jdbcType="VARCHAR" />
+		<result column="zhuangTai" property="zhuangTai" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,kaoPingID,daZuxuHao,chouQian,dangQianZuID,qianDao,xiaoZuPaiXu,zhuangTai
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<!---->
+	<select id="selectByPrimaryKey1" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{0,jdbcType=INTEGER} and
+		daZuxuHao = #{1,jdbcType=INTEGER}
+	</select>
+	<select id="selectByPrimaryKey2" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{0,jdbcType=INTEGER} and
+		daZuxuHao = #{1,jdbcType=INTEGER}
+	</select>
+
+	<update id="updateByPrimaryKey" parameterType="com.web.model.App_KaoPingChouQian">
+		update app_kaopingchouqian
+		<set>
+			<if test="kaoPingId != null">
+				kaoPingID = #{kaoPingId,jdbcType=INTEGER},
+			</if>
+			<if test="daZuXuHao != null">
+				daZuxuHao = #{daZuXuHao,jdbcType=INTEGER} ,
+			</if>
+			<!-- <if test="chouQian != null"> -->
+			chouQian = #{chouQian,jdbcType=VARCHAR},
+			<!-- </if> -->
+			<if test="dangQianZuId != null ">
+				dangQianZuID = #{dangQianZuId} ,
+			</if>
+			<if test="qianDao != null">
+				qianDao = #{qianDao,jdbcType=VARCHAR},
+			</if>
+			<if test="xiaozupaixu != null">
+				xiaoZuPaiXu = #{xiaozupaixu,jdbcType=VARCHAR},
+			</if>
+			<if test="zhuangTai != null">
+				zhuangTai = #{zhuangTai,jdbcType=INTEGER}
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="getchouqianbyfenzu" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{kaopingid,jdbcType=INTEGER} 
+	</select>
+	
+	<select id="getchouqianbyfenzu1" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{kaopingid,jdbcType=INTEGER} 
+	</select>
+	<select id="selectchouqian" resultType="java.util.Map"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{kaopingid} 
+			and	daZuxuHao = #{dazuid}
+	</select>
+	
+	<select id="selectchouqian2" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{kaopingid} 
+		<if test="dazuid != null">
+			and	daZuxuHao = #{dazuid}
+			</if>
+	</select>
+	
+	<select id="getchouqian" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{kaopingid} 
+	</select>
+	
+	<select id="getByDaZu" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from app_kaopingchouqian
+		where kaoPingID = #{kaopingid} 
+			and	<foreach collection="
+		dazuids " index="index" item="item"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<insert id="insert" parameterType="com.web.model.App_KaoPingChouQian">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into app_kaopingchouqian
+		(kaoPingID,daZuxuHao,chouQian,dangQianZuID,qianDao,xiaoZuPaiXu,zhuangTai)
+		values (#{kaoPingId,jdbcType=INTEGER},
+		#{daZuXuHao,jdbcType=INTEGER}, #{chouQian,jdbcType=VARCHAR},
+		#{dangQianZuId,jdbcType=INTEGER},
+		#{qianDao,jdbcType=VARCHAR},
+		#{xiaozupaixu,jdbcType=VARCHAR},
+		#{zhuangTai,jdbcType=INTEGER}
+		)
+	</insert>
+</mapper>

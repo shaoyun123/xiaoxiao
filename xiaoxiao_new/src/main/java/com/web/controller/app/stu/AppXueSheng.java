@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.web.model.XueSheng;
 import com.alibaba.fastjson.JSON;
@@ -600,8 +601,8 @@ public class AppXueSheng extends BaseController {
 			Date date1 = new Date();
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			String datetime = format.format(date1);
-			int res = datetime.compareTo(kaishishijian);
-			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+			int res = datetime.compareTo(kaishishijian);	
+//			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 			// List<MultipartFile> files =
 			// multipartRequest.getFiles("zhengming");
 			if (res > 0) {
@@ -614,8 +615,8 @@ public class AppXueSheng extends BaseController {
 			map.put("kaishishijian", kaishishijian);
 			map.put("jieshushijian", jieshushijian);
 			map.put("shenqingshijian", df.format(date));
-			List<MultipartFile> files = multipartRequest.getFiles("files");
-			if (files.isEmpty()) {
+//			List<MultipartFile> files = multipartRequest.getFiles("files");
+//			if (files.isEmpty()) {
 				int i = qingjiaService.insertByXueShengID(map);
 				if (i != 0) {
 					retInfo = "success";
@@ -624,36 +625,36 @@ public class AppXueSheng extends BaseController {
 					retInfo = "fail";
 					return retInfo;
 				}
-			} else {
-				MultipartFile newFile;
-				StringBuffer sBuffer = new StringBuffer();
-				for (int i = 0; i < files.size(); i++) {
-					newFile = files.get(i);
-					if (newFile.isEmpty()) {
-						continue;
-					}
-					String s = newFile.getOriginalFilename();
-					String Type = s.substring(s.lastIndexOf(".") + 1);
-					String filename = UUID.randomUUID().toString().replaceAll("-", "");
-					String path = request.getSession().getServletContext().getRealPath("/") + "upload" + File.separator;
-					File localFile = new File(path);
-					if (!localFile.exists()) {
-						localFile.mkdirs();
-					}
-					localFile = new File(path + filename + "." + Type);
-					newFile.transferTo(localFile);
-					sBuffer.append(filename + "." + Type + ",");
-				}
-				map.put("bingjiazhengming", sBuffer.toString());
-				int i = qingjiaService.insertByXueShengIDWithFile(map);
-				if (i != 0) {
-					retInfo = "success";
-					return retInfo;
-				} else {
-					retInfo = "fail";
-					return retInfo;
-				}
-			}
+//			} else {
+//				MultipartFile newFile;
+//				StringBuffer sBuffer = new StringBuffer();
+//				for (int i = 0; i < files.size(); i++) {
+//					newFile = files.get(i);
+//					if (newFile.isEmpty()) {
+//						continue;
+//					}
+//					String s = newFile.getOriginalFilename();
+//					String Type = s.substring(s.lastIndexOf(".") + 1);
+//					String filename = UUID.randomUUID().toString().replaceAll("-", "");
+//					String path = request.getSession().getServletContext().getRealPath("/") + "upload" + File.separator;
+//					File localFile = new File(path);
+//					if (!localFile.exists()) {
+//						localFile.mkdirs();
+//					}
+//					localFile = new File(path + filename + "." + Type);
+//					newFile.transferTo(localFile);
+//					sBuffer.append(filename + "." + Type + ",");
+//				}
+//				map.put("bingjiazhengming", sBuffer.toString());
+//				int i = qingjiaService.insertByXueShengIDWithFile(map);
+//				if (i != 0) {
+//					retInfo = "success";
+//					return retInfo;
+//				} else {
+//					retInfo = "fail";
+//					return retInfo;
+//				}
+//			}
 		} else {
 			return null;
 		}

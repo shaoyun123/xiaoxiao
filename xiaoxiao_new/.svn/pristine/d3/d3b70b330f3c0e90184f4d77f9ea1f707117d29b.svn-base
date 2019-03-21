@@ -1,0 +1,170 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page isELIgnored="false"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<div class="box span12">
+	<div class="box-header">
+		<h2>
+			<i class="icon-align-justify"></i><span class="break"></span>实践课设置
+		</h2>
+	</div>
+	<div class="box-content">
+		<form action="" class="form-horizontal" method="post" id="forms">
+<%-- 		<input id="id" name="id" type="hidden" size="30" value= "${kechengid}" /> --%>
+				<div class="control-group">
+				<label class="control-label">选择实践课：</label>
+				<div class="controls">
+					<select id="kechengid" name="kechengid" style="width: 100px;">
+						<option value="">--请选择--</option>
+						<c:forEach items="${shijiankelist}" var="shijianke">
+							<option value="${shijianke.ID}">${shijianke.kechengmingcheng}</option>
+						</c:forEach>
+					</select>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">分大组：</label>
+				<div class="controls">
+				<select id="fendazu" name="fendazu" style="width: 100px;" onchange="show(this.id)">
+						<option value="">--请选择--</option>
+						<option value="1">是</option>
+						<option value="0">否</option>
+				</select>
+				</div>
+			</div>
+			
+			<div class="control-group" id="dazuid" style = "display:none" >
+				<label class="control-label">指定大组长：</label>
+				<div class="controls" >
+					<select id="dazuzhangid" name="dazuzhangid" style="width: 100px;">
+						<option value="">--请选择--</option>
+<%-- 						<c:forEach items="${xueshengs}" var="xuesheng"> --%>
+<%-- 							<option value="${xuesheng.xueshengid}">${xuesheng.xingming}</option> --%>
+<%-- 						</c:forEach> --%>
+					</select>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label">分小组：</label>
+				<div class="controls">
+					<select id="fenxiaozu" name="fenxiaozu" style="width: 100px;" onchange="show(this.id)">
+						<option value="">--请选择--</option>
+							<option value="1">是</option>
+							<option value="0">否</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="control-group" id= "xiaozurongliang" style = "display:none">
+				<label class="control-label">小组容量：</label>
+				<div class="controls">
+					<input id="rongliang" name="rongliang" type="number" size="30" />
+					<span
+						class="" help-inline>请输入整数!</span>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label class="control-label" for="focusedInput"></label>
+				<div class="controls">
+					<button type="button" style="margin-left: 30px;"
+						class="btn btn-success" value="保存" onclick="save()">保存</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<script type="text/javascript">
+	function save() {
+		var id  = $("#kechengid").val();
+		if ($("#fendzu").val() == "") {
+			alert("请选择是否分大组！");
+			return false;
+		} 
+		if ($("#rongliang").val() == "") {
+			alert("请填写小组容量！");
+			return false;
+		}
+		if ($("#fenxiaozu").val() == "") {
+			alert("请选择是否分小组！");
+			return false;
+		}
+		if($("#fendzu").val() == "0")
+		if ($("#dazuzhangid").val() == "") {
+			alert("请选择大组长！");
+			return false;
+		}
+		$.ajax({
+			type : "POST",
+			url : 'saveupdateshezhi',
+			data : $("#forms").serialize(),
+			dataType : 'json',
+			cache : false,
+			timeout : 5000,
+			async : true,
+			success : function(data) {
+				if (data.status == "success") {
+					alert("设置成功！");
+				} else {
+					alert("设置失败");
+				}
+// 				toContentPage("getxiaozu?id=" + id);
+				toContentPage("shijiankeshezhi");
+// 				window.location.reload();
+			},
+			error : function() {
+				alert("登录超时!")
+			}
+		});
+	}
+	
+	function show(id) {
+		var fenzu = document.getElementById(id).value;
+		if(id=="fenxiaozu"){
+			if(fenzu == 1){
+				$("#xiaozurongliang").show();
+			}
+		}
+		if(id=="fendazu"){
+			if(fenzu == 0){
+				getshijianke();
+				$("#dazuid").show();
+			}
+		}
+	}
+	function getshijianke(){
+		var id  = $("#kechengid").val();
+		if(id==""){
+			alert("请选择实践课!");
+			return false;
+		}
+		$.ajax({
+			type : "POST",
+			url : 'getunfenzuxuesheng',
+			data : {"shijiankeid":id},
+			dataType : 'json',
+			cache : false,
+			timeout : 5000,
+			async : true,
+			success : function(data) {
+				var code = "";
+// 				code+='<select id="dazuzhangid" name="dazuzhangid" style="width: 100px;">';
+// 				code+="<option value="">--请选择--</option>";
+				for(var i =0;i<data.xueshengs.length;i++){
+// 				code += '<option value="'+data.xueshengs[i].xueshengid+'">'
+// 				+ data.xueshengs[i].xingming + '</option>';
+				$("#dazuzhangid").append('<option value="'+data.xueshengs[i].xueshengid+'">'
+						+ data.xueshengs[i].xingming + '</option>');
+				}
+// 				$("#dazuzhangid").append(code);
+// 				code+="</select>";
+			},
+			error : function() {
+				alert("登录超时!")
+			}
+		});
+	}
+</script>
+</body>
+</html>

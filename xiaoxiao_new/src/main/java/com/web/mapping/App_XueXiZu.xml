@@ -57,6 +57,14 @@
 		#{shiJianKeChengId,jdbcType=INTEGER} and chengYuanIDLieBiao like
 		#{chengYuanLieBiao,jdbcType=VARCHAR}
 	</select>
+	<select id="selectXueXiZuByXsID1" resultType="java.util.Map"
+		parameterType="com.web.model.App_XueXiZu">
+		select *
+		from app_xuexizu
+		where keChengID =
+		#{shiJianKeChengId,jdbcType=INTEGER} and chengYuanIDLieBiao like
+		#{chengYuanLieBiao,jdbcType=VARCHAR}
+	</select>
 	<select id="getXueXiZuByKeCheng" resultMap="BaseResultMap"
 		parameterType="java.lang.Integer">
 		select *
@@ -88,7 +96,7 @@
 		chengYuanIDLieBiao,
 		kpjg.ID AS kaopingjieguoid,
 		kpjg.paiXu,zongDeFen as zongdefen,kouFen as zongkoufen,pingJunFen as
-		average,zhaoPian,faYanRenID,zuiHongFen as finalscore,deFen as
+		average,zhaoPian,faYanRenID,zuiHongFen as finalscore,zonghefen,deFen as
 		quMaxAndMin,
 		mingCi as mingci
 		FROM
@@ -106,6 +114,21 @@
 		</foreach>
 		ORDER BY  mingci DESC
 	</select>
+	
+	<select id="getByXiaoZuIDs" resultType="java.util.Map"
+		parameterType="java.util.Map">
+		SELECT
+		* from app_xuexizu
+		WHERE
+		keChengID = #{kechengid}
+		AND ID in
+		<foreach collection="
+		xiaozuids " index="index" item="item"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
 	<select id="selectBykaoPingIdAndXueshengId" resultType="java.util.Map"
 		parameterType="java.util.Map">
 		SELECT kp.ID as kaopingid,kp.keChengID as

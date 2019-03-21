@@ -1,0 +1,402 @@
+package com.web.controller.app.jiaoshi;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.tools.ant.filters.LineContains.Contains;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.web.model.App_KaoTiKu;
+import com.web.model.App_ShiJianTi;
+import com.web.model.JiaoShi;
+import com.web.model.JiaoXueLou;
+import com.web.model.KeCheng;
+import com.web.model.XiaoQu;
+import com.web.model.XueQi;
+import com.web.model.XueSheng;
+import com.web.model.YongHu;
+import com.web.service.App_FenZuService;
+import com.web.service.App_KaoPingChouQianService;
+import com.web.service.App_KaoPingJieGuoService;
+import com.web.service.App_KaoTiKuService;
+import com.web.service.App_KeChengKaoPingService;
+import com.web.service.App_ShiJianTiService;
+import com.web.service.App_XueXiZuService;
+import com.web.service.BanJiService;
+import com.web.service.JiaoShiService;
+import com.web.service.JiaoXueLouService;
+import com.web.service.KeChengService;
+import com.web.service.NianFenService;
+import com.web.service.XiaoQuService;
+import com.web.service.XueQiService;
+import com.web.service.XueShengService;
+import com.web.service.YongHuService;
+import com.web.service.YuanXiService;
+import com.web.util.Util;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
+import net.sf.json.JSONObject;
+
+@Controller
+public class ShiXiController {
+	@Autowired
+	private KeChengService kechengService;
+	@Autowired
+	private JiaoShiService jiaoshiService;
+	@Autowired
+	private JiaoXueLouService jiaoXueLouService;
+	@Autowired
+	private XiaoQuService xiaoquService;
+	@Autowired
+	private YongHuService yongHuService;
+	@Autowired
+	private App_KaoTiKuService app_KaoTiKuService;
+	@Autowired
+	private App_ShiJianTiService app_ShiJianTiService;
+
+	@ResponseBody
+	@RequestMapping(value = "app_getshixilist")
+	public JSONObject app_getshixilist(HttpServletRequest request, HttpServletResponse response) {
+		String yonghuid = request.getParameter("yonghuid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		JSONObject jsonObject = new JSONObject();
+		String string = yonghuid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (!str.equals(token)) {
+			return jsonObject;
+		}
+		YongHu user = yongHuService.selectYongHuByID(Integer.parseInt(yonghuid));
+		List<Map<String, Object>> keChengs2 = new ArrayList<>();
+		Map<String, String> map = new HashMap<>();
+		String renkelaoshiid = user.getYonghuid().toString();
+		map.put("xueqiid", "");
+		map.put("renkelaoshiid", renkelaoshiid);
+		// 获得该老师的所有课程
+		List<Map<String, Object>> keChengs = kechengService.getKeChengByRenKeLaoShiID(map);
+		// 课程为空,获取参加的其他实习
+		if (keChengs == null || keChengs.isEmpty()) {
+			String idStr = "";
+			getqitashixi(user, keChengs2, idStr);
+			quchong(keChengs2);
+			jsonObject.put("kechengs", keChengs2);
+			return jsonObject;
+		}
+		// 如果课程不为空
+		for (int i = 0; i < keChengs.size(); i++) {
+			// 获取某一门课程的实习课
+			List<Map<String, Object>> shixi = kechengService
+					.selectShiXiByKeChengID((Integer) keChengs.get(i).get("ID"));
+			String idString = "";
+			if (shixi != null && shixi.size() != 0) {
+				for (int j = 0; j < shixi.size(); j++) {
+//					List<Map<String, Object>> laoshiMaps = new ArrayList<Map<String, Object>>();
+					keChengs.get(i).put("shixiid", (Integer) shixi.get(j).get("ID"));
+					JiaoShi jiaoShi = jiaoshiService.selectByPrimaryKey((Integer) keChengs.get(i).get("jiaoShiID"));
+					JiaoXueLou jiaoxuelou = jiaoXueLouService.selectByPrimaryKey(jiaoShi.getJiaoxuelouid());
+					XiaoQu xiaoQu = xiaoquService.selectByPrimaryKey(jiaoxuelou.getXiaoQuId());
+					keChengs.get(i).put("jiaoxuelouming", jiaoxuelou.getJiaoXueLouMing());
+					keChengs.get(i).put("jiaoshiming", jiaoShi.getJiaoshiming());
+					keChengs.get(i).put("xiaoquming", xiaoQu.getMingcheng());
+//					keChengs.get(i).put("shixizhezhi", shixi.get(j).get("sheZhi"));
+//					keChengs.get(i).put("laoshiids", shixi.get(j).get("renKeLaoShiID"));
+//					keChengs.get(i).put("shixizhuangTai", shixi.get(j).get("zhuangTai"));
+					keChengs.get(i).put("shixixinxi", shixi.get(j));
+					String renkelaoshidString[] = shixi.get(j).get("renKeLaoShiID").toString().split(";");
+					getlaoshixinxi(keChengs, renkelaoshidString);
+					keChengs2.add(keChengs.get(i));
+					// 获取所有某一门课程的所有实习id
+					idString += shixi.get(j).get("ID").toString() + ",";
+				}
+			} else {
+				// shixi为空，获取除了本次实习外的其它所有实习
+				getqitashixi(user, keChengs2, idString);
+			}
+		}
+		quchong(keChengs2);
+		jsonObject.put("kechengs", keChengs2);
+		return jsonObject;
+	}
+
+	private void getqitashixi(YongHu user, List<Map<String, Object>> keChengs2, String idStr) {
+		Map<String, Object> map2 = new HashMap<String, Object>();
+		if (idStr == null || idStr.equals("")) {
+			map2.put("id", idStr);
+		} else {
+			map2.put("id", Arrays.asList(idStr.split(",")));
+		}
+		// 获取除了本次实习外的其它所有实习
+		List<Map<String, Object>> allshixi = (List<Map<String, Object>>) kechengService.getallshixi(map2);
+		if (allshixi == null || allshixi.isEmpty()) {
+			return;
+		}
+		for (int m = 0; m < allshixi.size(); m++) {
+			String renkelaoshidString[] = allshixi.get(m).get("renKeLaoShiID").toString().split(";");
+			String renkelaoshiids = "";
+			for (String string2 : renkelaoshidString) {
+				renkelaoshiids += "," + string2.split(",")[0];
+			}
+			// 获取老师参加的其他实习,该实习是其他老师创建的
+			if ((renkelaoshiids + ",").contains("," + user.getYonghuid().toString() + ",")) {
+				String kechengidString = allshixi.get(m).get("keChengID").toString();
+				Map<String, Object> paramMap = new HashMap<String, Object>();
+				paramMap.put("kechengid", Integer.parseInt(kechengidString));
+//				KeCheng keCheng = kechengService.selectByPrimaryKey(Integer.parseInt(kechengidString));
+//				paramMap.put("renkelaoshiid", Integer.parseInt(keCheng.getRenkelaoshiid()));
+//				List<Map<String, Object>> kechengMap = kechengService.getKeChengAndShiJianByKeChengID(paramMap);
+//				 获取课程和对应的时间
+				List<Map<String, Object>> kechengMap = kechengService.getKeChengAndShiJianByKeChengID(paramMap);
+				for (int j = 0; j < kechengMap.size(); j++) {
+//					List<Map<String, Object>> laoshiMap = new ArrayList<Map<String, Object>>();
+					kechengMap.get(j).put("shixiid", (Integer) allshixi.get(m).get("ID"));
+					JiaoShi jiaoShi = jiaoshiService.selectByPrimaryKey((Integer) kechengMap.get(j).get("jiaoShiID"));
+					JiaoXueLou jiaoxuelou = jiaoXueLouService.selectByPrimaryKey(jiaoShi.getJiaoxuelouid());
+					XiaoQu xiaoQu = xiaoquService.selectByPrimaryKey(jiaoxuelou.getXiaoQuId());
+					kechengMap.get(j).put("jiaoxuelouming", jiaoxuelou.getJiaoXueLouMing());
+					kechengMap.get(j).put("jiaoshiming", jiaoShi.getJiaoshiming());
+					kechengMap.get(j).put("xiaoquming", xiaoQu.getMingcheng());
+//					kechengMap.get(j).put("shixizhezhi", allshixi.get(m).get("sheZhi"));
+//					kechengMap.get(j).put("laoshiids", allshixi.get(m).get("renKeLaoShiID"));
+//					kechengMap.get(j).put("shixizhuangTai", allshixi.get(m).get("zhuangTai"));
+					kechengMap.get(j).put("shixixinxi", allshixi.get(m));
+					getlaoshixinxi(kechengMap, renkelaoshidString);
+					keChengs2.add(kechengMap.get(j));
+				}
+			}
+		}
+	}
+
+	private void quchong(List<Map<String, Object>> list) {
+//		for (int i = 0; i < list.size() - 1; i++) {
+//			for (int j = list.size() - 1; j > i; j--) {
+//				if (list.get(j).equals(list.get(i))) {
+//					list.remove(j);
+//				}
+//			}
+//		}
+		HashSet<Map<String, Object>> h = new HashSet<Map<String, Object>>(list);
+		list.clear();
+		list.addAll(h);
+//		System.out.println(" remove duplicate " + list);
+	}
+
+	private void getlaoshixinxi(List<Map<String, Object>> kechengMap, String[] renkelaoshidString) {
+		for (int j = 0; j < kechengMap.size(); j++) {
+			List<Map<String, Object>> laoshiMap = new ArrayList<Map<String, Object>>();
+			for (String string2 : renkelaoshidString) {
+				// 查询实习负责人
+				if ((string2.split(",")[0]).equals(kechengMap.get(j).get("renKeLaoShiID").toString())) {
+					YongHu fuzeren = yongHuService
+							.selectYongHuByID(Integer.parseInt(kechengMap.get(j).get("renKeLaoShiID").toString()));
+					if (fuzeren == null) {
+						return;
+					}
+					Map<String, Object> fuzenrenMap = new HashMap<String, Object>();
+					fuzenrenMap.put("fuzerenxingming", fuzeren.getYonghuxingming());
+					fuzenrenMap.put("fuzerenid", fuzeren.getYonghuid());
+					kechengMap.get(j).put("fuzeren", fuzenrenMap);
+					continue;
+				}
+				// 查询其他参与老师姓名和id
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("laoshiid", string2.split(",")[0]);
+				YongHu yongHu = yongHuService.selectYongHuByID(Integer.parseInt(string2.split(",")[0]));
+				if (yongHu == null) {
+					map.put("laoshixingming", "");
+				} else {
+					map.put("laoshixingming", yongHu.getYonghuxingming());
+				}
+				laoshiMap.add(map);
+			}
+			kechengMap.get(j).put("laoshixinxi", laoshiMap);
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "app_shixishezhi")
+	public JSONObject app_shixishezhi(HttpServletRequest request, HttpServletResponse response) {
+		String yonghuid = request.getParameter("yonghuid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String leixing = request.getParameter("leixing");
+		String shixiid = request.getParameter("shixiid");
+		String renkelaoshiid = request.getParameter("renkelaoshiid");
+		JSONObject jsonObject = new JSONObject();
+		String string = yonghuid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (!str.equals(token)) {
+			return jsonObject;
+		}
+		Map<String, Object> shixiMap = kechengService.getshixi(Integer.parseInt(shixiid));
+		String shezhi = shixiMap.get("sheZhi").toString();
+		String newshezhi = "";
+		if (shezhi == null || "".equals(shezhi)) {
+			newshezhi += "3," + leixing + ";";
+		} else {
+			for (String string2 : shezhi.split(";")) {
+				if ((string2.split(",")[0]).equals("3")) {
+					string2 = "3," + leixing;
+				}
+				newshezhi += string2 + ";";
+			}
+		}
+		shixiMap.put("shezhi", newshezhi);
+		shixiMap.put("renkelaoshiid", renkelaoshiid);
+		int i = kechengService.updateshixi(shixiMap);
+		if (i != 0) {
+			jsonObject.put("status", "success");
+		} else {
+			jsonObject.put("status", "fail");
+		}
+		return jsonObject;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "app_getkaoti")
+	public JSONObject app_getkaoti(HttpServletRequest request, HttpServletResponse response) {
+		String yonghuid = request.getParameter("yonghuid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		JSONObject jsonObject = new JSONObject();
+		String string = yonghuid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (!str.equals(token)) {
+			return jsonObject;
+		}
+		List<App_KaoTiKu> kaotis = app_KaoTiKuService.getShiJianTiByLaoShiId(Integer.parseInt(yonghuid));
+		for (App_KaoTiKu app_KaoTiKu : kaotis) {
+			YongHu yongHu = yongHuService.selectYongHuByID(app_KaoTiKu.getShangchuanrenid());
+			if (yongHu == null) {
+				return jsonObject;
+			}
+			app_KaoTiKu.setLaoshixingming(yongHu.getYonghuxingming());
+		}
+		jsonObject.put("kaoti", kaotis);
+		return jsonObject;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "app_addkaoti")
+	public JSONObject app_addkaoti(HttpServletRequest request, HttpServletResponse response) {
+		String yonghuid = request.getParameter("yonghuid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kaotimingcheng = request.getParameter("kaotimingcheng");
+		JSONObject jsonObject = new JSONObject();
+		String string = yonghuid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (!str.equals(token)) {
+			return jsonObject;
+		}
+		List<App_KaoTiKu> kaotis = app_KaoTiKuService.getShiJianTiByLaoShiId(Integer.parseInt(yonghuid));
+		for (int i = 0; i < kaotis.size(); i++) {
+			if (kaotis.get(i).getMingcheng().equals(kaotimingcheng)) {
+				jsonObject.put("status", "samename");
+				return jsonObject;
+			}
+		}
+		App_KaoTiKu app_KaoTiKu = new App_KaoTiKu();
+		app_KaoTiKu.setMingcheng(kaotimingcheng);
+		app_KaoTiKu.setShangchuanrenid(Integer.parseInt(yonghuid));
+		int i = app_KaoTiKuService.insert(app_KaoTiKu);
+		if (i != 0) {
+			jsonObject.put("status", "success");
+		} else {
+			jsonObject.put("status", "fail");
+		}
+		return jsonObject;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "app_laoshixuanti")
+	public JSONObject app_laoshixuanti(HttpServletRequest request, HttpServletResponse response) {
+		String yonghuid = request.getParameter("yonghuid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String timu = request.getParameter("timu");
+		String shixiid = request.getParameter("shixiid");
+		JSONObject jsonObject = new JSONObject();
+		String string = yonghuid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (!str.equals(token)) {
+			return jsonObject;
+		}
+		if (timu == null || "".equals(timu)) {
+			return jsonObject;
+		}
+		for (String string2 : timu.trim().split(";")) {
+			String timuid = string2.split(",")[0];
+			String rongliang = string2.split(",")[1];
+			App_ShiJianTi app_ShiJianTi = new App_ShiJianTi();
+			app_ShiJianTi.setTimuid(Integer.parseInt(timuid));
+			app_ShiJianTi.setShixiid(Integer.parseInt(shixiid));
+			app_ShiJianTi.setRongliang(Integer.parseInt(rongliang));
+			app_ShiJianTi.setShifoushenhe(0);
+			int i = app_ShiJianTiService.insert(app_ShiJianTi);
+			if (i != 0) {
+				jsonObject.put("status", "success");
+			} else {
+				jsonObject.put("status", "fail");
+				return jsonObject;
+			}
+		}
+		return jsonObject;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "app_allkaoti")
+	public JSONObject app_allkaoti(HttpServletRequest request, HttpServletResponse response) {
+		String yonghuid = request.getParameter("yonghuid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String shixiid = request.getParameter("shixiid");
+		JSONObject jsonObject = new JSONObject();
+		String string = yonghuid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (!str.equals(token)) {
+			return jsonObject;
+		}
+		List<Map<String, Object>> allshijiantiList = app_ShiJianTiService
+				.getShiJianTiByShiXiId(Integer.parseInt(shixiid));
+		jsonObject.put("allkaoti", allshijiantiList);
+		return jsonObject;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "app_shenhekaoti")
+	public JSONObject app_shenhekaoti(HttpServletRequest request, HttpServletResponse response) {
+		String yonghuid = request.getParameter("yonghuid");
+		String token = request.getParameter("token");
+		String status = request.getParameter("status");
+		String kaotiid[] = request.getParameterValues("kaotiid");
+		JSONObject jsonObject = new JSONObject();
+		String string = yonghuid + "," + status;
+		String str = Util.SHA1Encode(string);
+		if (!str.equals(token)) {
+			return jsonObject;
+		}
+		for (String string2 : kaotiid) {
+			App_ShiJianTi app_ShiJianTi = app_ShiJianTiService.selectByPrimaryKey(Integer.parseInt(string2));
+			app_ShiJianTi.setShifoushenhe(1);
+			int i = app_ShiJianTiService.update(app_ShiJianTi);
+			if (i != 0) {
+				jsonObject.put("status", "success");
+			} else {
+				jsonObject.put("status", "fail");
+			}
+		}
+		return jsonObject;
+	}
+}

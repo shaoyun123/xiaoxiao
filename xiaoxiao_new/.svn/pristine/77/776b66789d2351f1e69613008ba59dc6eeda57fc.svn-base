@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.dao.App_XueXiZuMapper">
+	<resultMap id="BaseResultMap" type="com.web.model.App_XueXiZu">
+		<id column="ID" property="id" jdbcType="INTEGER" />
+		<result column="keChengID" property="shiJianKeChengId"
+			jdbcType="INTEGER" />
+		<result column="fenZuID" property="fenZuId" jdbcType="INTEGER" />
+		<result column="xueShengID" property="xiaoZuZhangId" jdbcType="INTEGER" />
+		<result column="xueXiZuMing" property="xueXiZuMing" jdbcType="VARCHAR" />
+		<result column="chengYuanIDLieBiao" property="chengYuanLieBiao"
+			jdbcType="VARCHAR" />
+		<result column="zhuangTai" property="zhuangTai" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID,keChengID,fenZuID,xueShengID,xueXiZuMing,chengYuanIDLieBiao,zhuangTai
+
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_xuexizu
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectByPrimaryKey1" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_xuexizu
+		where ID = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="getXueXiZu" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_xuexizu
+		where fenZuID = #{fenZuId}
+	</select>
+	<select id="getXueXZ" resultType="java.util.Map" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_xuexizu
+		where fenZuID = #{fenZuId}
+	</select>
+	<select id="selectXueXiZu" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select *
+		from app_xuexizu
+		where keChengID =
+		#{0,jdbcType=INTEGER} and xueShengID = #{1,jdbcType=INTEGER}
+	</select>
+	<select id="selectXueXiZuByXsID" resultMap="BaseResultMap"
+		parameterType="com.web.model.App_XueXiZu">
+		select *
+		from app_xuexizu
+		where keChengID =
+		#{shiJianKeChengId,jdbcType=INTEGER} and chengYuanIDLieBiao like
+		#{chengYuanLieBiao,jdbcType=VARCHAR}
+	</select>
+	<select id="selectXueXiZuByXsID1" resultType="java.util.Map"
+		parameterType="com.web.model.App_XueXiZu">
+		select *
+		from app_xuexizu
+		where keChengID =
+		#{shiJianKeChengId,jdbcType=INTEGER} and chengYuanIDLieBiao like
+		#{chengYuanLieBiao,jdbcType=VARCHAR}
+	</select>
+	<select id="getXueXiZuByKeCheng" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select *
+		from app_xuexizu
+		where keChengID =
+		#{kechengid,jdbcType=INTEGER}
+	</select>
+	<select id="getXueXiZuByKeCheng2" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select *
+		from app_xuexizu
+		where keChengID =
+		#{kechengid,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectXiaoZu" resultType="java.util.Map"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from app_xuexizu
+		where fenZuID = #{fenZuId}
+	</select>
+	<select id="selectAllXiaoZu" resultType="java.util.Map"
+		parameterType="java.util.Map">
+		SELECT
+		xxz.ID AS ID,
+		xueXiZuMing,
+		xueShengID,
+		chengYuanIDLieBiao,
+		kpjg.ID AS kaopingjieguoid,
+		kpjg.paiXu,zongDeFen as zongdefen,kouFen as zongkoufen,pingJunFen as
+		average,zhaoPian,faYanRenID,zuiHongFen as finalscore,deFen as
+		quMaxAndMin,
+		mingCi as mingci
+		FROM
+		app_xuexizu AS xxz
+		LEFT JOIN app_kaopingjieguo AS kpjg ON
+		xxz.ID =
+		kpjg.xueXiZuID
+		WHERE
+		kaoPingID = #{kaopingid}
+		AND xueXiZuID in
+		<foreach collection="
+		xiaozuids " index="index" item="item"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		ORDER BY  mingci DESC
+	</select>
+	<select id="selectBykaoPingIdAndXueshengId" resultType="java.util.Map"
+		parameterType="java.util.Map">
+		SELECT kp.ID as kaopingid,kp.keChengID as
+		shijiankechengid,xxz.ID as
+		xiaozuid,xxz.chengYuanIDLieBiao as
+		chengYuanIDLieBiao, xxz.fenZuID as
+		fenzuid,xxz.xueXiZuMing as
+		xiaozuming,xxz.xueShengID as xueshengid
+		,fz.zuMingCheng as
+		dazumingcheng,fz.zuZhangID as zuzhangid FROM
+		app_xuexizu as xxz left
+		JOIN
+		app_kechengkaoping as kp on
+		xxz.keChengID =
+		kp.keChengID LEFT JOIN
+		app_fenzu as fz ON fz.ID =
+		xxz.fenZuID
+		WHERE
+		kp.ID=#{kaopingid} and
+		kp.keChengID =
+		#{kechengid} and (kp.zhuangTai =1
+		or kp.zhuangTai =2 or
+		kp.zhuangTai = 3) and
+		fz.keChengID =
+		xxz.keChengID
+		and
+		<!-- xxz.chengYuanIDLieBiao like -->
+		<!-- #{xueshengid1} or -->
+		xxz.chengYuanIDLieBiao
+		like #{xueshengid2}
+
+	</select>
+
+	<update id="update" parameterType="com.web.model.App_XueXiZu">
+		update app_xuexizu
+		<set>
+			<if test="shiJianKeChengId != null">
+				keChengID = #{shiJianKeChengId,jdbcType=INTEGER},
+			</if>
+			<if test="fenZuId != null">
+				fenZuID = #{fenZuId,jdbcType=INTEGER} ,
+			</if>
+			<if test="xiaoZuZhangId != null">
+				xueShengID = #{xiaoZuZhangId,jdbcType=VARCHAR},
+			</if>
+			<if test="xueXiZuMing != null">
+				xueXiZuMing = #{xueXiZuMing,jdbcType=VARCHAR} ,
+			</if>
+			<if test="chengYuanLieBiao != null">
+				chengYuanIDLieBiao =
+				#{chengYuanLieBiao,jdbcType=VARCHAR},
+			</if>
+			<if test="zhuangTai != null">
+				zhuangTai = #{zhuangTai,jdbcType=INTEGER}
+			</if>
+		</set>
+		where ID = #{id,jdbcType=INTEGER}
+	</update>
+	<insert id="insert" parameterType="com.web.model.App_XueXiZu">
+		insert into app_xuexizu
+		(keChengID,fenZuID,xueShengID,xueXiZuMing,chengYuanIDLieBiao,zhuangTai)
+		values (#{shiJianKeChengId,jdbcType=INTEGER},
+		#{fenZuId,jdbcType=INTEGER},
+		#{xiaoZuZhangId,jdbcType=INTEGER},
+		#{xueXiZuMing,jdbcType=VARCHAR},
+		#{chengYuanLieBiao,jdbcType=VARCHAR},
+		#{zhuangTai,jdbcType=INTEGER}
+		)
+	</insert>
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from app_xuexizu where
+		ID = #{id,jdbcType = INTEGER}
+	</delete>
+</mapper>
